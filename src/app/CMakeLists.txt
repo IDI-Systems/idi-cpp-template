@@ -48,6 +48,8 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
             # EDIT LIST FILES BELOW HERE
             "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
         )
+        install(TARGETS "${IDI_MAIN_TARGET}"
+                LIBRARY)
     else()
         add_executable("${IDI_MAIN_TARGET}" "")
         target_sources(
@@ -59,10 +61,13 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
         target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
         target_compile_features("${IDI_MAIN_TARGET}" PRIVATE cxx_std_17)
         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES LINKER_LANGUAGE CXX)
+        install(TARGETS "${IDI_MAIN_TARGET}"
+            RUNTIME)
     endif()
     add_subdirectory("main")
 else()
-    # It's a static lib, do something with it?
+    install(TARGETS "${IDI_CORE}"
+        LIBRARY)
 endif()
 #####################################################################
 # MISC.                                                             #

@@ -20,13 +20,15 @@ macro(__idi_component_test component_name test_file)
 endmacro()
 
 macro(idi_component_test component_name test_file)
-    if(NOT IDI_IS_DYNAMIC)
+    if(IDI_BUILD_TESTS AND (NOT IDI_IS_DYNAMIC))
         __idi_component_test(${idi_component_test} ${component_name} ${test_file})
     endif()
 endmacro()
 
 macro(idi_component_test_public component_name test_file)
-    __idi_component_test(${idi_component_test} ${component_name} ${test_file})
+    if(IDI_BUILD_TESTS)
+        __idi_component_test(${idi_component_test} ${component_name} ${test_file})
+    endif()
 endmacro()
 
 macro(idi_component_setup component_name)
@@ -68,7 +70,12 @@ macro(idi_add_includes)
         # EDIT LIST FILES BELOW HERE
         ${ARGN}
     )
-
+    if(IDI_IS_LIBRARY AND (NOT IDI_IS_DYNAMIC))
+        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES PUBLIC_HEADER "${ARGN}")
+        install(TARGETS "${CURRENT_LIBRARY_NAME}"
+                PUBLIC_HEADER DESTINATION ${CMAKE_BINARY_DIR}/install/includes/${IDI_MAIN_TARGET}
+        )
+    endif()
     target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
     target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 endmacro()
@@ -80,6 +87,12 @@ macro(idi_add_public_includes)
         # EDIT LIST FILES BELOW HERE
         ${ARGN}
     )
+    if(IDI_IS_LIBRARY)
+        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES PUBLIC_HEADER "${ARGN}")
+        install(TARGETS "${CURRENT_LIBRARY_NAME}"
+                PUBLIC_HEADER DESTINATION ${CMAKE_BINARY_DIR}/install/includes/${IDI_MAIN_TARGET}
+        )
+    endif()
 
     target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
     target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")

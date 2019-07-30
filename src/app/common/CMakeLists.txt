@@ -5,8 +5,3 @@
 #
 
 idi_component(common)
-
-###################################################################################
-#         THIS LINE CAN BE REMOVED AND NOT INCLUDED IN ALL OTHER MODULES          #
-###################################################################################
-include("${CMAKE_CURRENT_LIST_DIR}/include/version.cmake")

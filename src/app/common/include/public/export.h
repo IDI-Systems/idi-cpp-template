@@ -8,9 +8,9 @@
  */
 #pragma once
 
-#define IDI_DYNAMIC_LIBRARY
+#include "platform_config.h"
 
-#ifdef IDI_DYNAMIC_LIBRARY
+#ifdef IDI_IS_DYNAMIC
 
 #ifdef _WIN32
 #define DLLEXPORT __declspec(dllexport)
@@ -20,4 +20,4 @@
 
 #define DLLEXPORT
 
-#endif // ACRE_CORE_DYNAMIC_LINKING
+#endif // IDI_IS_DYNAMIC
