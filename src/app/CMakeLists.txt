@@ -33,8 +33,7 @@ set_target_properties("${IDI_CORE}" PROPERTIES LINKER_LANGUAGE CXX)
 #####################################################################
 
 # List core components below via add_subdirectory
-add_subdirectory("common")
-
+include("${CMAKE_CURRENT_LIST_DIR}/components.cmake")
 
 #####################################################################
 # MAIN TARGET                                                       #
@@ -65,9 +64,6 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
 else()
     # It's a static lib, do something with it?
 endif()
-
-
-
 #####################################################################
 # MISC.                                                             #
 #####################################################################
