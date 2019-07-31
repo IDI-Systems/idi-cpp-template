@@ -7,5 +7,5 @@
 # You _should_ include .h/.hpp files here so they properly show up in IDEs.
 
 idi_add_public_includes(
-    "${CMAKE_CURRENT_LIST_DIR}/public_template_component.h"
+    "${CMAKE_CURRENT_LIST_DIR}/@__idi_new_component_name@_public.h"
 )

@@ -35,6 +35,10 @@ set_target_properties("${IDI_CORE}" PROPERTIES LINKER_LANGUAGE CXX)
 # List core components below via add_subdirectory
 include("${CMAKE_CURRENT_LIST_DIR}/components.cmake")
 
+if(DO_TEMPLATE_COMPONENT_TEST)
+    add_subdirectory("unit_test_component")
+endif()
+
 #####################################################################
 # MAIN TARGET                                                       #
 #####################################################################

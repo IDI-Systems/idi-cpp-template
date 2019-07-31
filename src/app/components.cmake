@@ -10,6 +10,5 @@
 ###############################################################################
 
 add_subdirectory("common")
-#add_subdirectory("unit_test_component")
-#add_subdirectory("booga_looga")
+
 
