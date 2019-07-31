@@ -8,7 +8,7 @@
 #include "app_version.h"
 #include "idi_version.h"
 
-using namespace idi::app;
+using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
 
 int common::get_version_major() {
     return IDI_VERSION_MAJOR;

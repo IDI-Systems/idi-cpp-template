@@ -12,6 +12,11 @@ set(IDI_BUILD_TESTS 1 CACHE BOOL "Build unit tests.")
 
 include("${IDI_PLATFORM_CONFIG}")
 
+set(__idi_vendor_namespace ${IDI_VENDOR_NAMESPACE})
+message("VENDOR NAMESPACE ${IDI_VENDOR_NAMESPACE}")
+set(__idi_app_namespace ${IDI_APP_NAMESPACE})
+
+
 
 # Basic configuration and pass through to src folder.
 project(${IDI_PROJECT_NAME} C CXX)

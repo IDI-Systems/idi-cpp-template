@@ -5,27 +5,4 @@
  * 
  */
 #pragma once
-#include "version.h"
-
-
-namespace idi::app {
-    namespace common {
-        /**
-         * Get the major version number of the current version of the ACRE core.
-         * @return int 
-         */
-        int get_version_major();
-
-        /**
-         * Get the minor version number of the current version of the ACRE core.
-         * @return int 
-         */
-        int get_version_minor();
-
-        /**
-         * Get the patch version number of the current version of the ACRE core.
-         * @return int 
-         */
-        int get_version_patch();
-    }
-}
+#include "__app_version.out.h"

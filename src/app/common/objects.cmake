@@ -6,7 +6,9 @@
 
 # This is the list of all files that should be included in the core build.
 # You _should_ include .h/.hpp files here so they properly show up in IDEs.
+
 idi_add_sources(
+    INTERNAL_CONFIGURE
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
 )
 

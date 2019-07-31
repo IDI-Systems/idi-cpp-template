@@ -10,8 +10,14 @@
 # Set this to the name of the project. This will be the resultant binary name.
 set(IDI_PROJECT_NAME "template_project")
 
+# Set this to be the vendor namespace
+set(IDI_VENDOR_NAMESPACE "idi")
+
+# Set this to be the primary namespace within the vendor namespace
+set(IDI_APP_NAMESPACE "app")
+
 # If IDI_IS_LIBRARY is set to 1 the project will be build as a library.
-set(IDI_IS_LIBRARY 0)
+set(IDI_IS_LIBRARY 1)
 
 # If IDI_IS_DYNAMIC is set to 1 then the project will build as a shared library.
 # If it is set to 0 it will build as a static library.

@@ -15,8 +15,8 @@ idi_add_public_includes(
     "${CMAKE_BINARY_DIR}/src/configured_templates/platform_config.h"
 )
 
-configure_file( ${CMAKE_SOURCE_DIR}/src/configure_templates/platform_config.h.in ${CMAKE_BINARY_DIR}/src/configured_templates/platform_config.h )
-configure_file( ${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/src/configured_templates/idi_version.h )
+configure_file(${CMAKE_SOURCE_DIR}/src/configure_templates/platform_config.h.in ${CMAKE_BINARY_DIR}/src/configured_templates/platform_config.h)
+configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/src/configured_templates/idi_version.h)
 target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_BINARY_DIR}/src/configured_templates")
 target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_BINARY_DIR}/src/configured_templates")
 target_include_directories("${IDI_CORE}" INTERFACE "${CMAKE_BINARY_DIR}/src/configured_templates")

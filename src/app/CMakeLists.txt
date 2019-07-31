@@ -63,13 +63,10 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
             RUNTIME)
     endif()
     add_subdirectory("main")
+    get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
+        source_group(TREE ${CMAKE_CURRENT_LIST_DIR} 
+    FILES ${IDI_MAIN_TARGET_SOURCES})
 else()
     install(TARGETS "${IDI_CORE}"
         LIBRARY)
 endif()
-#####################################################################
-# MISC.                                                             #
-#####################################################################
-get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
-source_group(TREE ${CMAKE_CURRENT_LIST_DIR} 
-    FILES ${IDI_MAIN_TARGET_SOURCES})

@@ -12,8 +12,8 @@
 
 TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
     SECTION("Internal API calls.") {
-        REQUIRE( idi::app::common::get_version_major() == IDI_VERSION_MAJOR );
-        REQUIRE( idi::app::common::get_version_minor() == IDI_VERSION_MINOR );
-        REQUIRE( idi::app::common::get_version_patch() == IDI_VERSION_PATCH );
+        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_version_major() == IDI_VERSION_MAJOR );
+        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_version_minor() == IDI_VERSION_MINOR );
+        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_version_patch() == IDI_VERSION_PATCH );
     }
 }
