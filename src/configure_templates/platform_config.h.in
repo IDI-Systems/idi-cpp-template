@@ -5,5 +5,9 @@
  * 
  */
 
+#cmakedefine IDI_PROJECT_NAME "@IDI_PROJECT_NAME@"
+
+#cmakedefine IDI_IS_SHARED
 
 #cmakedefine IDI_IS_DYNAMIC
+

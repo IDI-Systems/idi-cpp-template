@@ -38,8 +38,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/components.cmake")
 #####################################################################
 # MAIN TARGET                                                       #
 #####################################################################
-
-
 if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
     if(IDI_IS_DYNAMIC)
         target_sources(
@@ -72,6 +70,6 @@ endif()
 #####################################################################
 # MISC.                                                             #
 #####################################################################
-get_target_property(IDI_CORE_SOURCES "${IDI_CORE}" SOURCES)
+get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} 
-    FILES ${IDI_CORE_SOURCES})
+    FILES ${IDI_MAIN_TARGET_SOURCES})

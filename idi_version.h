@@ -13,7 +13,7 @@
 #endif
 
 #ifndef IDI_VERSION_MINOR
-#define IDI_VERSION_MINOR 1
+#define IDI_VERSION_MINOR 2
 #endif
 
 #ifndef IDI_VERSION_PATCH
