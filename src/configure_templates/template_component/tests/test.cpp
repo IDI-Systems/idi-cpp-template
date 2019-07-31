@@ -9,8 +9,8 @@
 
 #include "template_component.h"
 
-TEST_CASE("Template component test CHANGE ME!!!!!!!!!", "[template_component_change_me]") {
+TEST_CASE("Template component test CHANGE ME!!!!!!!!!", "[@__idi_new_component_name@]") {
     SECTION("Internal API calls.") {
-        REQUIRE( idi::app::template_component::component_function() == 42 );
+        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@::component_function() == 42 );
     }
 }

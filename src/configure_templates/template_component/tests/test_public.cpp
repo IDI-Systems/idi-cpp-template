@@ -9,8 +9,8 @@
 
 #include "public_template_component.h"
 
-TEST_CASE("Template public component test CHANGE ME!!!!!!!!!", "[template_component_change_me]") {
+TEST_CASE("Template public component test CHANGE ME!!!!!!!!!", "[@__idi_new_component_name@]") {
     SECTION("Public API calls.") {
-        REQUIRE( idi_component_function() == 42 );
+        REQUIRE( @__idi_new_component_name@_component_function() == 42 );
     }
 }

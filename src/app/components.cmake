@@ -10,4 +10,6 @@
 ###############################################################################
 
 add_subdirectory("common")
-add_subdirectory("template_component")
+#add_subdirectory("unit_test_component")
+#add_subdirectory("booga_looga")
+

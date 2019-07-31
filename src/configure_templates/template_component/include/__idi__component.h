@@ -6,8 +6,8 @@
  */
 #pragma once
 
-namespace idi::app {
-    namespace template_component {
+namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
+    namespace @__idi_new_component_name@ {
         /**
          * Demonstration component function.
          * @return int 

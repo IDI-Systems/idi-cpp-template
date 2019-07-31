@@ -8,14 +8,14 @@
 #include "template_component.h"
 #include "public_template_component.h"
 
-using namespace idi::app;
+using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
 
-namespace idi::app::template_component {
+namespace @__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@ {
     int component_function() {
         return 42;
     }
 }
 
-int idi_component_function() {
-    return template_component::component_function();
+int @__idi_new_component_name@_component_function() {
+    return @__idi_new_component_name@::component_function();
 }
