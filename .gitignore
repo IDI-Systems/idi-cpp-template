@@ -33,3 +33,6 @@
 
 build/*
 .vscode/*
+
+*.out.cpp
+*.out.h
