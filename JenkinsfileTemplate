@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Static Library Build') {
+        stage('Shared Library Build') {
             steps {
                 dir('build') {
                     deleteDir()
