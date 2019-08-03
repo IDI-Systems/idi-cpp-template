@@ -13,6 +13,8 @@ idi_add_public_includes(
     "${CMAKE_CURRENT_LIST_DIR}/version.h"
     EXTERNAL
     "${CMAKE_BINARY_DIR}/configured_templates/platform_config.h"
+    INTERNAL_CONFIGURE
+    "${CMAKE_CURRENT_LIST_DIR}/__version.h"
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/platform_config.h)

@@ -19,19 +19,19 @@ extern "C"
  * Get the major version number of the current version of the project.
  * @return int 
  */
-DLLEXPORT int @__idi_app_namespace@_@__idi_app_namespace@_common_get_version_major();
+DLLEXPORT int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_major();
 
 /**
  * Get the minor version number of the current version of the project.
  * @return int 
  */
-DLLEXPORT int @__idi_app_namespace@_@__idi_app_namespace@_common_get_version_minor();
+DLLEXPORT int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_minor();
 
 /**
  * Get the patch version number of the current version of the project.
  * @return int 
  */
-DLLEXPORT int @__idi_app_namespace@_@__idi_app_namespace@_common_get_version_patch();
+DLLEXPORT int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_patch();
 
 #ifdef __cplusplus
 }
