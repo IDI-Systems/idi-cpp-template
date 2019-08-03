@@ -1,0 +1,49 @@
+pipeline {
+    agent { label 'windows' } 
+    stages {
+        stage('Executable Build') {
+            steps {
+                dir('build') {
+                    deleteDir()
+                    bat 'cmake ..'
+                    bat 'cmake --build .'
+                    bat 'ctest -C Debug'
+                    junit 'reports/**_report*.xml'
+                }
+            }
+        }
+        stage('Executable Build With Template') {
+            steps {
+                dir('build') {
+                    deleteDir()
+                    bat 'cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1'
+                    bat 'cmake --build .'
+                    bat 'ctest -C Debug'
+                    junit 'reports/**_report*.xml'
+                }
+            }
+        }
+        stage('Static Library Build') {
+            steps {
+                dir('build') {
+                    deleteDir()
+                    bat 'cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake'
+                    bat 'cmake --build .'
+                    bat 'ctest -C Debug'
+                    junit 'reports/**_report*.xml'
+                }
+            }
+        }
+        stage('Static Library Build') {
+            steps {
+                dir('build') {
+                    deleteDir()
+                    bat 'cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake'
+                    bat 'cmake --build .'
+                    bat 'ctest -C Debug'
+                    junit 'reports/**_report*.xml'
+                }
+            }
+        }
+    }
+}
