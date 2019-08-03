@@ -1,6 +1,6 @@
-# ACRE Core
+# IDI C++ Project Template
 
-This is the core library for ACRE.
+This is a template for starting new C++ projects that conform to the IDI C++ project structure requirements.
 
 ## Build Instructions
 

@@ -11,19 +11,19 @@
 namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
     namespace common {
         /**
-         * Get the major version number of the current version of the ACRE core.
+         * Get the major version number of the current version of the project.
          * @return int 
          */
         int get_version_major();
 
         /**
-         * Get the minor version number of the current version of the ACRE core.
+         * Get the minor version number of the current version of the project.
          * @return int 
          */
         int get_version_minor();
 
         /**
-         * Get the patch version number of the current version of the ACRE core.
+         * Get the patch version number of the current version of the project.
          * @return int 
          */
         int get_version_patch();

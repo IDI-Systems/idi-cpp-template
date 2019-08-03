@@ -10,12 +10,11 @@ set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake" CACHE 
 set(IDI_BUILD_DEMOS 0 CACHE BOOL "Build demo applications if applicable.")
 set(IDI_BUILD_TESTS 1 CACHE BOOL "Build unit tests.")
 
-set(DO_TEMPLATE_COMPONENT_TEST 0 CACHE BOOL "Build unit tests for template.")
+set(DO_TEMPLATE_COMPONENT_TEST 0 CACHE BOOL "Generate unit test template component and build unit tests for template.")
 
 include("${IDI_PLATFORM_CONFIG}")
 
 set(__idi_vendor_namespace ${IDI_VENDOR_NAMESPACE})
-message("VENDOR NAMESPACE ${IDI_VENDOR_NAMESPACE}")
 set(__idi_app_namespace ${IDI_APP_NAMESPACE})
 
 
@@ -36,9 +35,19 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/new_component.cmake")
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/reports)
 
+
+# Define a nice short hand for 3rd party external library folders
+set(IDI_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
+
+# Add 3rd party external cmake projects below here if needed.
+
+# Catch is included by default as a submodule
+add_subdirectory(lib/Catch2)
+include("${CMAKE_CURRENT_LIST_DIR}/libraries.cmake")
+
+# Add the main source folder.
 add_subdirectory("src")
 
-# Needs to be wrapped in a define for building the demos or not.
 if(IDI_BUILD_DEMOS) 
     add_subdirectory("demo")
 endif()
