@@ -1,10 +1,10 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
- * 
+ *
  * Template Component
- * 
+ *
  * @copyright Copyright (c) 2019 International Development & Integration Systems LLC
- * 
+ *
  */
 #pragma once
 
@@ -17,7 +17,7 @@ extern "C"
 
 /**
  * Export the template component function.
- * @return int 
+ * @return int
  */
 DLLEXPORT int @__idi_new_component_name@_component_function();
 

@@ -1,8 +1,8 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
- * 
+ *
  * @copyright Copyright (c) 2019 International Development & Integration Systems LLC
- * 
+ *
  */
 
 #include "@__idi_new_component_name@.h"

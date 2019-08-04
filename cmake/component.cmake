@@ -11,7 +11,7 @@ macro(__idi_component_test component_name test_file)
     add_executable("${CURRENT_LIBRARY_TEST}" ${test_file})
     target_compile_features("${CURRENT_LIBRARY_TEST}" PRIVATE cxx_std_17)
 
-    target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE 
+    target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
         "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
     target_link_libraries("${CURRENT_LIBRARY_TEST}" "${IDI_CORE}")
@@ -41,7 +41,7 @@ macro(idi_component_setup component_name)
     target_link_libraries("${IDI_CORE}"
         "${CURRENT_LIBRARY_NAME}"
     )
-    source_group(TREE ${CMAKE_CURRENT_LIST_DIR} 
+    source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
 endmacro()
 
@@ -92,7 +92,7 @@ function(__process_source_files)
                 endif()
                 set_source_files_properties(${var} PROPERTIES HEADER_FILE_ONLY TRUE)
             endif()
-            
+
         endif()
     endforeach()
 
