@@ -28,6 +28,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Set the default installation path." FORCE)
 
+if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 
 include(CTest)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/component.cmake")
