@@ -6,7 +6,7 @@ This is a template for starting new C++ projects that conform to the IDI C++ pro
 
 ### Requirements
 
-- CMake >= 3.12
+- CMake >= 3.14
 - GCC / Clang / MSVC (VS2019)
 
 Make sure you have initialized submodules:
