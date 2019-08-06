@@ -43,7 +43,7 @@ set(IDI_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 
 # Catch is included by default as a submodule
 add_subdirectory(lib/Catch2)
-include("${CMAKE_CURRENT_LIST_DIR}/libraries.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 
 # Add the main source folder.
 add_subdirectory("src")
