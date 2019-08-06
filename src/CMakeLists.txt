@@ -44,8 +44,8 @@ endif()
 #####################################################################
 if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
     if(IDI_IS_DYNAMIC)
-        set_target_properties(IDI_MAIN_TARGET PROPERTIES CXX_VISIBILITY_PRESET hidden)
-        set_target_properties(IDI_MAIN_TARGET PROPERTIES C_VISIBILITY_PRESET hidden)
+        set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
+        set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES C_VISIBILITY_PRESET hidden)
 
         target_sources(
             "${IDI_MAIN_TARGET}"
