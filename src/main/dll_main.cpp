@@ -8,8 +8,8 @@ BOOL WINAPI DllMain(
     (void)lpReserved;
     (void)hinstDLL;
     // Perform actions based on the reason for calling.
-    switch( fdwReason ) 
-    { 
+    switch( fdwReason )
+    {
         case DLL_PROCESS_ATTACH:
          // Initialize once for each new process.
          // Return FALSE to fail DLL load.

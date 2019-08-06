@@ -48,7 +48,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/libraries.cmake")
 # Add the main source folder.
 add_subdirectory("src")
 
-if(IDI_BUILD_DEMOS) 
+if(IDI_BUILD_DEMOS)
     add_subdirectory("demo")
 endif()
 
