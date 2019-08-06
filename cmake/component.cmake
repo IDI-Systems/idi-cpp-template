@@ -4,7 +4,7 @@
 # @copyright Copyright (c) 2019 International Development & Integration Systems LLC
 #
 
-macro(__idi_component_test component_name test_file)
+function(__idi_component_test component_name test_file)
     get_filename_component(TEST_FILE_WLE ${test_file} NAME_WLE)
     set(CURRENT_LIBRARY_TEST "${component_name}_${TEST_FILE_WLE}")
 
@@ -16,18 +16,39 @@ macro(__idi_component_test component_name test_file)
 
     target_link_libraries("${CURRENT_LIBRARY_TEST}" "${IDI_CORE}")
 
+
+    set(ADD_MODE "ADDITIONAL_SOURCES")
+    foreach(var IN LISTS ARGN)
+        if(var STREQUAL "ADDITIONAL_LIBRARIES")
+            set(ADD_MODE "ADDITIONAL_LIBRARIES")
+        elseif(var STREQUAL "ADDITIONAL_INCLUDES")
+            set(ADD_MODE "ADDITIONAL_INCLUDES")
+        elseif(var STREQUAL "ADDITIONAL_SOURCES")
+            set(ADD_MODE "ADDITIONAL_SOURCES")
+        else()
+            if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
+                target_link_libraries("${CURRENT_LIBRARY_TEST}" ${var})
+            elseif(ADD_MODE STREQUAL "ADDITIONAL_SOURCES")
+                target_sources("${CURRENT_LIBRARY_NAME}" PRIVATE ${var})
+            elseif(ADD_MODE STREQUAL "ADDITIONAL_INCLUDES")
+                target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
+                    ${var})
+            endif()
+        endif()
+    endforeach()
+
     add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}" -o ${CMAKE_BINARY_DIR}/reports/${CURRENT_LIBRARY_TEST}_report.xml -r junit)
-endmacro()
+endfunction()
 
 macro(idi_component_test component_name test_file)
     if(IDI_BUILD_TESTS AND (NOT IDI_IS_DYNAMIC))
-        __idi_component_test(${idi_component_test} ${component_name} ${test_file})
+        __idi_component_test(${idi_component_test} ${component_name} ${test_file} ${ARGN})
     endif()
 endmacro()
 
 macro(idi_component_test_public component_name test_file)
     if(IDI_BUILD_TESTS)
-        __idi_component_test(${idi_component_test} ${component_name} ${test_file})
+        __idi_component_test(${idi_component_test} ${component_name} ${test_file} ${ARGN})
     endif()
 endmacro()
 
