@@ -31,9 +31,9 @@ before_script:
 
 script:
   - cmake .. && cmake --build . && ctest -C Debug
-  - rm -rf .
+  - rm -rf *
   - cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
-  - rm -rf .
-  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake' && cmake --build . && ctest -C Debug
-  - rm -rf .
-  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake' && cmake --build . && ctest -C Debug
+  - rm -rf *
+  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
+  - rm -rf *
+  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
