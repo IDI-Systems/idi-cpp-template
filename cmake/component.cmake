@@ -62,6 +62,10 @@ macro(idi_component_setup component_name)
     target_link_libraries("${IDI_CORE}"
         "${CURRENT_LIBRARY_NAME}"
     )
+    if(IDI_IS_DYNAMIC)
+        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
+        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
+    endif()
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
 endmacro()
