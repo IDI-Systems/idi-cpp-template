@@ -1,3 +1,7 @@
+#ifdef IDI_IS_DYNAMIC
+
+#ifdef _WIN32
+
 #include <Windows.h>
 
 BOOL WINAPI DllMain(
@@ -29,3 +33,7 @@ BOOL WINAPI DllMain(
     }
     return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
+
+#endif
+
+#endif
