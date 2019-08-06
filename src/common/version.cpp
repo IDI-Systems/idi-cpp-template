@@ -5,7 +5,7 @@
  *
  */
 
-#include "app_version.h"
+#include "version.hpp"
 #include "idi_version.h"
 
 using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;

@@ -5,4 +5,4 @@
  *
  */
 #pragma once
-#include "__app_version.out.h"
+#include "__version.out.hpp"

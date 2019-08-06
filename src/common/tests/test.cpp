@@ -8,7 +8,7 @@
 #include <catch2/catch.hpp>
 
 #include "idi_version.h"
-#include "app_version.h"
+#include "version.hpp"
 
 TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
     SECTION("Internal API calls.") {
