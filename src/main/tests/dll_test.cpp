@@ -11,9 +11,9 @@
 
 #define JOIN(A,B) A ##_## B
 
-#define MAJOR_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP)_get_version_major()
-#define MINOR_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP)_get_version_minor()
-#define PATCH_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP)_get_version_patch()
+#define MAJOR_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP) ## _get_version_major()
+#define MINOR_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP) ## _get_version_minor()
+#define PATCH_VERSION_CALL(VENDOR,APP)  JOIN(VENDOR, APP) ## _get_version_patch()
 
 TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
     SECTION("Public API calls.") {
