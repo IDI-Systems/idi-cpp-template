@@ -30,4 +30,4 @@ $ ctest -C Debug
 
 ## License
 
-Template is licensed under [MIT](https://github.com/IDI-Systems/idi-cpp-template/blob/master/LICENSE). When using the template, you are free to license your project including the derived template as you see fit.
+Template is licensed under [MIT](https://github.com/IDI-Systems/idi-cpp-template/blob/master/LICENSE). When using the template, make sure you change the `LICENSE` file accordingly!
