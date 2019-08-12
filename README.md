@@ -27,3 +27,7 @@ Run tests:
 ```
 $ ctest -C Debug
 ```
+
+## License
+
+Template is licensed under [MIT](https://github.com/IDI-Systems/idi-cpp-template/blob/master/LICENSE). When using the template, make sure you change the `LICENSE` file accordingly!
