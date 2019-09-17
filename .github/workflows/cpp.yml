@@ -23,23 +23,47 @@ jobs:
         submodules: true
     - name: Create build directory
       run: mkdir -p build
+
     - name: Build (Executable)
       run: |
         export PATH=${HOME}/cmake/bin:$PATH
         cd build
         cmake .. && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Executable)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-exe-linux
+        path: build/bin
+
     - name: Build (Executable with Template)
       run: |
         export PATH=${HOME}/cmake/bin:$PATH
         cd build && rm -rf *
         cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Executable with Template)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-exetemplate-linux
+        path: build/bin
+
     - name: Build (Static Library)
       run: |
         export PATH=${HOME}/cmake/bin:$PATH
         cd build && rm -rf *
         cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Static Library)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-static-linux
+        path: build/bin
+
     - name: Build (Shared Library)
       run: |
         export PATH=${HOME}/cmake/bin:$PATH
         cd build && rm -rf *
         cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Shared Library)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-shared-linux
+        path: build/bin
