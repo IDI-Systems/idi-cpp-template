@@ -1,0 +1,39 @@
+# This Travis file is meant to be a test for the template repo itself.
+# You should replace it with your own .travis.yml file for your project.
+if: repo = IDI-Systems/idi-cpp-template
+
+os: linux
+dist: bionic
+compiler: gcc
+language: cpp
+
+# the install step will take care of deploying a newer cmake version
+install:
+  # first we create a directory for the CMake binaries
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+  # we use wget to fetch the cmake binaries
+  - travis_retry wget --no-check-certificate https://github.com/Kitware/CMake/releases/download/v3.15.1/cmake-3.15.1-Linux-x86_64.tar.gz
+  # extract the binaries; the output here is quite lengthy,
+  # so we swallow it to not clutter up the travis console
+  - tar -xvf cmake-3.15.1-Linux-x86_64.tar.gz > /dev/null
+  - mv cmake-3.15.1-Linux-x86_64 cmake-install
+  # add both the top-level directory and the bin directory from the archive
+  # to the system PATH. By adding it to the front of the path we hide the
+  # preinstalled CMake with our own.
+  - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
+  # don't forget to switch back to the main build directory once you are done
+  - cd ${TRAVIS_BUILD_DIR}
+
+before_script:
+  - mkdir build
+  - cd build
+
+script:
+  - cmake .. && cmake --build . && ctest -C Debug
+  - rm -rf *
+  - cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
+  - rm -rf *
+  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
+  - rm -rf *
+  - cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
