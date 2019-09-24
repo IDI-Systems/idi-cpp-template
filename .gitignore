@@ -37,4 +37,4 @@ build/*
 *.out.cpp
 *.out.h
 
-src/app/unit_test_component/*
+src/unit_test_component/*
