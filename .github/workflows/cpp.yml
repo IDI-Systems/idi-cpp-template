@@ -1,0 +1,74 @@
+# This workflow file is meant to be a test for the template repo itself.
+# You should replace it with your own workflow file for your project.
+
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix. os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - name: (Linux) Install newer CMake
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        mkdir -p $HOME/cmake
+        wget -qO- "https://cmake.org/files/v3.15/cmake-3.15.3-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/cmake
+    - name: Checkout the source code
+      uses: actions/checkout@master
+      with:
+        submodules: true
+    - name: Create build directory
+      run: mkdir -p build
+
+    - name: Build (Executable)
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build
+        cmake .. && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Executable)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-exe-${{ matrix.os }}
+        path: build/bin
+
+    - name: Build (Executable with Template)
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build && rm -rf *
+        cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Executable with Template)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-exetmpl-${{ matrix.os }}
+        path: build/bin
+
+    - name: Build (Static Library)
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build && rm -rf *
+        cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Static Library)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-static-${{ matrix.os }}
+        path: build/bin
+
+    - name: Build (Shared Library)
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build && rm -rf *
+        cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
+    - name: Upload Artifact (Shared Library)
+      uses: actions/upload-artifact@master
+      with:
+        name: idi-cpp-template-shared-${{ matrix.os }}
+        path: build/bin
