@@ -22,14 +22,14 @@ int common::get_version_patch() {
     return IDI_VERSION_PATCH;
 }
 
-int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_major() {
+int @__idi_app_namespace@_get_version_major() {
     return common::get_version_major();
 }
 
-int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_minor() {
+int @__idi_app_namespace@_get_version_minor() {
     return common::get_version_minor();
 }
 
-int @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_patch() {
+int @__idi_app_namespace@_get_version_patch() {
     return common::get_version_patch();
 }
