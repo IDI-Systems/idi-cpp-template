@@ -34,6 +34,7 @@ jobs:
       run: mkdir -p build
 
     - name: Build (Executable)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build
@@ -45,6 +46,7 @@ jobs:
         path: build/bin
 
     - name: Build (Executable with Template)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
@@ -56,6 +58,7 @@ jobs:
         path: build/bin
 
     - name: Build (Static Library)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
@@ -67,6 +70,7 @@ jobs:
         path: build/bin
 
     - name: Build (Shared Library)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
