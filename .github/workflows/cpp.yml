@@ -23,13 +23,18 @@ jobs:
         mkdir -p $HOME/cmake
         wget -qO- "https://cmake.org/files/v3.15/cmake-3.15.3-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/cmake
     - name: Checkout the source code
-      uses: actions/checkout@master
-      with:
-        submodules: true
+      uses: actions/checkout@v2
+    - name: Checkout submodules
+      shell: bash
+      run: |
+        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+        git submodule sync --recursive
+        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
     - name: Create build directory
       run: mkdir -p build
 
     - name: Build (Executable)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build
@@ -41,6 +46,7 @@ jobs:
         path: build/bin
 
     - name: Build (Executable with Template)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
@@ -52,6 +58,7 @@ jobs:
         path: build/bin
 
     - name: Build (Static Library)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
@@ -63,6 +70,7 @@ jobs:
         path: build/bin
 
     - name: Build (Shared Library)
+      shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
