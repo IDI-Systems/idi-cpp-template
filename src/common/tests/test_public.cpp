@@ -13,8 +13,8 @@
 
 TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
     SECTION("Public API calls.") {
-        REQUIRE( @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_major() == IDI_VERSION_MAJOR );
-        REQUIRE( @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_minor() == IDI_VERSION_MINOR );
-        REQUIRE( @__idi_vendor_namespace@_@__idi_app_namespace@_get_version_patch() == IDI_VERSION_PATCH );
+        REQUIRE( @__idi_app_namespace@_get_version_major() == IDI_VERSION_MAJOR );
+        REQUIRE( @__idi_app_namespace@_get_version_minor() == IDI_VERSION_MINOR );
+        REQUIRE( @__idi_app_namespace@_get_version_patch() == IDI_VERSION_PATCH );
     }
 }
