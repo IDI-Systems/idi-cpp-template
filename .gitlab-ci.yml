@@ -1,0 +1,70 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build
+
+.linux-builds:
+  image: $IMAGE
+  parallel:
+    matrix:
+      - IMAGE: ubuntu:21.04
+        CC: gcc-10
+        CXX: g++-10
+      - IMAGE: ubuntu:21.04
+        CC: gcc-11
+        CXX: g++-11
+        EXPERIMENTAL: "true"
+      - IMAGE: ubuntu:21.04
+        CC: clang-11
+        CXX: clang++-11
+      - IMAGE: ubuntu:21.04
+        CC: clang-12
+        CXX: clang++-12
+        EXPERIMENTAL: "true"
+      - IMAGE: ubuntu:21.10
+        CC: clang-13
+        CXX: clang++-13
+        EXPERIMENTAL: "true"
+  rules:
+    - if: $EXPERIMENTAL == "true"
+      allow_failure: true
+    - if: $EXPERIMENTAL != "true"
+      allow_failure: false
+
+build-linux:
+  stage: build
+  extends: .linux-builds
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq cmake
+    - |
+      echo "Install Tools"
+      if [[ $CC == gcc-* ]]; then
+        apt-get install -y -qq $CC $CXX
+        update-alternatives --install /usr/bin/gcc gcc /usr/bin/$CC 100
+        update-alternatives --install /usr/bin/g++ g++ /usr/bin/$CXX 100
+      elif [[ $CC == clang-* ]]; then
+        DEBIAN_FRONTEND="noninteractive" apt-get install -y -qq $CC
+        update-alternatives --install /usr/bin/clang clang /usr/bin/$CC 100
+        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/$CXX 100
+      fi
+  script:
+    - cmake --version
+    - |
+      echo "Test Compilers"
+      if [[ $CC == gcc-* ]]; then
+        gcc --version
+        g++ --version
+      elif [[ $CC == clang-* ]]; then
+        clang --version
+        clang++ --version
+      fi
+    - mkdir -p build && cd build && cmake .. -DIDI_BUILD_DEMOS=1 && cmake --build . -j 8
+    - |
+      if ! ctest -C Debug ; then
+        cat Testing/Temporary/LastTest.log
+      fi
+  interruptible: true
+  artifacts:
+    paths:
+      - build/bin/template_project
