@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2019 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
 
 function(__idi_component_test component_name test_file)

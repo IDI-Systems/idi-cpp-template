@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2019 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
 # This is a configuration file for the project platform. Set these values before
 # configuration of the project. These values are also accessible via an included

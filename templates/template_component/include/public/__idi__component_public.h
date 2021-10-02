@@ -3,7 +3,7 @@
  *
  * Template Component
  *
- * @copyright Copyright (c) 2019 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
  *
  */
 #pragma once

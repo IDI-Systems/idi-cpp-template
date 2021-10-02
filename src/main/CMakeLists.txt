@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2019 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
 
 include("${CMAKE_CURRENT_LIST_DIR}/objects.cmake")

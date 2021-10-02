@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2019 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
 cmake_policy(SET CMP0079 NEW)
 
