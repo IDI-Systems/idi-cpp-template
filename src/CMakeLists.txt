@@ -8,7 +8,8 @@
 # GLOBAL COMPILER OPTIONS                                           #
 #####################################################################
 if (MSVC)
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4 /WX /Zc:__cplusplus /MP /std:c++latest)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS) # Disable MSVC 'unsafe' function warnings
 else()
     add_compile_options(-Wall -Wextra -Wshadow -pedantic -Werror)
 endif()
@@ -25,7 +26,7 @@ if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
 else()
     add_library("${IDI_CORE}" STATIC "")
 endif()
-target_compile_features("${IDI_CORE}" PRIVATE cxx_std_17)
+target_compile_features("${IDI_CORE}" PRIVATE cxx_std_20)
 set_target_properties("${IDI_CORE}" PROPERTIES LINKER_LANGUAGE CXX)
 
 #####################################################################
