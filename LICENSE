@@ -1,4 +1,6 @@
 MIT License
+Applies only to IDI-Systems's CMake Template for C++ Projects. All derivatives
+are explicitly excluded from this license unless modified by the template user.
 
 Copyright (c) 2021 International Development and Integration Systems LLC (IDI-Systems)
 
