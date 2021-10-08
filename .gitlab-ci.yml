@@ -27,9 +27,10 @@ stages:
         CXX: clang++-13
         EXPERIMENTAL: "true"
   rules:
-    - if: $EXPERIMENTAL == "true"
+    # Only on push events (same as 'only: [branches, tags]')
+    - if: $EXPERIMENTAL == "true" && $CI_PIPELINE_SOURCE == "push"
       allow_failure: true
-    - if: $EXPERIMENTAL != "true"
+    - if: $EXPERIMENTAL != "true" && $CI_PIPELINE_SOURCE == "push"
       allow_failure: false
 
 build-linux:
