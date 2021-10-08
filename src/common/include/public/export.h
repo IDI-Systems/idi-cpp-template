@@ -13,13 +13,13 @@
 #ifdef IDI_IS_DYNAMIC
 
 #ifdef _WIN32
-#define DLLEXPORT __declspec(dllexport)
+#define IDI_EXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT __attribute__((visibility("default")))
+#define IDI_EXPORT __attribute__((visibility("default")))
 #endif // _WIN32
 
 #else
 
-#define DLLEXPORT
+#define IDI_EXPORT
 
 #endif // IDI_IS_DYNAMIC
