@@ -17,23 +17,20 @@ stages:
       - IMAGE: ubuntu:21.04
         CC: gcc-11
         CXX: g++-11
-        EXPERIMENTAL: "true"
       - IMAGE: ubuntu:21.04
         CC: clang-11
         CXX: clang++-11
       - IMAGE: ubuntu:21.04
         CC: clang-12
         CXX: clang++-12
-        EXPERIMENTAL: "true"
       - IMAGE: ubuntu:21.10
         CC: clang-13
         CXX: clang++-13
-        EXPERIMENTAL: "true"
   rules:
     # Only on push events (same as 'only: [branches, tags]')
-    - if: $EXPERIMENTAL == "true" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push" && "$COMPILER-$VERSION" =~ /^(gcc-(11)|clang-(12|13))$/
       allow_failure: true
-    - if: $EXPERIMENTAL != "true" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push"
       allow_failure: false
 
 build-linux:
