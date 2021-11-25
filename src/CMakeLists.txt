@@ -65,7 +65,7 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
             "${CMAKE_CURRENT_LIST_DIR}/main/main.cpp"
         )
         target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
-        target_compile_features("${IDI_MAIN_TARGET}" PRIVATE cxx_std_17)
+        target_compile_features("${IDI_MAIN_TARGET}" PRIVATE cxx_std_20)
         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES LINKER_LANGUAGE CXX)
         install(TARGETS "${IDI_MAIN_TARGET}"
             RUNTIME)

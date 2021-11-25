@@ -12,20 +12,21 @@ stages:
   parallel:
     matrix:
       - IMAGE: ubuntu:21.04
-        CC: gcc-10
-        CXX: g++-10
+        COMPILER: gcc
+        VERSION: 10
       - IMAGE: ubuntu:21.04
-        CC: gcc-11
-        CXX: g++-11
+        COMPILER: gcc
+        VERSION: 11
       - IMAGE: ubuntu:21.04
-        CC: clang-11
-        CXX: clang++-11
+        COMPILER: clang
+        VERSION: 11
       - IMAGE: ubuntu:21.04
-        CC: clang-12
-        CXX: clang++-12
+        COMPILER: clang
+        VERSION: 12
       - IMAGE: ubuntu:21.10
-        CC: clang-13
-        CXX: clang++-13
+        COMPILER: clang
+        VERSION: 13
+
   rules:
     # Only on push events (same as 'only: [branches, tags]')
     - if: $CI_PIPELINE_SOURCE == "push" && "$COMPILER-$VERSION" =~ /^(gcc-(11)|clang-(12|13))$/
@@ -40,23 +41,23 @@ build-linux:
     - apt-get update -qq && apt-get install -y -qq cmake
     - |
       echo "Install Tools"
-      if [[ $CC == gcc-* ]]; then
-        apt-get install -y -qq $CC $CXX
-        update-alternatives --install /usr/bin/gcc gcc /usr/bin/$CC 100
-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/$CXX 100
-      elif [[ $CC == clang-* ]]; then
-        DEBIAN_FRONTEND="noninteractive" apt-get install -y -qq $CC
-        update-alternatives --install /usr/bin/clang clang /usr/bin/$CC 100
-        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/$CXX 100
+      if [[ $COMPILER == gcc ]]; then
+        apt-get install -y -qq gcc-$VERSION g++-$VERSION
+        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$VERSION 100
+        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-$VERSION 100
+      elif [[ $COMPILER == clang ]]; then
+        DEBIAN_FRONTEND="noninteractive" apt-get install -y -qq clang-$VERSION
+        update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$VERSION 100
+        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-$VERSION 100
       fi
   script:
     - cmake --version
     - |
       echo "Test Compilers"
-      if [[ $CC == gcc-* ]]; then
+      if [[ $COMPILER == gcc ]]; then
         gcc --version
         g++ --version
-      elif [[ $CC == clang-* ]]; then
+      elif [[ $COMPILER == clang ]]; then
         clang --version
         clang++ --version
       fi
