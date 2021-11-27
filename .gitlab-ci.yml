@@ -28,11 +28,9 @@ stages:
         VERSION: 13
 
   rules:
-    # Only on push events (same as 'only: [branches, tags]')
-    - if: $CI_PIPELINE_SOURCE == "push" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(11)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(12|13)$/))
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(11)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(12|13)$/))
       allow_failure: true
-    - if: $CI_PIPELINE_SOURCE == "push"
-      allow_failure: false
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
 
 build-linux:
   stage: build
