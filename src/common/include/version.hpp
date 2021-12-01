@@ -5,4 +5,5 @@
  *
  */
 #pragma once
+
 #include "__version.out.hpp"

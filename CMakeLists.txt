@@ -53,4 +53,3 @@ add_subdirectory("src")
 if(IDI_BUILD_DEMOS)
     add_subdirectory("demo")
 endif()
-
