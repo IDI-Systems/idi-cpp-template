@@ -5,6 +5,7 @@
 #
 
 function(__idi_component_test component_name test_file)
+    set(__LIBRARY_LIST "${LIBRARY_LIST}")
     get_filename_component(TEST_FILE_WLE ${test_file} NAME_WLE)
     set(CURRENT_LIBRARY_TEST "${component_name}_${TEST_FILE_WLE}")
 
@@ -15,6 +16,8 @@ function(__idi_component_test component_name test_file)
         "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
     target_link_libraries("${CURRENT_LIBRARY_TEST}" "${IDI_CORE}")
+    list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
+    list(APPEND __LIBRARY_LIST ${IDI_CORE})
 
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
@@ -28,6 +31,7 @@ function(__idi_component_test component_name test_file)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
                 target_link_libraries("${CURRENT_LIBRARY_TEST}" ${var})
+                list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "ADDITIONAL_SOURCES")
                 target_sources("${CURRENT_LIBRARY_TEST}" PRIVATE ${var})
             elseif(ADD_MODE STREQUAL "ADDITIONAL_INCLUDES")
@@ -37,7 +41,9 @@ function(__idi_component_test component_name test_file)
         endif()
     endforeach()
 
-    add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}" -o ${CMAKE_BINARY_DIR}/reports/${CURRENT_LIBRARY_TEST}_report.xml -r junit)
+    add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}")
+    target_code_coverage("${CURRENT_LIBRARY_TEST}" ALL OBJECTS "${__LIBRARY_LIST}" EXCLUDE tests/* lib/*)
+    # message(WARNING "TEST LIBS: ${__LIBRARY_LIST}")
 endfunction()
 
 macro(idi_component_test component_name test_file)
@@ -53,6 +59,7 @@ macro(idi_component_test_public component_name test_file)
 endmacro()
 
 function(idi_component_setup component_name)
+    set(__LIBRARY_LIST "")
     set(CURRENT_LIBRARY_NAME "${component_name}")
     add_library("${CURRENT_LIBRARY_NAME}" OBJECT "")
     target_compile_features("${CURRENT_LIBRARY_NAME}" PUBLIC cxx_std_17)
@@ -68,6 +75,7 @@ function(idi_component_setup component_name)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
                 target_link_libraries("${CURRENT_LIBRARY_NAME}" ${var})
+                list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "ADDITIONAL_SOURCES")
                 target_sources("${CURRENT_LIBRARY_NAME}" PRIVATE ${var})
             elseif(ADD_MODE STREQUAL "ADDITIONAL_INCLUDES")
@@ -89,6 +97,9 @@ function(idi_component_setup component_name)
     endif()
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
+
+    target_code_coverage("${CURRENT_LIBRARY_NAME}" ALL OBJECTS "${__LIBRARY_LIST}")
+    # message(WARNING "LIBS: ${__LIBRARY_LIST}")
 endfunction()
 
 macro(idi_component component_name)

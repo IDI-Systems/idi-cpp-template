@@ -28,12 +28,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Set the default installation path." FORCE)
 
+if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# Set runtime library search path to relative and make it available without installing
+set(CMAKE_INSTALL_RPATH $ORIGIN/${IDI_PROJECT_NAME})
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 include(CTest)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/component.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/new_component.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/code-coverage.cmake")
+
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/reports)
 
@@ -53,3 +60,4 @@ add_subdirectory("src")
 if(IDI_BUILD_DEMOS)
     add_subdirectory("demo")
 endif()
+

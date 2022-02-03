@@ -3,15 +3,16 @@
 #
 # @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
+include(CMakePrintHelpers)
+add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
 
 #####################################################################
 # GLOBAL COMPILER OPTIONS                                           #
 #####################################################################
 if (MSVC)
-    add_compile_options(/W4 /WX /Zc:__cplusplus /MP /std:c++latest)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS) # Disable MSVC 'unsafe' function warnings
+    add_compile_options(/W4 /WX /wd4505)
 else()
-    add_compile_options(-Wall -Wextra -Wshadow -pedantic -Werror)
+    add_compile_options(-Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions)
 endif()
 
 
@@ -21,10 +22,12 @@ endif()
 set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
 set(IDI_CORE "idi_core")
 if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
-    set(IDI_CORE "${IDI_MAIN_TARGET}")
-    add_library("${IDI_CORE}" SHARED "")
+    add_library("${IDI_MAIN_TARGET}" SHARED "")
+    add_library("${IDI_CORE}" STATIC "")
+    target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
 else()
     add_library("${IDI_CORE}" STATIC "")
+    target_code_coverage("${IDI_CORE}" ALL)
 endif()
 target_compile_features("${IDI_CORE}" PRIVATE cxx_std_20)
 set_target_properties("${IDI_CORE}" PROPERTIES LINKER_LANGUAGE CXX)
@@ -74,7 +77,20 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
     get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
         source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
     FILES ${IDI_MAIN_TARGET_SOURCES})
+    target_code_coverage("${IDI_MAIN_TARGET}" ALL OBJECTS "${IDI_CORE}")
 else()
     install(TARGETS "${IDI_CORE}"
         LIBRARY)
+endif()
+
+# Compiler flags
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${IDI_MAIN_TARGET} PUBLIC
+        "-Wno-unused-parameter"  # TeamSpeak 3 API definitions
+        "-Wno-stringop-truncation" "-Wno-stringop-overflow" # strncpy warns about truncation when intentional (only in GCC)
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${IDI_MAIN_TARGET} PUBLIC
+        "-Wno-unused-parameter"  # TeamSpeak 3 API definitions
+    )
 endif()
