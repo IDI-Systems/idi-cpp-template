@@ -33,6 +33,35 @@ IDI_EXPORT int @__idi_app_namespace@_get_version_minor();
  */
 IDI_EXPORT int @__idi_app_namespace@_get_version_patch();
 
+/**
+ * Get the short version of the git hash
+ * 
+ * @return const char *
+ */
+IDI_EXPORT const char * @__idi_app_namespace@_get_git_hash_short();
+
+/**
+ * Get the long version of the git hash
+ * 
+ * @return const char *
+ */
+IDI_EXPORT const char * @__idi_app_namespace@_get_git_hash_long();
+
+/**
+ * Get the git branch at build time
+ * 
+ * @return const char *
+ */
+IDI_EXPORT const char * @__idi_app_namespace@_get_git_branch();
+
+/**
+ * Get if the git repo is dirty at build time.
+ * 
+ * @return true If the git repo is dirty
+ * @return false If the git repo is not dirty
+ */
+IDI_EXPORT const bool @__idi_app_namespace@_get_git_is_dirty();
+
 #ifdef __cplusplus
 }
 #endif

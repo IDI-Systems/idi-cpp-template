@@ -18,7 +18,15 @@ idi_add_public_includes(
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/platform_config.h)
-configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/idi_version.h)
+#configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/idi_version.h)
+add_custom_target(AlwaysCheckGit COMMAND ${CMAKE_COMMAND}
+    -Dlocal_dir="${CMAKE_SOURCE_DIR}"
+    -Doutput_dir="${CMAKE_BINARY_DIR}/configured_templates"
+    -P "${CMAKE_SOURCE_DIR}/cmake/git.cmake"
+    )
+
+add_dependencies(common AlwaysCheckGit)
+
 target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_BINARY_DIR}/configured_templates")
 target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_BINARY_DIR}/configured_templates")
 target_include_directories("${IDI_CORE}" INTERFACE "${CMAKE_BINARY_DIR}/configured_templates")
