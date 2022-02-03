@@ -23,6 +23,6 @@ TEST_CASE("Git information are correctly set and returned.", "[common]") {
         REQUIRE_THAT( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_git_hash_short(), Catch::Equals(IDI_VERSION_GIT_HASH_SHORT) );
         REQUIRE_THAT( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_git_hash_long(), Catch::Equals(IDI_VERSION_GIT_HASH_FULL) );
         REQUIRE_THAT( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_git_branch(), Catch::Equals(IDI_VERSION_GIT_BRANCH) );
-        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_git_is_dirty() == static_cast<const bool>(IDI_VERSION_GIT_DIRTY) );
+        REQUIRE( @__idi_vendor_namespace@::@__idi_app_namespace@::common::get_git_is_dirty() == static_cast<bool>(IDI_VERSION_GIT_DIRTY) );
     }
 }

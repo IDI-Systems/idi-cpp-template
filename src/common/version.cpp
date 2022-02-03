@@ -42,7 +42,7 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@::common {
         return git_branch;
     }
 
-    const bool get_git_is_dirty() {
+    bool get_git_is_dirty() {
         return git_is_dirty;
     }
 }
@@ -79,7 +79,7 @@ const char * @__idi_app_namespace@_get_git_branch() {
     return common::git_branch.c_str();
 }
 
-const bool @__idi_app_namespace@_get_git_is_dirty() {
+bool @__idi_app_namespace@_get_git_is_dirty() {
     return common::git_is_dirty;
 }
 

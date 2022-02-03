@@ -60,7 +60,7 @@ IDI_EXPORT const char * @__idi_app_namespace@_get_git_branch();
  * @return true If the git repo is dirty
  * @return false If the git repo is not dirty
  */
-IDI_EXPORT const bool @__idi_app_namespace@_get_git_is_dirty();
+IDI_EXPORT bool @__idi_app_namespace@_get_git_is_dirty();
 
 #ifdef __cplusplus
 }

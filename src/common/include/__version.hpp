@@ -60,6 +60,6 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
          * @return true If the git repo is dirty
          * @return false If the git repo is not dirty
          */
-        const bool get_git_is_dirty();
+        bool get_git_is_dirty();
     }
 }
