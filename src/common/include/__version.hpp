@@ -61,5 +61,14 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
          * @return false If the git repo is not dirty
          */
         bool get_git_is_dirty();
+
+        /**
+         * Gets the build timestamp in UTC time
+         * 
+         * Ex: 2022-02-04T02:04:14Z
+         * 
+         * @return std::string reference to timestamp.
+         */
+        const std::string& get_build_timestamp();
     }
 }

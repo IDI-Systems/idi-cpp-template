@@ -6,6 +6,7 @@
  */
 
 #include "version.hpp"
+#include "public/__build_info.out.h"
 #include "idi_version.h"
 
 #include <string>
@@ -30,6 +31,8 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@::common {
     const std::string git_branch = IDI_VERSION_GIT_BRANCH;
     const bool git_is_dirty = IDI_VERSION_GIT_DIRTY;
 
+    const std::string build_timestamp = IDI_BUILD_TIMESTAMP;
+
     const std::string& get_git_hash_short() {
         return git_hash_short;
     }
@@ -44,6 +47,10 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@::common {
 
     bool get_git_is_dirty() {
         return git_is_dirty;
+    }
+
+    const std::string& get_build_timestamp() {
+        return build_timestamp;
     }
 }
 
@@ -83,7 +90,10 @@ bool @__idi_app_namespace@_get_git_is_dirty() {
     return common::git_is_dirty;
 }
 
+const char * @__idi_app_namespace@_get_build_timestamp() {
+    return common::build_timestamp.c_str();
+}
+
 #ifdef __cplusplus
 }
 #endif
-

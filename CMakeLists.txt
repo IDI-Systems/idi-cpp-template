@@ -9,7 +9,8 @@ cmake_policy(SET CMP0079 NEW)
 set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake" CACHE FILEPATH "Platform configuration file.")
 set(IDI_BUILD_DEMOS 0 CACHE BOOL "Build demo applications if applicable.")
 set(IDI_BUILD_TESTS 1 CACHE BOOL "Build unit tests.")
-
+set(IDI_USE_GIT_VERSIONING 1 CACHE BOOL "Check git for version information related to hashes and branches.")
+set(IDI_USE_BUILD_TIMESTAMPS 0 CACHE BOOL "Set the current time for the build as build info. Disabled by default as it can increase build time during development.")
 set(DO_TEMPLATE_COMPONENT_TEST 0 CACHE BOOL "Generate unit test template component and build unit tests for template.")
 
 include("${IDI_PLATFORM_CONFIG}")

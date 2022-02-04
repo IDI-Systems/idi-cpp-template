@@ -18,14 +18,16 @@ idi_add_public_includes(
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/platform_config.h)
-#configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/idi_version.h)
-add_custom_target(AlwaysCheckGit COMMAND ${CMAKE_COMMAND}
-    -Dlocal_dir="${CMAKE_SOURCE_DIR}"
-    -Doutput_dir="${CMAKE_BINARY_DIR}/configured_templates"
-    -P "${CMAKE_SOURCE_DIR}/cmake/git.cmake"
+configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/idi_version.h)
+add_custom_target(GetBuildInfo COMMAND ${CMAKE_COMMAND}
+    -Dlocal_dir="${CMAKE_CURRENT_LIST_DIR}"
+    -Doutput_dir="${CMAKE_CURRENT_LIST_DIR}"
+    -Duse_git_versioning="${IDI_USE_GIT_VERSIONING}"
+    -Duse_build_timestamps="${IDI_USE_BUILD_TIMESTAMPS}"
+    -P "${CMAKE_SOURCE_DIR}/cmake/build_info.cmake"
     )
 
-add_dependencies(common AlwaysCheckGit)
+add_dependencies(common GetBuildInfo)
 
 target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_BINARY_DIR}/configured_templates")
 target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_BINARY_DIR}/configured_templates")

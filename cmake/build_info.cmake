@@ -1,6 +1,7 @@
 # cmake/gitversion.cmake
 cmake_minimum_required(VERSION 3.0.0)
 
+if (use_git_versioning)
 message(STATUS "Resolving GIT Version")
 
 set(__idi_version_git_hash_short "unknown")
@@ -39,9 +40,6 @@ if(GIT_FOUND)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   message( STATUS "GIT dirty: ${__idi_version_git_is_dirty}")
-  if(__idi_version_git_is_dirty)
-    set(__idi_version_git_hash_short "${__idi_version_git_hash_short}-dirty")
-  endif()
   message( STATUS "GIT hash (short): ${__idi_version_git_hash_short}")
   message( STATUS "GIT hash (long): ${__idi_version_git_hash_long}")
   message( STATUS "GIT branch name: ${__idi_version_git_branch}")
@@ -49,6 +47,15 @@ else()
   message(STATUS "GIT not found")
 endif()
 
-string(TIMESTAMP _time_stamp)
+else()
 
-configure_file(${local_dir}/idi_version.h ${output_dir}/idi_version.h @ONLY)
+set(__idi_version_git_is_dirty 0)
+
+endif()
+
+if (use_build_timestamps)
+string(TIMESTAMP __idi_build_timestamp "%Y-%m-%dT%H:%M:%SZ" UTC)
+else()
+endif()
+
+configure_file(${local_dir}/__build_info.h ${output_dir}/__build_info.out.h @ONLY)

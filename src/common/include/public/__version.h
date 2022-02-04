@@ -62,6 +62,15 @@ IDI_EXPORT const char * @__idi_app_namespace@_get_git_branch();
  */
 IDI_EXPORT bool @__idi_app_namespace@_get_git_is_dirty();
 
+/**
+ * Gets the build timestamp in UTC time
+ * 
+ * Ex: 2022-02-04T02:04:14Z
+ * 
+ * @return std::string reference to timestamp.
+ */
+IDI_EXPORT const char * @__idi_app_namespace@_get_build_timestamp();
+
 #ifdef __cplusplus
 }
 #endif
