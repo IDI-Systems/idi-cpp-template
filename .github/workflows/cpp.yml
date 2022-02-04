@@ -30,7 +30,7 @@ jobs:
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build
-        cmake .. && cmake --build . && ctest -C Debug
+        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 && cmake --build . && ctest -C Debug
     - name: Upload Artifact (Executable)
       uses: actions/upload-artifact@v2
       with:
@@ -42,7 +42,7 @@ jobs:
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
-        cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
+        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
     - name: Upload Artifact (Executable with Template)
       uses: actions/upload-artifact@v2
       with:
@@ -54,7 +54,7 @@ jobs:
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
-        cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
+        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
     - name: Upload Artifact (Static Library)
       uses: actions/upload-artifact@v2
       with:
@@ -66,7 +66,7 @@ jobs:
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build && rm -rf *
-        cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
+        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
     - name: Upload Artifact (Shared Library)
       uses: actions/upload-artifact@v2
       with:

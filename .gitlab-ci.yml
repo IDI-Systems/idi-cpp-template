@@ -59,7 +59,7 @@ build-linux:
         clang --version
         clang++ --version
       fi
-    - mkdir -p build && cd build && cmake .. -DIDI_BUILD_DEMOS=1 && cmake --build . -j 8
+    - mkdir -p build && cd build && cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_DEMOS=1 && cmake --build . -j 8
     - |
       if ! ctest -C Debug ; then
         cat Testing/Temporary/LastTest.log
