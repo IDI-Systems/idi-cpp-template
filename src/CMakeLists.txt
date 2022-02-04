@@ -10,7 +10,8 @@ add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
 # GLOBAL COMPILER OPTIONS                                           #
 #####################################################################
 if (MSVC)
-    add_compile_options(/W4 /WX /wd4505)
+    add_compile_options(/W4 /WX /Zc:__cplusplus /MP /std:c++latest)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS) # Disable MSVC 'unsafe' function warnings
 else()
     add_compile_options(-Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions)
 endif()
@@ -81,16 +82,4 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
 else()
     install(TARGETS "${IDI_CORE}"
         LIBRARY)
-endif()
-
-# Compiler flags
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(${IDI_MAIN_TARGET} PUBLIC
-        "-Wno-unused-parameter"  # TeamSpeak 3 API definitions
-        "-Wno-stringop-truncation" "-Wno-stringop-overflow" # strncpy warns about truncation when intentional (only in GCC)
-    )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${IDI_MAIN_TARGET} PUBLIC
-        "-Wno-unused-parameter"  # TeamSpeak 3 API definitions
-    )
 endif()
