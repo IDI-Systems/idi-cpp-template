@@ -36,7 +36,7 @@ build-linux:
   stage: build
   extends: .linux-builds
   before_script:
-    - apt-get update -qq && apt-get install -y -qq cmake
+    - apt-get update -qq && apt-get install -y -qq cmake && apt-get install -y -qq git
     - |
       echo "Install Tools"
       if [[ $COMPILER == gcc ]]; then
