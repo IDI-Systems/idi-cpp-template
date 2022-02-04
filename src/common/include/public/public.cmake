@@ -19,6 +19,7 @@ idi_add_public_includes(
 
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/platform_config.h)
 configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/idi_version.h)
+message( STATUS "Configured CI Branch Name: ${IDI_GIT_BRANCH_NAME}")
 add_custom_target(GetBuildInfo COMMAND ${CMAKE_COMMAND}
     -Dlocal_dir="${CMAKE_CURRENT_LIST_DIR}"
     -Doutput_dir="${CMAKE_CURRENT_LIST_DIR}"

@@ -39,8 +39,9 @@ if (use_git_versioning)
             ERROR_QUIET
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        message( STATUS "CI Branch Name: ${git_branch_name}")
         if (git_branch_name AND (NOT git_branch_name STREQUAL __idi_version_git_branch))
-            set(__idi_version_git_branch, "${git_branch_name}")
+            set(__idi_version_git_branch "${git_branch_name}")
         endif()
         message( STATUS "GIT dirty: ${__idi_version_git_is_dirty}")
         message( STATUS "GIT hash (short): ${__idi_version_git_hash_short}")

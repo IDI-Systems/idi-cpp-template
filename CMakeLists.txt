@@ -15,7 +15,7 @@ set(IDI_BUILD_TESTS 1 CACHE BOOL "Build unit tests.")
 set(IDI_USE_GIT_VERSIONING 1 CACHE BOOL "Check git for version information related to hashes and branches.")
 set(IDI_USE_BUILD_TIMESTAMPS 0 CACHE BOOL "Set the current time for the build as build info. Disabled by default as it can increase build time during development.")
 set(DO_TEMPLATE_COMPONENT_TEST 0 CACHE BOOL "Generate unit test template component and build unit tests for template.")
-set(IDI_GIT_BRANCH_NAME "" CACHE STRING "The branch name of the git repo. If not set it will be interogated from Git itself, but could result in a value of HEAD." FORCE)
+set(IDI_GIT_BRANCH_NAME "" CACHE STRING "The branch name of the git repo. If not set it will be interogated from Git itself, but could result in a value of HEAD.")
 
 list(APPEND IDI_MSVC_PRIVATE_COMPILE_OPTIONS /W4 /WX /Zc:__cplusplus /MP /std:c++latest)
 list(APPEND IDI_MSVC_PRIVATE_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
