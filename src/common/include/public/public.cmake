@@ -24,6 +24,7 @@ add_custom_target(GetBuildInfo COMMAND ${CMAKE_COMMAND}
     -Doutput_dir="${CMAKE_CURRENT_LIST_DIR}"
     -Duse_git_versioning="${IDI_USE_GIT_VERSIONING}"
     -Duse_build_timestamps="${IDI_USE_BUILD_TIMESTAMPS}"
+    -Dgit_branch_name="${IDI_GIT_BRANCH_NAME}"
     -P "${CMAKE_SOURCE_DIR}/cmake/build_info.cmake"
     )
 
