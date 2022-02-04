@@ -4,13 +4,23 @@
 # @copyright Copyright (c) 2021 International Development & Integration Systems LLC
 #
 
+function(idi_target_compile_settings)
+    if (MSVC)
+        target_compile_options("${ARGV0}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_OPTIONS})
+        target_compile_definitions("${ARGV0}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_DEFINITIONS}) # Disable MSVC 'unsafe' function warnings
+    else()
+        target_compile_options("${ARGV0}" PRIVATE ${IDI_GNU_PRIVATE_COMPILE_OPTIONS})
+    endif()
+    target_compile_features("${ARGV0}" PRIVATE ${IDI_PRIVATE_COMPILE_FEATURES})
+endfunction()
+
 function(__idi_component_test component_name test_file)
     set(__LIBRARY_LIST "${LIBRARY_LIST}")
     get_filename_component(TEST_FILE_WLE ${test_file} NAME_WLE)
     set(CURRENT_LIBRARY_TEST "${component_name}_${TEST_FILE_WLE}")
 
     add_executable("${CURRENT_LIBRARY_TEST}" ${test_file})
-    target_compile_features("${CURRENT_LIBRARY_TEST}" PRIVATE cxx_std_17)
+    idi_target_compile_settings("${CURRENT_LIBRARY_TEST}")
 
     target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
         "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
@@ -62,8 +72,7 @@ function(idi_component_setup component_name)
     set(__LIBRARY_LIST "")
     set(CURRENT_LIBRARY_NAME "${component_name}")
     add_library("${CURRENT_LIBRARY_NAME}" OBJECT "")
-    target_compile_features("${CURRENT_LIBRARY_NAME}" PUBLIC cxx_std_17)
-
+    idi_target_compile_settings("${CURRENT_LIBRARY_NAME}")
     set(ADD_MODE "ADDITIONAL_LIBRARIES")
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "ADDITIONAL_LIBRARIES")
