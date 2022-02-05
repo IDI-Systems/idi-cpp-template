@@ -66,14 +66,16 @@ set(IDI_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 # Add 3rd party external cmake projects below here if needed.
 
 # Add the main source folder.
-include("src/CMakeLists.txt")
+add_subdirectory("src")
 
 # Catch is included by default as a submodule
 if(NOT TARGET Catch2)
     add_subdirectory(lib/Catch2)
 endif()
-include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 
 if(IDI_BUILD_DEMOS)
-    include("demo/CMakeLists.txt")
+    add_subdirectory("demo")
 endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
+

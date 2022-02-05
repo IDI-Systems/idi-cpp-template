@@ -9,4 +9,4 @@
 # !!! DO NOT ADD THE main FOLDER AS A COMPONENT !!!                           #
 ###############################################################################
 
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/common")
+add_subdirectory(common)
