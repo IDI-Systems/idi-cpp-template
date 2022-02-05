@@ -8,13 +8,21 @@ add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
 #####################################################################
 # CORE LIBRARY                                                      #
 #####################################################################
-set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-set(IDI_CORE "${IDI_PROJECT_NAME}_core")
+
 if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
+    set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+    set(IDI_CORE "${IDI_PROJECT_NAME}_core")
     add_library("${IDI_MAIN_TARGET}" SHARED "")
     add_library("${IDI_CORE}" STATIC "")
     target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
 else()
+    if(IDI_IS_LIBRARY)
+        set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+        set(IDI_CORE "${IDI_PROJECT_NAME}")
+    else()
+        set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+        set(IDI_CORE "${IDI_PROJECT_NAME}_core")
+    endif()
     add_library("${IDI_CORE}" STATIC "")
     target_code_coverage("${IDI_CORE}" ALL)
     if(IDI_IS_LIBRARY)
@@ -65,7 +73,7 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
         install(TARGETS "${IDI_MAIN_TARGET}"
             RUNTIME)
     endif()
-    add_subdirectory("main")
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/main")
     get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
         source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
     FILES ${IDI_MAIN_TARGET_SOURCES})

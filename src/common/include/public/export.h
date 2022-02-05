@@ -8,18 +8,4 @@
  */
 #pragma once
 
-#include "platform_config.h"
-
-#ifdef IDI_IS_DYNAMIC
-
-#ifdef _WIN32
-#define IDI_EXPORT __declspec(dllexport)
-#else
-#define IDI_EXPORT __attribute__((visibility("default")))
-#endif // _WIN32
-
-#else
-
-#define IDI_EXPORT
-
-#endif // IDI_IS_DYNAMIC
+#include "__export.out.h"
