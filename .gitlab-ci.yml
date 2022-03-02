@@ -17,6 +17,9 @@ stages:
       - IMAGE: ubuntu:21.04
         COMPILER: gcc
         VERSION: 11
+      - IMAGE: ubuntu:22.04
+        COMPILER: gcc
+        VERSION: 12
       - IMAGE: ubuntu:21.04
         COMPILER: clang
         VERSION: 11
@@ -26,6 +29,9 @@ stages:
       - IMAGE: ubuntu:21.10
         COMPILER: clang
         VERSION: 13
+      - IMAGE: ubuntu:22.04
+        COMPILER: clang
+        VERSION: 14
 
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(11)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(12|13)$/))
@@ -40,6 +46,10 @@ build-linux:
     - |
       echo "Install Tools"
       if [[ $COMPILER == gcc ]]; then
+        if [[ $VERSION == 12 ]]; then
+          add-apt-repository ppa:ubuntu-toolchain-r/test
+          apt-get update
+        fi
         apt-get install -y -qq gcc-$VERSION g++-$VERSION
         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$VERSION 100
         update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-$VERSION 100
