@@ -34,7 +34,7 @@ stages:
         VERSION: 14
 
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(11)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(12|13)$/))
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(12)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(13|14)$/))
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
 
