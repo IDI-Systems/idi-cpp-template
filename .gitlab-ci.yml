@@ -46,10 +46,6 @@ build-linux:
     - |
       echo "Install Tools"
       if [[ $COMPILER == gcc ]]; then
-        if [[ $VERSION == 12 ]]; then
-          add-apt-repository ppa:ubuntu-toolchain-r/test
-          apt-get update
-        fi
         apt-get install -y -qq gcc-$VERSION g++-$VERSION
         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$VERSION 100
         update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-$VERSION 100
