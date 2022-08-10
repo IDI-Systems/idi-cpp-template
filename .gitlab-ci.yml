@@ -16,7 +16,7 @@ build-linux:
       - IMAGE: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:clang-14
   image: $IMAGE
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($IMAGE =~ /*(gcc-12|clang-13|clang-14)$/))
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($IMAGE =~ /(gcc-12|clang-13|clang-14)$/))
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   script:
