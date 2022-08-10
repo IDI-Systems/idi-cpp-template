@@ -7,7 +7,7 @@
 
 #include "version.hpp"
 #include "public/__build_info.out.h"
-#include "idi_version.h"
+#include "@__idi_project_name@/idi_version.h"
 
 #include <string>
 

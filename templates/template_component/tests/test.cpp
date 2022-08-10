@@ -7,7 +7,7 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include <catch2/catch.hpp>
 
-#include "@__idi_new_component_name@.h"
+#include "@__idi_new_component_name@.hpp"
 
 TEST_CASE("Template component test CHANGE ME!!!!!!!!!", "[@__idi_new_component_name@]") {
     SECTION("Internal API calls.") {

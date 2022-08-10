@@ -5,32 +5,30 @@
 #
 include(CMakePrintHelpers)
 add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
-
-#####################################################################
-# GLOBAL COMPILER OPTIONS                                           #
-#####################################################################
-if (MSVC)
-    add_compile_options(/W4 /WX /Zc:__cplusplus /MP /std:c++latest)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS) # Disable MSVC 'unsafe' function warnings
-else()
-    add_compile_options(-Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions)
-endif()
-
-
 #####################################################################
 # CORE LIBRARY                                                      #
 #####################################################################
-set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-set(IDI_CORE "idi_core")
+
 if(IDI_IS_LIBRARY AND IDI_IS_DYNAMIC)
+    set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+    set(IDI_CORE "${IDI_MAIN_TARGET}")
     add_library("${IDI_MAIN_TARGET}" SHARED "")
-    add_library("${IDI_CORE}" STATIC "")
-    target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
 else()
+    if(IDI_IS_LIBRARY)
+        set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+        set(IDI_CORE "${IDI_PROJECT_NAME}")
+    else()
+        set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
+        set(IDI_CORE "${IDI_PROJECT_NAME}_core")
+    endif()
     add_library("${IDI_CORE}" STATIC "")
     target_code_coverage("${IDI_CORE}" ALL)
+    if(IDI_IS_LIBRARY)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    endif()
 endif()
-target_compile_features("${IDI_CORE}" PRIVATE cxx_std_20)
+set(IDI_CORE ${IDI_CORE} PARENT_SCOPE)
+idi_target_compile_settings("${IDI_CORE}")
 set_target_properties("${IDI_CORE}" PROPERTIES LINKER_LANGUAGE CXX)
 
 #####################################################################
@@ -69,12 +67,12 @@ if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
             "${CMAKE_CURRENT_LIST_DIR}/main/main.cpp"
         )
         target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
-        target_compile_features("${IDI_MAIN_TARGET}" PRIVATE cxx_std_20)
+        idi_target_compile_settings("${IDI_MAIN_TARGET}")
         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES LINKER_LANGUAGE CXX)
         install(TARGETS "${IDI_MAIN_TARGET}"
             RUNTIME)
     endif()
-    add_subdirectory("main")
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/main")
     get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
         source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
     FILES ${IDI_MAIN_TARGET_SOURCES})
