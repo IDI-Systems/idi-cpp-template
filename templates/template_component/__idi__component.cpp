@@ -5,7 +5,7 @@
  *
  */
 
-#include "@__idi_new_component_name@.h"
+#include "@__idi_new_component_name@.hpp"
 #include "@__idi_new_component_name@_public.h"
 
 using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
