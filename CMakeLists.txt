@@ -7,17 +7,19 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 cmake_policy(SET CMP0079 NEW)
 
 # Basic configuration and pass through to src folder.
-project(${IDI_PROJECT_NAME} C CXX)
+
 
 set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake" CACHE FILEPATH "Platform configuration file." FORCE)
 
 include("${IDI_PLATFORM_CONFIG}")
 
+project(${IDI_PROJECT_NAME} C CXX)
+
 string(TOUPPER ${IDI_PROJECT_NAME} IDI_PREFIX_UPPER)
 
 set(IDI_PREFIX ${IDI_PREFIX_UPPER})
 
-set("${IDI_PREFIX}_BUILD_DEMOS" 0 CACHE BOOL "Build demo applications if applicable.")
+set("${IDI_PREFIX}_BUILD_DEMOS" 1 CACHE BOOL "Build demo applications if applicable.")
 set("${IDI_PREFIX}_BUILD_TESTS" 1 CACHE BOOL "Build unit tests.")
 set("${IDI_PREFIX}_USE_GIT_VERSIONING" 1 CACHE BOOL "Check git for version information related to hashes and branches.")
 set("${IDI_PREFIX}_USE_BUILD_TIMESTAMPS" 0 CACHE BOOL "Set the current time for the build as build info. Disabled by default as it can increase build time during development.")

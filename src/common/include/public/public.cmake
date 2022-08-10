@@ -11,11 +11,14 @@
 idi_add_public_includes(
     "${CMAKE_CURRENT_LIST_DIR}/export.h"
     "${CMAKE_CURRENT_LIST_DIR}/version.h"
+    "${CMAKE_CURRENT_LIST_DIR}/platform_config.h"
     EXTERNAL
     "${CMAKE_BINARY_DIR}/configured_templates/${IDI_PROJECT_NAME}/platform_config.h"
     INTERNAL_CONFIGURE
     "${CMAKE_CURRENT_LIST_DIR}/__version.h"
     "${CMAKE_CURRENT_LIST_DIR}/__export.h"
+    "${CMAKE_CURRENT_LIST_DIR}/__platform_config.h"
+
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/${IDI_PROJECT_NAME}/platform_config.h)
