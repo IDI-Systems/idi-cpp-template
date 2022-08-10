@@ -107,7 +107,7 @@ function(__idi_component_test component_name test_file)
         endif()
     endforeach()
 
-    add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}")
+    add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}" WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     if (IDI_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that tests link against the build tree RPATH and not
@@ -272,4 +272,11 @@ function(idi_add_public_includes)
     target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
     target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
     target_include_directories("${IDI_CORE}" INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
+endfunction()
+
+function(idi_add_additional_files)
+    foreach(var IN LISTS ARGN)
+        get_filename_component(ADDITIONAL_FILE_NAME ${var} NAME)
+        configure_file("${var}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ADDITIONAL_FILE_NAME}" COPYONLY)
+    endforeach()
 endfunction()
