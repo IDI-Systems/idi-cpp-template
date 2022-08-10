@@ -1,4 +1,4 @@
-#ifdef IDI_IS_DYNAMIC
+#ifdef IDI_IS_SHARED
 
 #ifdef _WIN32
 

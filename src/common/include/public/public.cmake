@@ -21,6 +21,8 @@ idi_add_public_includes(
 
 )
 
+set(IDI_PROJECT_NAME_STR ${IDI_PROJECT_NAME})
+
 configure_file(${CMAKE_SOURCE_DIR}/templates/platform_config.in.h ${CMAKE_BINARY_DIR}/configured_templates/${IDI_PROJECT_NAME}/platform_config.h)
 configure_file(${CMAKE_SOURCE_DIR}/idi_version.h ${CMAKE_BINARY_DIR}/configured_templates/${IDI_PROJECT_NAME}/idi_version.h)
 message( STATUS "Configured CI Branch Name: ${IDI_CI_GIT_BRANCH_NAME}")

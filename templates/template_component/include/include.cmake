@@ -11,6 +11,6 @@ idi_add_includes(
 )
 
 # This include pulls in public header files. These are files that are declared public
-# and should expose the public API used when linking against the component as a dynamic
+# and should expose the public API used when linking against the component as a shared
 # library.
 include("${CMAKE_CURRENT_LIST_DIR}/public/public.cmake")

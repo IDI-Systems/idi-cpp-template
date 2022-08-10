@@ -12,7 +12,7 @@ add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
 if(IDI_IS_LIBRARY)
     set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
     set(IDI_CORE "${IDI_MAIN_TARGET}")
-    if(IDI_IS_DYNAMIC)
+    if(IDI_IS_SHARED)
         add_library("${IDI_MAIN_TARGET}" SHARED "")
     endif()
 endif()
@@ -23,7 +23,7 @@ if (NOT IDI_IS_LIBRARY)
     target_code_coverage("${IDI_CORE}" ALL)
 endif()
 
-if (NOT IDI_IS_DYNAMIC)
+if (NOT IDI_IS_SHARED)
     add_library("${IDI_CORE}" STATIC "")
 endif()
 
@@ -45,8 +45,8 @@ endif()
 #####################################################################
 # MAIN TARGET                                                       #
 #####################################################################
-if((IDI_IS_LIBRARY AND IDI_IS_DYNAMIC) OR (NOT IDI_IS_LIBRARY))
-    if(IDI_IS_DYNAMIC)
+if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
+    if(IDI_IS_SHARED)
         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES C_VISIBILITY_PRESET hidden)
 

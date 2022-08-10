@@ -53,8 +53,8 @@ function(__idi_demo demo_name demo_file)
             endif()
         endif()
     endforeach()
-    if (IDI_IS_DYNAMIC)
-        # setting target BUILD_WITH_INSTALL_RPATH to OFF for a dynamic library
+    if (IDI_IS_SHARED)
+        # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that demos link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.
         set_property(TARGET ${CURRENT_DEMO} PROPERTY BUILD_WITH_INSTALL_RPATH OFF)
@@ -108,8 +108,8 @@ function(__idi_component_test component_name test_file)
     endforeach()
 
     add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}")
-    if (IDI_IS_DYNAMIC)
-        # setting target BUILD_WITH_INSTALL_RPATH to OFF for a dynamic library
+    if (IDI_IS_SHARED)
+        # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that tests link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.
         set_property(TARGET ${CURRENT_LIBRARY_TEST} PROPERTY BUILD_WITH_INSTALL_RPATH OFF)
@@ -119,7 +119,7 @@ function(__idi_component_test component_name test_file)
 endfunction()
 
 macro(idi_component_test component_name test_file)
-    if(IDI_BUILD_TESTS AND (NOT IDI_IS_DYNAMIC))
+    if(IDI_BUILD_TESTS AND (NOT IDI_IS_SHARED))
         __idi_component_test(${component_name} ${test_file} ${ARGN})
     endif()
 endmacro()
@@ -167,11 +167,11 @@ function(idi_component_setup component_name)
     target_link_libraries("${IDI_CORE}"
         "${CURRENT_LIBRARY_NAME}"
     )
-    if(IDI_IS_DYNAMIC)
+    if(IDI_IS_SHARED)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
     endif()
-    if (IDI_IS_DYNAMIC OR IDI_FORCE_PIC)
+    if (IDI_IS_SHARED OR IDI_FORCE_PIC)
         set_property(TARGET ${CURRENT_LIBRARY_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
     endif()
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
@@ -250,7 +250,7 @@ macro(idi_add_includes)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
 
-    if(IDI_IS_LIBRARY AND (NOT IDI_IS_DYNAMIC))
+    if(IDI_IS_LIBRARY AND (NOT IDI_IS_SHARED))
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES PUBLIC_HEADER "${FILE_LIST}")
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
                 PUBLIC_HEADER DESTINATION ${CMAKE_BINARY_DIR}/install/includes/${IDI_MAIN_TARGET}

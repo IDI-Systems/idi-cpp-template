@@ -1,7 +1,7 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * Common defines for exporting to dynamic linked libraries.
+ * Common defines for exporting to shared libraries.
  *
  * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
  *
@@ -10,7 +10,7 @@
 
 #include "@__idi_project_name@/platform_config.h"
 
-#ifdef IDI_IS_DYNAMIC
+#ifdef IDI_IS_SHARED
 
 #ifdef _WIN32
 #define IDI_EXPORT __declspec(dllexport)
@@ -22,4 +22,4 @@
 
 #define IDI_EXPORT
 
-#endif // IDI_IS_DYNAMIC
+#endif // IDI_IS_SHARED

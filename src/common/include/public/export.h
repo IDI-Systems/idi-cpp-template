@@ -1,7 +1,7 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * Common defines for exporting to dynamic linked libraries.
+ * Common defines for exporting to shared libraries.
  *
  * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
  *
