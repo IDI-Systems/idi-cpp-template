@@ -4,63 +4,24 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-stages:
-  - build
-
-.linux-builds:
-  image: $IMAGE
-  parallel:
-    matrix:
-      - IMAGE: ubuntu:22.04
-        COMPILER: gcc
-        VERSION: 11 # 11.2.0
-      - IMAGE: ubuntu:22.04
-        COMPILER: gcc
-        VERSION: 12 # 12.0.0-pre
-      - IMAGE: ubuntu:22.04
-        COMPILER: clang
-        VERSION: 11 # 11.1.0
-      - IMAGE: ubuntu:22.04
-        COMPILER: clang
-        VERSION: 12 # 12.0.1
-      - IMAGE: ubuntu:22.04
-        COMPILER: clang
-        VERSION: 13 # 13.0.1
-      - IMAGE: ubuntu:22.04
-        COMPILER: clang
-        VERSION: 14 # 14.0.0
-
-  rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /^(gcc)$/ && $VERSION =~ /^(12)$/) || ($COMPILER =~ /^(clang)$/ && $VERSION =~ /^(13|14)$/))
-      allow_failure: true
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
-
 build-linux:
   stage: build
-  extends: .linux-builds
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq cmake && apt-get install -y -qq git
-    - |
-      echo "Install Tools"
-      if [[ $COMPILER == gcc ]]; then
-        apt-get install -y -qq gcc-$VERSION g++-$VERSION
-        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$VERSION 100
-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-$VERSION 100
-      elif [[ $COMPILER == clang ]]; then
-        DEBIAN_FRONTEND="noninteractive" apt-get install -y -qq clang-$VERSION
-        update-alternatives --install /usr/bin/clang clang /usr/bin/clang-$VERSION 100
-        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-$VERSION 100
-      fi
+  parallel:
+    matrix:
+      - COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:$COMPILER
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-12|clang-13|clang-14)$/))
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   script:
     - cmake --version
     - |
       echo "Test Compilers"
-      if [[ $COMPILER == gcc ]]; then
-        gcc --version
-        g++ --version
-      elif [[ $COMPILER == clang ]]; then
-        clang --version
-        clang++ --version
+      if [[ $COMPILER =~ ^gcc ]]; then
+        gcc --version && g++ --version
+      elif [[ $COMPILER =~ ^clang ]]; then
+        clang --version && clang++ --version
       fi
     - mkdir -p build && cd build && cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_DEMOS=1 -DIDI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH" && cmake --build . -j 8
     - |
