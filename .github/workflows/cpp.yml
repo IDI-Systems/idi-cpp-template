@@ -11,10 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-2022]
         type: [exe, static, shared]
     env:
-      CMAKE_ARGS: -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_TESTS=1 -DIDI_BUILD_DEMOS=1 -DIDI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH" -DDO_TEMPLATE_COMPONENT_TEST=1
+      CMAKE_ARGS: -DIDI_BUILD_DEMOS=1 -DIDI_BUILD_TESTS=1 -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_DO_TEMPLATE_COMPONENT_TEST=1 -DIDI_CI_GIT_BRANCH_NAME="$GITHUB_REF_NAME"
       CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
 
     steps:
@@ -29,6 +29,7 @@ jobs:
       shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
+        cmake --version
         cd build
         cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }} && cmake --build . -j 8 && ctest -C Debug --output-junit ctest.xml
     - name: Upload Artifact

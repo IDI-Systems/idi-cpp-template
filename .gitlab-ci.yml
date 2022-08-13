@@ -3,7 +3,7 @@
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  CMAKE_ARGS: -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_TESTS=1 -DIDI_BUILD_DEMOS=1 -DIDI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH" -DDO_TEMPLATE_COMPONENT_TEST=1
+  CMAKE_ARGS: -DIDI_BUILD_DEMOS=1 -DIDI_BUILD_TESTS=1 -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_DO_TEMPLATE_COMPONENT_TEST=1 -DIDI_CI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH"
 
 build-linux:
   stage: build
@@ -19,6 +19,8 @@ build-linux:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-12|clang-13|clang-14)$/))
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
+  before_script:
+    - apt-get install -y -qq jq
   script:
     - cmake --version
     - |
