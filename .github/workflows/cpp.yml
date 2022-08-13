@@ -14,8 +14,8 @@ jobs:
         os: [ubuntu-22.04, windows-2022]
         type: [exe, static, shared]
     env:
-      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_USE_BUILD_TIMESTAMPS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1 -DTEMPLATE_PROJECT_CI_GIT_BRANCH_NAME="$GITHUB_REF_NAME"
-      CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
+      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_USE_BUILD_TIMESTAMPS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1 -DTEMPLATE_PROJECT_CI_GIT_BRANCH_NAME=$GITHUB_REF_NAME
+      CONFIGS: "{ 'exe': 'platform_config.cmake', 'static': 'platform_config.static.cmake', 'shared': 'platform_config.shared.cmake' }"
 
     steps:
     - name: Checkout the source code
@@ -31,7 +31,9 @@ jobs:
         export PATH=$HOME/cmake/bin:$PATH
         cmake --version
         cd build
-        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }} && cmake --build . -j 8 && ctest -C Debug --output-junit ctest.xml
+        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
+        cmake --build . -j 8
+        ctest -C Debug --output-junit ctest.xml
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:

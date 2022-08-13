@@ -12,7 +12,7 @@ build-linux:
       - COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
         TYPE: [exe, static, shared]
   variables:
-    CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
+    CONFIGS: "{ 'exe': 'platform_config.cmake', 'static': 'platform_config.static.cmake', 'shared': 'platform_config.shared.cmake' }"
   image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:$COMPILER
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-12|clang-13|clang-14)$/))
@@ -30,7 +30,8 @@ build-linux:
         clang --version && clang++ --version
       fi
     - mkdir -p build && cd build
-    - cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../$(echo $CONFIGS | jq .$TYPE) && cmake --build . -j 8
+    - cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../$(echo $CONFIGS | jq .$TYPE)
+    - cmake --build . -j 8
     - ctest -C Debug --output-junit ctest.xml
   interruptible: true
   artifacts:
