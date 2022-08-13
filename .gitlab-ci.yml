@@ -3,14 +3,13 @@
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  CMAKE_ARGS: -DIDI_BUILD_DEMOS=1 -DIDI_BUILD_TESTS=1 -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_DO_TEMPLATE_COMPONENT_TEST=1 -DIDI_CI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH"
+  CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_USE_BUILD_TIMESTAMPS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1 -DTEMPLATE_PROJECT_CI_GIT_BRANCH_NAME="$GITHUB_REF_NAME"
 
 build-linux:
   stage: build
   parallel:
     matrix:
-      #- COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
-      - COMPILER: [clang-14]
+      - COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
         TYPE: [exe, static, shared]
   variables:
     CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
