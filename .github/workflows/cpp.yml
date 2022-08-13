@@ -13,9 +13,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         type: [exe, static, shared]
-      env:
-        CMAKE_ARGS: -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_TESTS=1 -DIDI_BUILD_DEMOS=1 -DIDI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH" -DDO_TEMPLATE_COMPONENT_TEST=1
-        CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
+    env:
+      CMAKE_ARGS: -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_BUILD_TESTS=1 -DIDI_BUILD_DEMOS=1 -DIDI_GIT_BRANCH_NAME="$CI_COMMIT_BRANCH" -DDO_TEMPLATE_COMPONENT_TEST=1
+      CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
 
     steps:
     - name: Checkout the source code
