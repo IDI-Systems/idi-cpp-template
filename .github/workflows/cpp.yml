@@ -25,16 +25,28 @@ jobs:
     - name: Create build directory
       run: mkdir -p build
 
+    - name: Configure
+      shell: bash
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build
+        cmake --version
+        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
     - name: Build
       shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
-        cmake --version
         cd build
-        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
         cmake --build . -j 8
+    - name: Test
+      shell: bash
+      run: |
+        export PATH=$HOME/cmake/bin:$PATH
+        cd build
         ctest -C Debug --output-junit ctest.xml
+
     - name: Upload Artifact
+      if: always()
       uses: actions/upload-artifact@v2
       with:
         name: idi-cpp-template-${{ matrix.type }}-${{ matrix.os }}

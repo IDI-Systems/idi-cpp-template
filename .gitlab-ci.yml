@@ -9,8 +9,7 @@ build-linux:
   stage: build
   parallel:
     matrix:
-      #- COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
-      - COMPILER: [clang-14]
+      - COMPILER: [gcc-11, gcc-12, clang-11.0.1, clang-12, clang-13, clang-14]
         TYPE: [exe, static, shared]
   variables:
     CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
