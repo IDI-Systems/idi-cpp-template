@@ -3,11 +3,7 @@
 
 name: CI
 
-on:
-  push:
-    branches:
-    - master
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   build:
@@ -15,7 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-2022]
+        type: [exe, static, shared]
+    env:
+      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_USE_BUILD_TIMESTAMPS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1 -DTEMPLATE_PROJECT_CI_GIT_BRANCH_NAME="${{ github.ref_name }}"
+      CONFIGS: '{ "exe": "platform_config.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
 
     steps:
     - name: Checkout the source code
@@ -25,50 +25,29 @@ jobs:
     - name: Create build directory
       run: mkdir -p build
 
-    - name: Build (Executable)
+    - name: Configure
       shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build
-        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 && cmake --build . && ctest -C Debug
-    - name: Upload Artifact (Executable)
-      uses: actions/upload-artifact@v2
-      with:
-        name: idi-cpp-template-exe-${{ matrix.os }}
-        path: build/bin
-
-    - name: Build (Executable with Template)
+        cmake --version
+        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
+    - name: Build
       shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
-        cd build && rm -rf *
-        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DDO_TEMPLATE_COMPONENT_TEST=1 && cmake --build . && ctest -C Debug
-    - name: Upload Artifact (Executable with Template)
-      uses: actions/upload-artifact@v2
-      with:
-        name: idi-cpp-template-exetpl-${{ matrix.os }}
-        path: build/bin
-
-    - name: Build (Static Library)
+        cd build
+        cmake --build . -j 8
+    - name: Test
       shell: bash
       run: |
         export PATH=$HOME/cmake/bin:$PATH
-        cd build && rm -rf *
-        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake && cmake --build . && ctest -C Debug
-    - name: Upload Artifact (Static Library)
-      uses: actions/upload-artifact@v2
-      with:
-        name: idi-cpp-template-static-${{ matrix.os }}
-        path: build/bin
+        cd build
+        ctest -C Debug --output-junit ctest.xml
 
-    - name: Build (Shared Library)
-      shell: bash
-      run: |
-        export PATH=$HOME/cmake/bin:$PATH
-        cd build && rm -rf *
-        cmake .. -DIDI_USE_BUILD_TIMESTAMPS=1 -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake && cmake --build . && ctest -C Debug
-    - name: Upload Artifact (Shared Library)
+    - name: Upload Artifact
+      if: always()
       uses: actions/upload-artifact@v2
       with:
-        name: idi-cpp-template-shared-${{ matrix.os }}
-        path: build/bin
+        name: idi-cpp-template-${{ matrix.type }}-${{ matrix.os }}
+        path: build/ctest.xml
