@@ -57,7 +57,7 @@ if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
             "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
         )
         install(TARGETS "${IDI_MAIN_TARGET}"
-                LIBRARY)
+                LIBRARY FILE_SET HEADERS DESTINATION includes/${IDI_MAIN_TARGET}/public)
     else()
         add_executable("${IDI_MAIN_TARGET}" "")
         target_sources(
@@ -79,5 +79,5 @@ if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
     target_code_coverage("${IDI_MAIN_TARGET}" ALL OBJECTS "${IDI_CORE}")
 else()
     install(TARGETS "${IDI_CORE}"
-        LIBRARY)
+        ARCHIVE)
 endif()

@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "@__idi_project_name@/platform_config.h"
+#include "platform_config.h"
 
 #ifdef IDI_IS_SHARED
 
