@@ -3,7 +3,7 @@
  *
  * Common defines for exporting to shared libraries.
  *
- * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
 #pragma once
