@@ -1,13 +1,13 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
 
 #include "version.hpp"
 #include "public/__build_info.out.h"
-#include "@__idi_project_name@/idi_version.h"
+#include "public/idi_version.h"
 
 #include <string>
 

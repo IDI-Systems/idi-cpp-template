@@ -1,12 +1,11 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
+ * Common defines for exporting to shared libraries.
+ *
  * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
+#pragma once
 
-#include <iostream>
-
-int main() {
-    return 0;
-}
+#include "__idi_version.out.h"

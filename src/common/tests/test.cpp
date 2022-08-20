@@ -1,11 +1,11 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
-#include "@__idi_project_name@/idi_version.h"
+#include "public/idi_version.h"
 #include "public/__build_info.out.h"
 #include "version.hpp"
 

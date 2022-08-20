@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
 include(CMakePrintHelpers)
 add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
@@ -57,7 +57,7 @@ if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
             "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
         )
         install(TARGETS "${IDI_MAIN_TARGET}"
-                LIBRARY)
+                LIBRARY FILE_SET HEADERS DESTINATION includes/${IDI_MAIN_TARGET}/public)
     else()
         add_executable("${IDI_MAIN_TARGET}" "")
         target_sources(
@@ -79,5 +79,5 @@ if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
     target_code_coverage("${IDI_MAIN_TARGET}" ALL OBJECTS "${IDI_CORE}")
 else()
     install(TARGETS "${IDI_CORE}"
-        LIBRARY)
+        ARCHIVE)
 endif()

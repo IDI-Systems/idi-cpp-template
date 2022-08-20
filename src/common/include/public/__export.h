@@ -3,12 +3,12 @@
  *
  * Common defines for exporting to shared libraries.
  *
- * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
 #pragma once
 
-#include "@__idi_project_name@/platform_config.h"
+#include "platform_config.h"
 
 #ifdef IDI_IS_SHARED
 

@@ -3,7 +3,7 @@
  *
  * Functions for getting the version number of the project
  *
- * @copyright Copyright (c) 2021 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
  *
  */
 #pragma once
@@ -35,28 +35,28 @@ IDI_EXPORT int @__idi_app_namespace@_get_version_patch();
 
 /**
  * Get the short version of the git hash
- * 
+ *
  * @return const char *
  */
 IDI_EXPORT const char * @__idi_app_namespace@_get_git_hash_short();
 
 /**
  * Get the long version of the git hash
- * 
+ *
  * @return const char *
  */
 IDI_EXPORT const char * @__idi_app_namespace@_get_git_hash_long();
 
 /**
  * Get the git branch at build time
- * 
+ *
  * @return const char *
  */
 IDI_EXPORT const char * @__idi_app_namespace@_get_git_branch();
 
 /**
  * Get if the git repo is dirty at build time.
- * 
+ *
  * @return true If the git repo is dirty
  * @return false If the git repo is not dirty
  */
@@ -64,9 +64,9 @@ IDI_EXPORT bool @__idi_app_namespace@_get_git_is_dirty();
 
 /**
  * Gets the build timestamp in UTC time
- * 
+ *
  * Ex: 2022-02-04T02:04:14Z
- * 
+ *
  * @return std::string reference to timestamp.
  */
 IDI_EXPORT const char * @__idi_app_namespace@_get_build_timestamp();
