@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "version.h"
+#include "public/version.h"
 
 namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
     namespace common {
