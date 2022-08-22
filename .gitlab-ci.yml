@@ -21,14 +21,7 @@ build-linux:
   before_script:
     - apt-get install -y -qq jq
   script:
-    - cmake --version
-    - |
-      echo "Test Compilers"
-      if [[ $COMPILER =~ ^gcc ]]; then
-        gcc --version && g++ --version
-      elif [[ $COMPILER =~ ^clang ]]; then
-        clang --version && clang++ --version
-      fi
+    - cmake --version && $CC --version && $CXX --version
     - mkdir -p build && cd build
     - cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../$(echo $CONFIGS | jq -r .$TYPE)
     - cmake --build . -j 8
