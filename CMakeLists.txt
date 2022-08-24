@@ -9,7 +9,7 @@ cmake_policy(SET CMP0079 NEW)
 # Basic configuration and pass through to src folder.
 
 
-set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake" CACHE FILEPATH "Platform configuration file.")
+set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake")
 
 include("${IDI_PLATFORM_CONFIG}")
 
