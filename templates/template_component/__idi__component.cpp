@@ -10,7 +10,7 @@
 
 using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
 
-namespace @__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@{
+namespace @__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@ {
     int component_function() {
         return 42;
     }

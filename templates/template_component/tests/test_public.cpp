@@ -11,6 +11,6 @@
 
 TEST_CASE("Template public component test CHANGE ME!!!!!!!!!", "[@__idi_new_component_name@]") {
     SECTION("Public API calls.") {
-        REQUIRE(@__idi_new_component_name @_component_function() == 42);
+        REQUIRE(@__idi_new_component_name@_component_function() == 42);
     }
 }
