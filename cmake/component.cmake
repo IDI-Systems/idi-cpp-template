@@ -190,12 +190,20 @@ function(idi_component_setup component_name)
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
                 FILE_SET core_public_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
-        target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME}/public)
+        if(IDI_IS_SUBDIRECTORY)
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+        else()
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME}/public)
+        endif()
     else()
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
             FILE_SET core_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
-        target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+        if(IDI_IS_SUBDIRECTORY)
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+        else()
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+        endif()
     endif()
     if (IDI_IS_SHARED OR IDI_FORCE_PIC)
         set_property(TARGET ${CURRENT_LIBRARY_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
