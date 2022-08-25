@@ -168,22 +168,30 @@ function(idi_component_setup component_name)
     target_link_libraries("${IDI_CORE}"
         "${CURRENT_LIBRARY_NAME}"
     )
+
+    target_include_directories(${CURRENT_LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/)
     if(IDI_IS_SHARED)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
                 FILE_SET core_public_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
+        target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME}/public)
     else()
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
             FILE_SET core_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
+        target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
     endif()
     if (IDI_IS_SHARED OR IDI_FORCE_PIC)
         set_property(TARGET ${CURRENT_LIBRARY_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
     endif()
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
+
+
+
+
 
     target_code_coverage("${CURRENT_LIBRARY_NAME}" ALL OBJECTS "${__LIBRARY_LIST}")
     # message(WARNING "LIBS: ${__LIBRARY_LIST}")
@@ -250,28 +258,19 @@ endfunction()
 macro(idi_add_sources)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
-
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 endmacro()
 
 macro(idi_add_includes)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
     target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 endmacro()
 
 function(idi_add_public_includes)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
-
     target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_public_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include/public FILES ${FILE_LIST})
     target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
-
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
 endfunction()
 
 function(idi_add_additional_files)
