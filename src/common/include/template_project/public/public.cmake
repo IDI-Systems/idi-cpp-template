@@ -10,6 +10,8 @@
 # They should be marked as INTERFACE so that other libraries consuming the core
 # can access them.
 
+# This is only used to in this component to configure files related to commmon.
+# It is not needed in any other component.
 idi_configure_common_includes()
 
 idi_add_public_includes(
