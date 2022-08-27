@@ -12,7 +12,6 @@ macro(idi_init)
 
     cmake_policy(SET CMP0079 NEW)
 
-
     string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
     string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
 
@@ -41,6 +40,8 @@ macro(idi_init)
     set("${IDI_PREFIX}_DO_TEMPLATE_COMPONENT_TEST" 0 CACHE BOOL "Generate unit test template component and build unit tests for template.")
     set("${IDI_PREFIX}_FORCE_PIC" 0 CACHE BOOL "Force the use of Position Independent Code (PIC). This is useful if this library is a static library being included in a shared library.")
     set("${IDI_PREFIX}_CI_GIT_BRANCH_NAME" "" CACHE STRING "The branch name of the git repo. If not set it will be interogated from Git itself, but could result in a value of HEAD.")
+
+    include(${PROJECT_SOURCE_DIR}/platform-compile-options.cmake)
 
     idi_cmake_hook(post-options)
 
@@ -73,7 +74,7 @@ macro(idi_init)
 
     include(CTest)
     include("${CMAKE_CURRENT_LIST_DIR}/cmake/component.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/cmake/new_component.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/cmake/new-component.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/cmake/code-coverage.cmake")
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/reports)
@@ -199,7 +200,7 @@ macro(idi_configure_common_includes)
         -Duse_git_versioning="${IDI_USE_GIT_VERSIONING}"
         -Duse_build_timestamps="${IDI_USE_BUILD_TIMESTAMPS}"
         -Dgit_branch_name="${IDI_CI_GIT_BRANCH_NAME}"
-        -P "${PROJECT_SOURCE_DIR}/cmake/build_info.cmake"
+        -P "${PROJECT_SOURCE_DIR}/cmake/build-info.cmake"
         )
 
     add_dependencies("${IDI_PROJECT_NAME}_common" "${IDI_PROJECT_NAME}GetBuildInfo")

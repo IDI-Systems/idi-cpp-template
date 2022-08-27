@@ -7,9 +7,9 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 
 include(cmake/framework.cmake)
 
-idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/pre-start.cmake)
+idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/pre-configure.cmake)
 
-set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform_config.cmake")
+set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform-config.cmake")
 include("${IDI_PLATFORM_CONFIG}")
 
 idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/post-platform-config.cmake)
