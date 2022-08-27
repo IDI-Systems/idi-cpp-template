@@ -4,14 +4,16 @@
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
 
-function(idi_target_compile_settings)
+function(idi_target_compile_settings compile_target)
+    idi_cmake_hook(pre-target-compile-options)
     if (MSVC)
-        target_compile_options("${ARGV0}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_OPTIONS})
-        target_compile_definitions("${ARGV0}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_DEFINITIONS})
+        target_compile_options("${compile_target}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_OPTIONS})
+        target_compile_definitions("${compile_target}" PRIVATE ${IDI_MSVC_PRIVATE_COMPILE_DEFINITIONS})
     else()
-        target_compile_options("${ARGV0}" PRIVATE ${IDI_GNU_PRIVATE_COMPILE_OPTIONS})
+        target_compile_options("${compile_target}" PRIVATE ${IDI_GNU_PRIVATE_COMPILE_OPTIONS})
     endif()
-    target_compile_features("${ARGV0}" PRIVATE ${IDI_PRIVATE_COMPILE_FEATURES})
+    target_compile_features("${compile_target}" PRIVATE ${IDI_PRIVATE_COMPILE_FEATURES})
+    idi_cmake_hook(post-target-compile-options)
 endfunction()
 
 function(__idi_demo demo_name demo_file)
@@ -134,6 +136,7 @@ function(idi_component_setup component_name)
     set(__LIBRARY_LIST "")
     set(CURRENT_LIBRARY_NAME "${IDI_PROJECT_NAME}_${component_name}")
     set(CURRENT_LIBRARY_DIR ${CMAKE_CURRENT_LIST_DIR})
+    idi_cmake_hook(pre-component)
     add_library("${CURRENT_LIBRARY_NAME}" OBJECT "")
     idi_target_compile_settings("${CURRENT_LIBRARY_NAME}")
 
@@ -211,12 +214,8 @@ function(idi_component_setup component_name)
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
 
-
-
-
-
     target_code_coverage("${CURRENT_LIBRARY_NAME}" ALL OBJECTS "${__LIBRARY_LIST}")
-    # message(WARNING "LIBS: ${__LIBRARY_LIST}")
+    idi_cmake_hook(post-component)
 endfunction()
 
 macro(idi_component component_name)

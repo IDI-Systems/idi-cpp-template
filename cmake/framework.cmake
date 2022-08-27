@@ -1,9 +1,24 @@
+macro(idi_cmake_hook_abs hook_path)
+    include(${hook_path} OPTIONAL)
+endmacro()
+
+macro(idi_cmake_hook hook_name)
+    idi_cmake_hook_abs(${PROJECT_SOURCE_DIR}/cmake-hooks/${hook_name}.cmake)
+endmacro()
+
 macro(idi_init)
+    idi_cmake_hook(pre-init)
+
     cmake_policy(SET CMP0079 NEW)
 
-    string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
-    string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
-
+    # Case desensitize for comparing on windows.
+    if (WIN32)
+        string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
+        string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
+    else()
+        set(CMAKE_SOURCE_DIR_UPPER ${CMAKE_SOURCE_DIR})
+        string(PROJECT_SOURCE_DIR_UPPER ${PROJECT_SOURCE_DIR})
+    endif()
 
     if(CMAKE_SOURCE_DIR_UPPER STREQUAL PROJECT_SOURCE_DIR_UPPER)
         set(IDI_IS_SUBDIRECTORY false)
@@ -16,12 +31,14 @@ macro(idi_init)
         message(FATAL_ERROR "IDI_IS_SHARED is set to TRUE but IDI_IS_LIBRARY is set to FALSE in platform configuration, please set IDI_IS_LIBRARY to true if you wish to build a shared library.")
     endif()
 
+    idi_cmake_hook(pre-options)
+
     # backwards compat with old configuration for naming
     set(IDI_IS_DYNAMIC ${IDI_IS_SHARED})
-
     string(TOUPPER ${IDI_PROJECT_NAME} IDI_PREFIX_UPPER)
-
     set(IDI_PREFIX ${IDI_PREFIX_UPPER})
+
+
 
     set("${IDI_PREFIX}_BUILD_DEMOS" 1 CACHE BOOL "Build demo applications if applicable.")
     set("${IDI_PREFIX}_BUILD_TESTS" 1 CACHE BOOL "Build unit tests.")
@@ -30,6 +47,8 @@ macro(idi_init)
     set("${IDI_PREFIX}_DO_TEMPLATE_COMPONENT_TEST" 0 CACHE BOOL "Generate unit test template component and build unit tests for template.")
     set("${IDI_PREFIX}_FORCE_PIC" 0 CACHE BOOL "Force the use of Position Independent Code (PIC). This is useful if this library is a static library being included in a shared library.")
     set("${IDI_PREFIX}_CI_GIT_BRANCH_NAME" "" CACHE STRING "The branch name of the git repo. If not set it will be interogated from Git itself, but could result in a value of HEAD.")
+
+    idi_cmake_hook(post-options)
 
     set("IDI_BUILD_DEMOS" "${${IDI_PREFIX}_BUILD_DEMOS}")
     set("IDI_BUILD_TESTS" "${${IDI_PREFIX}_BUILD_TESTS}")
@@ -43,9 +62,11 @@ macro(idi_init)
     set(__idi_app_namespace ${IDI_APP_NAMESPACE})
     set(__idi_project_name ${IDI_PROJECT_NAME})
 
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    if(NOT IDI_IS_SUBDIRECTORY)
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    endif()
 
     message("[${IDI_PROJECT_NAME}] Config IDI_IS_LIBRARY: ${IDI_IS_LIBRARY}")
     message("[${IDI_PROJECT_NAME}] Config IDI_IS_SHARED: ${IDI_IS_SHARED}")
@@ -64,10 +85,10 @@ macro(idi_init)
     # Define a nice short hand for 3rd party external library folders
     set(IDI_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 
-    # Add 3rd party external cmake projects below here if needed.
-
     # Add the main source folder.
+    idi_cmake_hook(pre-source)
     add_subdirectory("src")
+    idi_cmake_hook(post-source)
 
     # Catch is included by default as a submodule
     if(NOT TARGET Catch2)
@@ -115,7 +136,9 @@ macro(idi_src)
     #####################################################################
 
     # List core components below via add_subdirectory
+    idi_cmake_hook(pre-components-list)
     include("${CMAKE_CURRENT_LIST_DIR}/components.cmake")
+    idi_cmake_hook(post-components-list)
 
     if(DO_TEMPLATE_COMPONENT_TEST)
         add_subdirectory("unit_test_component")
