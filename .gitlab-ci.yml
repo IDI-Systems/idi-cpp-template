@@ -29,6 +29,7 @@ build-linux:
   interruptible: true
   artifacts:
     when: always
+    name: "idi-cpp-template-$TYPE-$COMPILER-$CI_COMMIT_SHORT_SHA"
     paths:
       - build/ctest.xml
     reports:
