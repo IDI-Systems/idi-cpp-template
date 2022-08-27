@@ -1,9 +1,11 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * Template Component
+ * @copyright Copyright (c) 2022 International Development & Integration
  *
- * @copyright Copyright (c) 2022 International Development & Integration Systems LLC
+ * Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+ *
+ * License explicitly allows for relicensing of this file.
  *
  */
 #pragma once
