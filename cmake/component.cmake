@@ -136,6 +136,20 @@ function(idi_component_setup component_name)
     set(CURRENT_LIBRARY_DIR ${CMAKE_CURRENT_LIST_DIR})
     add_library("${CURRENT_LIBRARY_NAME}" OBJECT "")
     idi_target_compile_settings("${CURRENT_LIBRARY_NAME}")
+
+    file(GLOB include_dirs RELATIVE ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/include/*)
+    list(LENGTH include_dirs num_include_dirs)
+    if (num_include_dirs GREATER 1 OR num_include_dirs LESS 1)
+        message(FATAL_ERROR "The include directory ${CMAKE_CURRENT_LIST_DIR}/include must contain exactly one subfolder (of any name) and no other files.")
+    endif()
+
+    list(GET include_dirs 0 include_dir_name)
+
+    if (NOT include_dir_name STREQUAL ${IDI_PROJECT_NAME})
+        message(STATUS "Updating include prefix dir in ${CMAKE_CURRENT_LIST_DIR}/include/ from ${include_dir_name} to ${IDI_PROJECT_NAME}")
+        file(RENAME ${CMAKE_CURRENT_LIST_DIR}/include/${include_dir_name} ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+    endif()
+
     set(ADD_MODE "ADDITIONAL_LIBRARIES")
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "ADDITIONAL_LIBRARIES")
@@ -168,22 +182,38 @@ function(idi_component_setup component_name)
     target_link_libraries("${IDI_CORE}"
         "${CURRENT_LIBRARY_NAME}"
     )
+
+    target_include_directories(${CURRENT_LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/)
     if(IDI_IS_SHARED)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
         set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
                 FILE_SET core_public_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
+        if(IDI_IS_SUBDIRECTORY)
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+        else()
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME}/public)
+        endif()
     else()
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
             FILE_SET core_includes DESTINATION includes/${IDI_MAIN_TARGET}
         )
+        if(IDI_IS_SUBDIRECTORY)
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+        else()
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME})
+        endif()
     endif()
     if (IDI_IS_SHARED OR IDI_FORCE_PIC)
         set_property(TARGET ${CURRENT_LIBRARY_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
     endif()
     source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
         FILES ${INTERNAL_FILE_LIST})
+
+
+
+
 
     target_code_coverage("${CURRENT_LIBRARY_NAME}" ALL OBJECTS "${__LIBRARY_LIST}")
     # message(WARNING "LIBS: ${__LIBRARY_LIST}")
@@ -250,28 +280,19 @@ endfunction()
 macro(idi_add_sources)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
-
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 endmacro()
 
 macro(idi_add_includes)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
-    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
+    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include/${IDI_PROJECT_NAME} FILES ${FILE_LIST})
 endmacro()
 
 function(idi_add_public_includes)
     set(FILE_LIST "")
     __process_source_files(${ARGN})
-
-    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_public_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include/public FILES ${FILE_LIST})
-    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
-
-    target_include_directories("${CURRENT_LIBRARY_NAME}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories("${IDI_CORE}" INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
+    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_public_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include/${IDI_PROJECT_NAME}/public FILES ${FILE_LIST})
+    target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include/${IDI_PROJECT_NAME} FILES ${FILE_LIST})
 endfunction()
 
 function(idi_add_additional_files)
