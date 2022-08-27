@@ -11,14 +11,8 @@ macro(idi_init)
 
     cmake_policy(SET CMP0079 NEW)
 
-    # Case desensitize for comparing on windows.
-    if (WIN32)
-        string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
-        string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
-    else()
-        set(CMAKE_SOURCE_DIR_UPPER ${CMAKE_SOURCE_DIR})
-        string(PROJECT_SOURCE_DIR_UPPER ${PROJECT_SOURCE_DIR})
-    endif()
+    string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
+    string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
 
     if(CMAKE_SOURCE_DIR_UPPER STREQUAL PROJECT_SOURCE_DIR_UPPER)
         set(IDI_IS_SUBDIRECTORY false)
@@ -37,8 +31,6 @@ macro(idi_init)
     set(IDI_IS_DYNAMIC ${IDI_IS_SHARED})
     string(TOUPPER ${IDI_PROJECT_NAME} IDI_PREFIX_UPPER)
     set(IDI_PREFIX ${IDI_PREFIX_UPPER})
-
-
 
     set("${IDI_PREFIX}_BUILD_DEMOS" 1 CACHE BOOL "Build demo applications if applicable.")
     set("${IDI_PREFIX}_BUILD_TESTS" 1 CACHE BOOL "Build unit tests.")
