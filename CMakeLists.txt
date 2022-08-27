@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 
 include(cmake/framework.cmake)
 

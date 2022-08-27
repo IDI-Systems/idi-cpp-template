@@ -3,6 +3,8 @@
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 # These are platform compile options that will be applied to all cmake targets in the project.
 
 list(APPEND IDI_MSVC_PRIVATE_COMPILE_OPTIONS /W4 /WX /Zc:__cplusplus /MP /std:c++latest)

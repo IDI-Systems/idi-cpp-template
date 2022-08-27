@@ -3,6 +3,8 @@
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 
 function(idi_target_compile_settings compile_target)
     idi_cmake_hook(pre-target-compile-options)

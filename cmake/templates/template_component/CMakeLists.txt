@@ -3,6 +3,8 @@
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 
 # Arguments after the name are the names of other components this
 # component depends on. The common component is almost universal.

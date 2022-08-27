@@ -3,6 +3,8 @@
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 # This is a configuration file for the project platform. Set these values before
 # configuration of the project. These values are also accessible via an included
 # header file titled "platform_config.h"

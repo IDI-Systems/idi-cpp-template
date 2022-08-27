@@ -3,7 +3,8 @@
 #
 # @copyright Copyright (c) 2022 International Development & Integration Systems LLC
 #
-
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 # This is the list of all files that should be included in the core build.
 # You _should_ include .h/.hpp files here so they properly show up in IDEs.
 # They should be marked as INTERFACE so that other libraries consuming the core
