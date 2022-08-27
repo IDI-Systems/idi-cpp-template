@@ -77,12 +77,12 @@ Any header files that are not to be consumed by end-users should _not_ be includ
 ```
 src/
  |--- some_component/
- | |--- some_implementation.cpp         # built as part of the object
- | | |--- include/
- | | | |--- project_name/               # actual folder name via the IDI_PROJECT_NAME var
- | | | | |--- some_implementation.hpp   # static library avaialable header
- | | | | | |--- public/
- | | | | | | |--- exported_impl.h       # C exported function headers for shared lib
+   |--- some_implementation.cpp         # built as part of the object
+     |--- include/
+       |--- project_name/               # actual folder name via the IDI_PROJECT_NAME var
+         |--- some_implementation.hpp   # static library avaialable header
+         |--- public/
+           |--- exported_impl.h         # C exported function headers for shared lib
  ```
 
  ### Component Include Files
