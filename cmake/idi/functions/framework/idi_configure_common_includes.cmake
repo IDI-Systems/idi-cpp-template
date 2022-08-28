@@ -17,7 +17,7 @@ macro(idi_configure_common_includes)
         -Duse_git_versioning="${IDI_USE_GIT_VERSIONING}"
         -Duse_build_timestamps="${IDI_USE_BUILD_TIMESTAMPS}"
         -Dgit_branch_name="${IDI_CI_GIT_BRANCH_NAME}"
-        -P "${PROJECT_SOURCE_DIR}/cmake/scripts/build-info.cmake"
+        -P "${PROJECT_SOURCE_DIR}/cmake/idi/scripts/build-info.cmake"
         )
 
     add_dependencies("${IDI_PROJECT_NAME}_common" "${IDI_PROJECT_NAME}GetBuildInfo")
