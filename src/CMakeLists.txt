@@ -5,5 +5,5 @@
 #
 # Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
 #
-
+set(IDI_SRC_CML_V 1)
 idi_src()

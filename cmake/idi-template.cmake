@@ -8,6 +8,16 @@
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake)
 
+if (IDI_ROOT_CML_V LESS IDI_ROOT_REQ_CML_V)
+    message(FATAL_ERROR "The root CMakeLists.txt is not at the required version for the IDI CMake framework."
+    "If you updated the template recently, also update the CMakeList.txt in the root directory")
+endif()
+
+if (IDI_SRC_CML_V LESS IDI_SRC_REQ_CML_V)
+    message(FATAL_ERROR "The CMakeLists.txt in the src directory is not at the required version for the IDI CMake framework."
+    "If you updated the template recently, also update the CMakeList.txt in the src directory")
+endif()
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/functions/idi_add_sources.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/functions/idi_component_test.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/functions/idi_component.cmake)
