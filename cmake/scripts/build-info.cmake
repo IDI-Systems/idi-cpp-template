@@ -1,5 +1,10 @@
-# cmake/gitversion.cmake
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+#
+# @author Cliff Foster (Nou) <cliff@idi-systems.com>
+#
+# @copyright Copyright (c) 2022 International Development & Integration Systems LLC
+#
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
 
 if (use_git_versioning)
     message(STATUS "Resolving GIT Version")
