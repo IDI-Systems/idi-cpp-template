@@ -22,6 +22,6 @@ set(IDI_APP_NAMESPACE "app")
 set(IDI_IS_LIBRARY false)
 
 # If IDI_IS_SHARED is set to true then the project will build as a shared library.
-# If it is set to false it will build as a static library. This reequires
+# If it is set to false it will build as a static library. This requires
 # IDI_IS_LIBRARY being set to true
 set(IDI_IS_SHARED false)
