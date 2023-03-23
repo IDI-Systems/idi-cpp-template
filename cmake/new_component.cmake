@@ -10,11 +10,15 @@ function(copy_template component_name src_dir dest_dir)
             string(REPLACE "__idi__component" ${component_name} configured_filename ${template_file})
             message(STATUS "Configuring file ${dest_dir}/${configured_filename}")
             configure_file(
-                    ${src_template_path}
-                    ${dest_dir}/${configured_filename}
-                    @ONLY)
+                ${src_template_path}
+                ${dest_dir}/${configured_filename}
+                @ONLY)
         else()
-            copy_template(${component_name} ${src_template_path} ${dest_dir}/${template_file})
+            if(${template_file} MATCHES "include")
+                copy_template(${component_name} ${src_template_path} ${dest_dir}/${template_file}/${IDI_PROJECT_NAME})
+            else()
+                copy_template(${component_name} ${src_template_path} ${dest_dir}/${template_file})
+            endif()
         endif()
     endforeach()
 endfunction()

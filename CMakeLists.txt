@@ -15,6 +15,17 @@ include("${IDI_PLATFORM_CONFIG}")
 
 project(${IDI_PROJECT_NAME} C CXX)
 
+string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
+string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
+
+
+if(CMAKE_SOURCE_DIR_UPPER STREQUAL PROJECT_SOURCE_DIR_UPPER)
+    set(IDI_IS_SUBDIRECTORY false)
+ else()
+    message(STATUS "Project ${IDI_PROJECT_NAME} has been added by another project via add_subdirectory, include paths will be relative to ${IDI_PROJECT_NAME}/")
+    set(IDI_IS_SUBDIRECTORY true)
+ endif()
+
 if(IDI_IS_SHARED AND (NOT IDI_IS_LIBRARY))
     message(FATAL_ERROR "IDI_IS_SHARED is set to TRUE but IDI_IS_LIBRARY is set to FALSE in platform configuration, please set IDI_IS_LIBRARY to true if you wish to build a shared library.")
 endif()
