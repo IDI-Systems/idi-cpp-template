@@ -3,11 +3,7 @@
  *
  * Defines for getting the platform configuration of the project
  *
- * @copyright Copyright (c) 2022 International Development & Integration
- *
- * Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
- *
- * License explicitly allows for relicensing of this file.
+ * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
 #pragma once
