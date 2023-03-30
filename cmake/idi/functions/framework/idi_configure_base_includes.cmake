@@ -20,5 +20,5 @@ macro(idi_configure_common_includes)
         -P "${PROJECT_SOURCE_DIR}/cmake/idi/scripts/build-info.cmake"
         )
 
-    add_dependencies("${IDI_PROJECT_NAME}_common" "${IDI_PROJECT_NAME}GetBuildInfo")
+    add_dependencies("${IDI_PROJECT_NAME}_base" "${IDI_PROJECT_NAME}GetBuildInfo")
 endmacro()

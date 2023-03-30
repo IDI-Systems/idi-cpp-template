@@ -11,4 +11,4 @@
 # !!! DO NOT ADD THE main FOLDER AS A COMPONENT !!!                           #
 ###############################################################################
 
-add_subdirectory(common)
+add_subdirectory(base)

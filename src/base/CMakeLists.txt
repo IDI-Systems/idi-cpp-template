@@ -5,5 +5,5 @@
 #
 # Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
 #
-
-idi_component(common)
+set(IDI_BASE_CML_V 1)
+idi_component(base)

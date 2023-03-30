@@ -24,3 +24,4 @@ set(IDI_CPP_FRAMEWORK_VERSION_HOTFIX 0)
 # actions outside of the cmake folder in root.
 set(IDI_ROOT_REQ_CML_V 1)
 set(IDI_SRC_REQ_CML_V 1)
+set(IDI_BASE_REQ_CML_V 1)

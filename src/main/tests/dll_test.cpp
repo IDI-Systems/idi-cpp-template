@@ -21,7 +21,7 @@
 #define __PATCH_VERSION_CALL(APP) JOIN_APP(APP, get_version_patch)
 #define PATCH_VERSION_CALL        __PATCH_VERSION_CALL(IDI_APP_NAMESPACE)
 
-TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
+TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Public API calls.") {
         REQUIRE(MAJOR_VERSION_CALL() != -1);
         REQUIRE(MINOR_VERSION_CALL() != -1);

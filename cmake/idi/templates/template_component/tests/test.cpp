@@ -16,6 +16,6 @@
 
 TEST_CASE("Template component test CHANGE ME!!!!!!!!!", "[@__idi_new_component_name@]") {
     SECTION("Internal API calls.") {
-        REQUIRE(@__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@::component_function() == 42);
+        REQUIRE(@__idi_namespace@::@__idi_new_component_name@::component_function() == 42);
     }
 }

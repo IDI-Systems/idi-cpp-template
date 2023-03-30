@@ -16,6 +16,7 @@ set(IDI_PROJECT_NAME "template_project")
 set(IDI_VENDOR_NAMESPACE "idi")
 
 # Set this to be the primary namespace within the vendor namespace
+# If this is set to an empty string the vendor namespace will only be used
 set(IDI_APP_NAMESPACE "app")
 
 # If IDI_IS_LIBRARY is set to true the project will be built as a library.

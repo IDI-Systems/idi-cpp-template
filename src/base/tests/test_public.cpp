@@ -11,7 +11,7 @@
 #include "version.h"
 #include "public/__build_info.out.h"
 
-TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
+TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Public API calls.") {
         REQUIRE( @__idi_app_namespace@_get_version_major() == IDI_VERSION_MAJOR );
         REQUIRE( @__idi_app_namespace@_get_version_minor() == IDI_VERSION_MINOR );
@@ -19,7 +19,7 @@ TEST_CASE("Version numbers are correctly set and returned.", "[common]") {
     }
 }
 
-TEST_CASE("Git information are correctly set and returned.", "[common]") {
+TEST_CASE("Git information are correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
         REQUIRE_THAT( @__idi_app_namespace@_get_git_hash_short(), Catch::Equals(IDI_VERSION_GIT_HASH_SHORT) );
         REQUIRE_THAT( @__idi_app_namespace@_get_git_hash_long(), Catch::Equals(IDI_VERSION_GIT_HASH_FULL) );

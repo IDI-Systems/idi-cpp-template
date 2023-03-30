@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace @__idi_vendor_namespace@::@__idi_app_namespace@::common {
+namespace @__idi_namespace@::base {
 
     int get_version_major() {
         return IDI_VERSION_MAJOR;
@@ -56,42 +56,42 @@ namespace @__idi_vendor_namespace@::@__idi_app_namespace@::common {
 
 
 
-using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
+using namespace @__idi_namespace@;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 int @__idi_app_namespace@_get_version_major() {
-    return common::get_version_major();
+    return base::get_version_major();
 }
 
 int @__idi_app_namespace@_get_version_minor() {
-    return common::get_version_minor();
+    return base::get_version_minor();
 }
 
 int @__idi_app_namespace@_get_version_patch() {
-    return common::get_version_patch();
+    return base::get_version_patch();
 }
 
 const char * @__idi_app_namespace@_get_git_hash_short() {
-    return common::git_hash_short.c_str();
+    return base::git_hash_short.c_str();
 }
 
 const char * @__idi_app_namespace@_get_git_hash_long() {
-    return common::git_hash_long.c_str();
+    return base::git_hash_long.c_str();
 }
 
 const char * @__idi_app_namespace@_get_git_branch() {
-    return common::git_branch.c_str();
+    return base::git_branch.c_str();
 }
 
 bool @__idi_app_namespace@_get_git_is_dirty() {
-    return common::git_is_dirty;
+    return base::git_is_dirty;
 }
 
 const char * @__idi_app_namespace@_get_build_timestamp() {
-    return common::build_timestamp.c_str();
+    return base::build_timestamp.c_str();
 }
 
 #ifdef __cplusplus

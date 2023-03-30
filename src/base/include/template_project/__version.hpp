@@ -10,8 +10,8 @@
 
 #include "public/version.h"
 
-namespace @__idi_vendor_namespace@::@__idi_app_namespace@ {
-    namespace common {
+namespace @__idi_namespace@ {
+    namespace base {
         /**
          * Get the major version number of the current version of the project.
          *

@@ -8,9 +8,9 @@
 #include "@__idi_new_component_name@.hpp"
 #include "@__idi_new_component_name@_public.h"
 
-using namespace @__idi_vendor_namespace@::@__idi_app_namespace@;
+using namespace @__idi_namespace@;
 
-namespace @__idi_vendor_namespace@::@__idi_app_namespace@::@__idi_new_component_name@ {
+namespace @__idi_namespace@::@__idi_new_component_name@ {
     int component_function() {
         return 42;
     }
