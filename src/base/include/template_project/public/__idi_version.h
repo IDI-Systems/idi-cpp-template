@@ -8,14 +8,16 @@
  */
 #pragma once
 
+// Below here are defines configured via CMake
 #ifndef IDI_VERSION_MAJOR
-#define IDI_VERSION_MAJOR 0
+#define IDI_VERSION_MAJOR @__idi_version_major@
 #endif
 
+
 #ifndef IDI_VERSION_MINOR
-#define IDI_VERSION_MINOR 1
+#define IDI_VERSION_MINOR @__idi_version_minor@
 #endif
 
 #ifndef IDI_VERSION_PATCH
-#define IDI_VERSION_PATCH 0
+#define IDI_VERSION_PATCH @__idi_version_patch@
 #endif

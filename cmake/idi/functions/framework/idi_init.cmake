@@ -27,6 +27,11 @@ macro(idi_init)
         message(FATAL_ERROR "IDI_IS_SHARED is set to TRUE but IDI_IS_LIBRARY is set to FALSE in platform configuration, please set IDI_IS_LIBRARY to true if you wish to build a shared library.")
     endif()
 
+    include(${PROJECT_SOURCE_DIR}/version.cmake)
+    set(__idi_version_major ${IDI_PROJECT_VERSION_MAJOR})
+    set(__idi_version_minor ${IDI_PROJECT_VERSION_MINOR})
+    set(__idi_version_patch ${IDI_PROJECT_VERSION_PATCH})
+
     idi_cmake_hook(pre-options)
 
     # backwards compat with old configuration for naming
@@ -54,12 +59,14 @@ macro(idi_init)
     set("IDI_CI_GIT_BRANCH_NAME" "${${IDI_PREFIX}_CI_GIT_BRANCH_NAME}")
     set("IDI_FORCE_PIC" "${${IDI_PREFIX}_FORCE_PIC}")
 
-    if (${IDI_APP_NAMESPACE})
-        set(__idi_namespace ${IDI_VENDOR_NAMESPACE} "::" ${IDI_APP_NAMESPACE})
+    if (IDI_APP_NAMESPACE)
+        set(__idi_namespace "${IDI_VENDOR_NAMESPACE}::${IDI_APP_NAMESPACE}")
         set(__idi_app_namespace ${IDI_APP_NAMESPACE})
+        set(__idi_c_namespace "${IDI_VENDOR_NAMESPACE}_${IDI_APP_NAMESPACE}")
     else()
         set(__idi_namespace ${IDI_VENDOR_NAMESPACE})
         set(__idi_app_namespace ${IDI_VENDOR_NAMESPACE})
+        set(__idi_c_namespace ${IDI_VENDOR_NAMESPACE})
     endif()
     set(__idi_project_name ${IDI_PROJECT_NAME})
 

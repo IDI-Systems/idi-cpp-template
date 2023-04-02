@@ -62,35 +62,35 @@ using namespace @__idi_namespace@;
 extern "C"
 {
 #endif
-int @__idi_app_namespace@_get_version_major() {
+int @__idi_c_namespace@_get_version_major() {
     return base::get_version_major();
 }
 
-int @__idi_app_namespace@_get_version_minor() {
+int @__idi_c_namespace@_get_version_minor() {
     return base::get_version_minor();
 }
 
-int @__idi_app_namespace@_get_version_patch() {
+int @__idi_c_namespace@_get_version_patch() {
     return base::get_version_patch();
 }
 
-const char * @__idi_app_namespace@_get_git_hash_short() {
+const char * @__idi_c_namespace@_get_git_hash_short() {
     return base::git_hash_short.c_str();
 }
 
-const char * @__idi_app_namespace@_get_git_hash_long() {
+const char * @__idi_c_namespace@_get_git_hash_long() {
     return base::git_hash_long.c_str();
 }
 
-const char * @__idi_app_namespace@_get_git_branch() {
+const char * @__idi_c_namespace@_get_git_branch() {
     return base::git_branch.c_str();
 }
 
-bool @__idi_app_namespace@_get_git_is_dirty() {
+bool @__idi_c_namespace@_get_git_is_dirty() {
     return base::git_is_dirty;
 }
 
-const char * @__idi_app_namespace@_get_build_timestamp() {
+const char * @__idi_c_namespace@_get_build_timestamp() {
     return base::build_timestamp.c_str();
 }
 

@@ -10,7 +10,7 @@
 # Follow https://semver.org/ rules!
 
 # Major version is required to change if there is API breaking changes!
-set(IDI_CPP_FRAMEWORK_VERSION_MAJOR 1)
+set(IDI_CPP_FRAMEWORK_VERSION_MAJOR 2)
 
 # Minor increments on backwards compat updates!
 set(IDI_CPP_FRAMEWORK_VERSION_MINOR 0)

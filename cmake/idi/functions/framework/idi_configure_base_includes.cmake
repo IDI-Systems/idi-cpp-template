@@ -9,7 +9,7 @@
 macro(idi_configure_common_includes)
     set(IDI_PROJECT_NAME_STR ${IDI_PROJECT_NAME})
 
-    configure_file(${PROJECT_SOURCE_DIR}/idi_version.h ${CMAKE_CURRENT_LIST_DIR}/__idi_version.out.h)
+    #configure_file(${PROJECT_SOURCE_DIR}/idi_version.h ${CMAKE_CURRENT_LIST_DIR}/__idi_version.out.h)
     message( STATUS "Configured CI Branch Name: ${IDI_CI_GIT_BRANCH_NAME}")
     add_custom_target("${IDI_PROJECT_NAME}GetBuildInfo" COMMAND ${CMAKE_COMMAND}
         -Dlocal_dir="${CMAKE_CURRENT_LIST_DIR}"
