@@ -9,15 +9,15 @@
 #pragma once
 
 // Below here are defines configured via CMake
-#ifndef IDI_VERSION_MAJOR
-#define IDI_VERSION_MAJOR @__idi_version_major@
+#ifndef @__idi_c_caps_namespace@_VERSION_MAJOR
+#define @__idi_c_caps_namespace@_VERSION_MAJOR @__idi_version_major@
 #endif
 
 
-#ifndef IDI_VERSION_MINOR
-#define IDI_VERSION_MINOR @__idi_version_minor@
+#ifndef @__idi_c_caps_namespace@_VERSION_MINOR
+#define @__idi_c_caps_namespace@_VERSION_MINOR @__idi_version_minor@
 #endif
 
-#ifndef IDI_VERSION_PATCH
-#define IDI_VERSION_PATCH @__idi_version_patch@
+#ifndef @__idi_c_caps_namespace@_VERSION_PATCH
+#define @__idi_c_caps_namespace@_VERSION_PATCH @__idi_version_patch@
 #endif

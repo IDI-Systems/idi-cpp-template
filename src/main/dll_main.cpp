@@ -1,5 +1,3 @@
-#ifdef IDI_IS_SHARED
-
 #ifdef _WIN32
 
 #include <Windows.h>
@@ -31,7 +29,5 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
     }
     return TRUE; // Successful DLL_PROCESS_ATTACH.
 }
-
-#endif
 
 #endif

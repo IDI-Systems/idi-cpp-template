@@ -19,7 +19,6 @@ idi_add_public_includes(
     "${CMAKE_CURRENT_LIST_DIR}/version.h"
     "${CMAKE_CURRENT_LIST_DIR}/platform_config.h"
     "${CMAKE_CURRENT_LIST_DIR}/idi_version.h"
-    "${CMAKE_CURRENT_LIST_DIR}/__idi_version.out.h"
     INTERNAL_CONFIGURE
     "${CMAKE_CURRENT_LIST_DIR}/__idi_version.h"
     "${CMAKE_CURRENT_LIST_DIR}/__version.h"

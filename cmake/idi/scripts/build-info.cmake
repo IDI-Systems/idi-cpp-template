@@ -72,4 +72,6 @@ else()
     set(__idi_build_timestamp "")
 endif()
 
+set(__idi_c_caps_namespace "${idi_c_caps_namespace}")
+
 configure_file(${local_dir}/__build_info.h ${output_dir}/__build_info.out.h @ONLY)

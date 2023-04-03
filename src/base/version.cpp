@@ -14,24 +14,24 @@
 namespace @__idi_namespace@::base {
 
     int get_version_major() {
-        return IDI_VERSION_MAJOR;
+        return @__idi_c_caps_namespace@_VERSION_MAJOR;
     }
 
     int get_version_minor() {
-        return IDI_VERSION_MINOR;
+        return @__idi_c_caps_namespace@_VERSION_MINOR;
     }
 
     int get_version_patch() {
-        return IDI_VERSION_PATCH;
+        return @__idi_c_caps_namespace@_VERSION_PATCH;
     }
 
 
-    const std::string git_hash_short = IDI_VERSION_GIT_HASH_SHORT;
-    const std::string git_hash_long = IDI_VERSION_GIT_HASH_FULL;
-    const std::string git_branch = IDI_VERSION_GIT_BRANCH;
-    const bool git_is_dirty = IDI_VERSION_GIT_DIRTY;
+    const std::string git_hash_short = @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
+    const std::string git_hash_long = @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
+    const std::string git_branch = @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
+    const bool git_is_dirty = @__idi_c_caps_namespace@_VERSION_GIT_DIRTY;
 
-    const std::string build_timestamp = IDI_BUILD_TIMESTAMP;
+    const std::string build_timestamp = @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
 
     const std::string& get_git_hash_short() {
         return git_hash_short;

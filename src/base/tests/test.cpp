@@ -13,21 +13,21 @@
 
 TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
-        REQUIRE(@__idi_namespace@::base::get_version_major() == IDI_VERSION_MAJOR);
-        REQUIRE(@__idi_namespace@::base::get_version_minor() == IDI_VERSION_MINOR);
-        REQUIRE(@__idi_namespace@::base::get_version_patch() == IDI_VERSION_PATCH);
+        REQUIRE(@__idi_namespace@::base::get_version_major() == @__idi_c_caps_namespace@_VERSION_MAJOR);
+        REQUIRE(@__idi_namespace@::base::get_version_minor() == @__idi_c_caps_namespace@_VERSION_MINOR);
+        REQUIRE(@__idi_namespace@::base::get_version_patch() == @__idi_c_caps_namespace@_VERSION_PATCH);
     }
 }
 
 TEST_CASE("Git information are correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
         REQUIRE_THAT(@__idi_namespace@::base::get_git_hash_short(),
-          Catch::Equals(IDI_VERSION_GIT_HASH_SHORT));
+          Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT));
         REQUIRE_THAT(@__idi_namespace@::base::get_git_hash_long(),
-          Catch::Equals(IDI_VERSION_GIT_HASH_FULL));
-        REQUIRE_THAT(@__idi_namespace@::base::get_git_branch(), Catch::Equals(IDI_VERSION_GIT_BRANCH));
-        REQUIRE(@__idi_namespace@::base::get_git_is_dirty() == static_cast<bool>(IDI_VERSION_GIT_DIRTY));
+          Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL));
+        REQUIRE_THAT(@__idi_namespace@::base::get_git_branch(), Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_BRANCH));
+        REQUIRE(@__idi_namespace@::base::get_git_is_dirty() == static_cast<bool>(@__idi_c_caps_namespace@_VERSION_GIT_DIRTY));
         REQUIRE_THAT(@__idi_namespace@::base::get_build_timestamp(),
-          Catch::Equals(IDI_BUILD_TIMESTAMP));
+          Catch::Equals(@__idi_c_caps_namespace@_BUILD_TIMESTAMP));
     }
 }

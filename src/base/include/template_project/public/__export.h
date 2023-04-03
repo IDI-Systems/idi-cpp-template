@@ -10,16 +10,16 @@
 
 #include "platform_config.h"
 
-#ifdef IDI_IS_SHARED
+#ifdef @__idi_c_caps_namespace@_IS_SHARED
 
 #ifdef _WIN32
-#define IDI_EXPORT __declspec(dllexport)
+#define @__idi_c_caps_namespace@_EXPORT __declspec(dllexport)
 #else
-#define IDI_EXPORT __attribute__((visibility("default")))
+#define @__idi_c_caps_namespace@_EXPORT __attribute__((visibility("default")))
 #endif // _WIN32
 
 #else
 
-#define IDI_EXPORT
+#define @__idi_c_caps_namespace@_EXPORT
 
-#endif // IDI_IS_SHARED
+#endif // @__idi_c_caps_namespace@_IS_SHARED

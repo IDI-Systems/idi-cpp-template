@@ -29,6 +29,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_component.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_configure_file.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_demo.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_target_compile_settings.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_platform_config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/misc.cmake)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_configure_base_includes.cmake)

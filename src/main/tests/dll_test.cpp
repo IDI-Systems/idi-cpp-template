@@ -9,22 +9,10 @@
 
 #include <catch2/catch.hpp>
 
-#define JOIN_APP(APP, FUNC)                APP##_##FUNC
-#define JOIN_VENDOR_APP(VENDOR, APP, FUNC) VENDOR##_##APP##_##FUNC
-
-#define __MAJOR_VERSION_CALL(APP) JOIN_APP(APP, get_version_major)
-#define MAJOR_VERSION_CALL        __MAJOR_VERSION_CALL(IDI_APP_NAMESPACE)
-
-#define __MINOR_VERSION_CALL(APP) JOIN_APP(APP, get_version_minor)
-#define MINOR_VERSION_CALL        __MINOR_VERSION_CALL(IDI_APP_NAMESPACE)
-
-#define __PATCH_VERSION_CALL(APP) JOIN_APP(APP, get_version_patch)
-#define PATCH_VERSION_CALL        __PATCH_VERSION_CALL(IDI_APP_NAMESPACE)
-
 TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Public API calls.") {
-        REQUIRE(MAJOR_VERSION_CALL() != -1);
-        REQUIRE(MINOR_VERSION_CALL() != -1);
-        REQUIRE(PATCH_VERSION_CALL() != -1);
+        REQUIRE(@__idi_c_namespace@_get_version_major() != -1);
+        REQUIRE(@__idi_c_namespace@_get_version_minor() != -1);
+        REQUIRE(@__idi_c_namespace@_get_version_patch() != -1);
     }
 }
