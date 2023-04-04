@@ -12,6 +12,7 @@ macro(idi_init)
     idi_cmake_hook(pre-init)
 
     cmake_policy(SET CMP0079 NEW)
+    cmake_policy(SET CMP0135 NEW)
 
     string(TOUPPER ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_UPPER)
     string(TOUPPER ${PROJECT_SOURCE_DIR} PROJECT_SOURCE_DIR_UPPER)
