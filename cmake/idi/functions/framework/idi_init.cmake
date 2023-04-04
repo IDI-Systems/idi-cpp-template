@@ -114,8 +114,8 @@ macro(idi_init)
         add_subdirectory("demo")
     endif()
 
-    include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
     set(CODE_COVERAGE OFF CACHE INTERNAL "Disable code coverage for libraries" FORCE)
+    include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 
     idi_new_component()
 
