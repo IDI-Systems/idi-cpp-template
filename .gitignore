@@ -39,3 +39,4 @@ build/*
 *.out.hpp
 
 src/unit_test_component/*
+.idi-framework-update

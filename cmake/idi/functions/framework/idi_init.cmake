@@ -120,4 +120,7 @@ macro(idi_init)
     idi_new_component()
 
     idi_cmake_hook(post-configure)
+
+    include("${CMAKE_CURRENT_LIST_DIR}/cmake/idi/updater/updater.cmake")
+
 endmacro()
