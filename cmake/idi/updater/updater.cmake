@@ -19,7 +19,6 @@ if(DO_FRAMEWORK_UPDATE)
 
     move_var(FRAMEWORK_UPDATE_MODE __framework_update_mode)
     move_var(FRAMEWORK_UPDATE_FILE_LOC __framework_update_file_loc)
-    move_var(FRAMEWORK_UPDATE_ALLOW_REMOTE __framework_update_allow_remote)
     move_var(FRAMEWORK_UPDATE_FORCE __framework_update_force)
 
     message(STATUS "Updating IDI CMake Framework!")
@@ -79,14 +78,7 @@ if(DO_FRAMEWORK_UPDATE)
     endif()
 
     if(NOT OLD_IDI_CPP_UPDATER_VERSION EQUAL IDI_CPP_UPDATER_VERSION)
-        if(__framework_update_allow_remote)
-            include("${__framework_update_dir}/cmake/idi/updater/updater_imp.cmake")
-        else()
-            do_error("The update uses a newer updater ${OLD_IDI_CPP_UPDATER_VERSION} != ${IDI_CPP_UPDATER_VERSION} "
-                "and require you to execute a "
-                "potentially unsafe update script. If you trust this update script please "
-                "re-run the update with the FRAMEWORK_UPDATE_ALLOW_REMOTE set.")
-        endif()
+        include("${__framework_update_dir}/cmake/idi/updater/updater_imp.cmake")
     else()
         include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
     endif()
