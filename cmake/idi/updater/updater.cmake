@@ -24,10 +24,10 @@ if(DO_FRAMEWORK_UPDATE)
 
     message(STATUS "Updating IDI CMake Framework!")
 
-    set(__framework_update_dir "${PROJECT_SOURCE_DIR}/.idi-framework-update")
+    set(FRAMEWORK_UPDATE_DIR "${PROJECT_SOURCE_DIR}/.idi-framework-update")
 
-    file(REMOVE_RECURSE ${__framework_update_dir})
-    file(MAKE_DIRECTORY ${__framework_update_dir})
+    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+    file(MAKE_DIRECTORY ${FRAMEWORK_UPDATE_DIR})
 
 
     if(NOT __framework_update_mode)
@@ -41,7 +41,7 @@ if(DO_FRAMEWORK_UPDATE)
             do_error("FRAMEWORK_UPDATE_MODE is 'file', but FRAMEWORK_UPDATE_FILE_LOC is not defined!")
         endif()
 
-        file(COPY "${__framework_update_file_loc}/" DESTINATION ${__framework_update_dir}
+        file(COPY "${__framework_update_file_loc}/" DESTINATION ${FRAMEWORK_UPDATE_DIR}
             PATTERN ".idi-framework-update" EXCLUDE
             PATTERN "build" EXCLUDE
             PATTERN ".git" EXCLUDE
@@ -62,8 +62,8 @@ if(DO_FRAMEWORK_UPDATE)
     set(OLD_IDI_SRC_REQ_CML_V ${IDI_SRC_REQ_CML_V})
     set(OLD_IDI_BASE_REQ_CML_V ${IDI_BASE_REQ_CML_V})
 
-    include("${__framework_update_dir}/cmake/idi/updater/updater_version.cmake")
-    include("${__framework_update_dir}/cmake/idi/updater/updater_version.cmake")
+    include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake")
+    include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake")
 
     if ((OLD_IDI_CPP_UPDATER_VERSION EQUAL IDI_CPP_UPDATER_VERSION) AND
         (OLD_IDI_CPP_FRAMEWORK_VERSION_MAJOR EQUAL IDI_CPP_FRAMEWORK_VERSION_MAJOR) AND
@@ -91,7 +91,7 @@ if(DO_FRAMEWORK_UPDATE)
         include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
     endif()
 
-    file(REMOVE_RECURSE ${__framework_update_dir})
+    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
 endif()
 
 
