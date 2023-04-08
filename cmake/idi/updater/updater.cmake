@@ -45,14 +45,25 @@ if(DO_FRAMEWORK_UPDATE)
             PATTERN "build" EXCLUDE
             PATTERN ".git" EXCLUDE
             )
-    elseif(__framework_update_mode STREQUAL "file")
-        file(ARCHIVE_EXTRACT INPUT "${PROJECT_SOURCE_DIR}/${__framework_update_file_loc}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
-            do_error("The downloaded file provided via FRAMEWORK_UPDATE_URL does not appear to be a valid template update!")
+            do_error("The folder provided via FRAMEWORK_UPDATE_FOLDER_LOC does not appear to be a valid template update!")
+        endif()
+    elseif(__framework_update_mode STREQUAL "file")
+        if (NOT __framework_update_file_loc)
+            do_error("FRAMEWORK_UPDATE_MODE is 'file', but FRAMEWORK_UPDATE_FILE_LOC is not defined!")
+        endif()
+
+        file(ARCHIVE_EXTRACT INPUT "${PROJECT_SOURCE_DIR}/${__framework_update_file_loc}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+
+        if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
+            do_error("The file provided via FRAMEWORK_UPDATE_FILE_LOC does not appear to be a valid template update!")
         endif()
     elseif(__framework_update_mode STREQUAL "url")
         file(DOWNLOAD ${__framework_update_url} "${PROJECT_SOURCE_DIR}/.idi_framework_dl")
+
         file(ARCHIVE_EXTRACT INPUT "${PROJECT_SOURCE_DIR}/.idi_framework_dl" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The downloaded file provided via FRAMEWORK_UPDATE_URL does not appear to be a valid template update!")
         endif()
