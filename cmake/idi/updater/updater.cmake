@@ -96,13 +96,13 @@ if(DO_FRAMEWORK_UPDATE)
         endif()
     endif()
 
-    # if(NOT OLD_IDI_CPP_UPDATER_VERSION EQUAL IDI_CPP_UPDATER_VERSION)
-    #     include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_imp.cmake")
-    # else()
-    #     include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
-    # endif()
+    if(NOT OLD_IDI_CPP_UPDATER_VERSION EQUAL IDI_CPP_UPDATER_VERSION)
+        include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_imp.cmake")
+    else()
+        include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
+    endif()
 
-    # file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
 endif()
 
 
