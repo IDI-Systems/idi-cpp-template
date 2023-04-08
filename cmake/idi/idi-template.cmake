@@ -8,6 +8,8 @@
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/version.cmake)
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater.cmake")
+
 if (IDI_ROOT_CML_V LESS IDI_ROOT_REQ_CML_V)
     message(FATAL_ERROR "The root CMakeLists.txt is not at the required version for the IDI CMake framework."
     "If you updated the template recently, also update the CMakeList.txt in the root directory")

@@ -15,7 +15,7 @@ macro(idi_src)
 
     if(IDI_IS_LIBRARY)
         set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-        set(IDI_CORE "${IDI_MAIN_TARGET}")
+        set(IDI_CORE "${IDI_MAIN_TARGET}_${__idi_version_full}")
         if(IDI_IS_SHARED)
             add_library("${IDI_MAIN_TARGET}" SHARED "")
         endif()
@@ -23,7 +23,7 @@ macro(idi_src)
 
     if (NOT IDI_IS_LIBRARY)
         set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-        set(IDI_CORE "${IDI_PROJECT_NAME}_core")
+        set(IDI_CORE "${IDI_PROJECT_NAME}_core_${__idi_version_full}")
         target_code_coverage("${IDI_CORE}" ALL)
     endif()
 

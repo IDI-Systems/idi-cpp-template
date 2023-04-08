@@ -7,6 +7,8 @@
 #
 
 macro(idi_init)
+
+
     include(CTest)
 
     idi_cmake_hook(pre-init)
@@ -32,6 +34,7 @@ macro(idi_init)
     set(__idi_version_major ${IDI_PROJECT_VERSION_MAJOR})
     set(__idi_version_minor ${IDI_PROJECT_VERSION_MINOR})
     set(__idi_version_patch ${IDI_PROJECT_VERSION_PATCH})
+    set(__idi_version_full "${IDI_PROJECT_VERSION_MAJOR}.${IDI_PROJECT_VERSION_MINOR}.${IDI_PROJECT_VERSION_PATCH}")
 
     idi_cmake_hook(pre-options)
 
@@ -39,6 +42,13 @@ macro(idi_init)
     set(IDI_IS_DYNAMIC ${IDI_IS_SHARED})
     string(TOUPPER ${IDI_PROJECT_NAME} IDI_PREFIX_UPPER)
     set(IDI_PREFIX ${IDI_PREFIX_UPPER})
+
+    set("${IDI_PREFIX}_VERSION_MAJOR" ${IDI_PROJECT_VERSION_MAJOR})
+    set("${IDI_PREFIX}_VERSION_MINOR" ${IDI_PROJECT_VERSION_MINOR})
+    set("${IDI_PREFIX}_VERSION_PATCH" ${IDI_PROJECT_VERSION_PATCH})
+    set("${IDI_PREFIX}_VERSION_FULL" "${IDI_PROJECT_VERSION_MAJOR}.${IDI_PROJECT_VERSION_MINOR}.${IDI_PROJECT_VERSION_PATCH}")
+
+
 
     set("${IDI_PREFIX}_BUILD_DEMOS" 1 CACHE BOOL "Build demo applications if applicable.")
     set("${IDI_PREFIX}_BUILD_TESTS" 1 CACHE BOOL "Build unit tests.")
@@ -98,6 +108,8 @@ macro(idi_init)
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/reports)
 
+    idi_new_component()
+
     # Define a nice short hand for 3rd party external library folders
     set(IDI_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 
@@ -117,10 +129,6 @@ macro(idi_init)
 
     include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 
-    idi_new_component()
-
     idi_cmake_hook(post-configure)
-
-    include("${CMAKE_CURRENT_LIST_DIR}/cmake/idi/updater/updater.cmake")
 
 endmacro()

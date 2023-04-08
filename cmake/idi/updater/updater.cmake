@@ -11,7 +11,7 @@ macro(do_error)
 endmacro()
 
 if(DO_FRAMEWORK_UPDATE)
-    include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_version.cmake")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater_version.cmake")
     unset(DO_FRAMEWORK_UPDATE CACHE)
 
     move_var(FRAMEWORK_UPDATE_MODE __framework_update_mode)
@@ -22,7 +22,7 @@ if(DO_FRAMEWORK_UPDATE)
 
     message(STATUS "Updating IDI CMake Framework!")
 
-    set(FRAMEWORK_UPDATE_DIR "${PROJECT_SOURCE_DIR}/.idi-framework-update")
+    set(FRAMEWORK_UPDATE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.idi-framework-update")
 
     file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
     file(MAKE_DIRECTORY ${FRAMEWORK_UPDATE_DIR})
@@ -54,15 +54,15 @@ if(DO_FRAMEWORK_UPDATE)
             do_error("FRAMEWORK_UPDATE_MODE is 'file', but FRAMEWORK_UPDATE_FILE_LOC is not defined!")
         endif()
 
-        file(ARCHIVE_EXTRACT INPUT "${PROJECT_SOURCE_DIR}/${__framework_update_file_loc}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+        file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${__framework_update_file_loc}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The file provided via FRAMEWORK_UPDATE_FILE_LOC does not appear to be a valid template update!")
         endif()
     elseif(__framework_update_mode STREQUAL "url")
-        file(DOWNLOAD ${__framework_update_url} "${PROJECT_SOURCE_DIR}/.idi_framework_dl")
+        file(DOWNLOAD ${__framework_update_url} "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl")
 
-        file(ARCHIVE_EXTRACT INPUT "${PROJECT_SOURCE_DIR}/.idi_framework_dl" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+        file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl" DESTINATION ${FRAMEWORK_UPDATE_DIR})
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The downloaded file provided via FRAMEWORK_UPDATE_URL does not appear to be a valid template update!")
@@ -99,10 +99,12 @@ if(DO_FRAMEWORK_UPDATE)
     if(NOT OLD_IDI_CPP_UPDATER_VERSION EQUAL IDI_CPP_UPDATER_VERSION)
         include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_imp.cmake")
     else()
-        include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
+        include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
     endif()
 
     file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+
+    return()
 endif()
 
 
