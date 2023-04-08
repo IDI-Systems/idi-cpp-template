@@ -1,7 +1,4 @@
-# TODO: remove this set after developing
 include(FetchContent)
-
-set(FRAMEWORK_UPDATE_FOLDER_LOC ${PROJECT_SOURCE_DIR})
 
 macro(move_var)
     set(${ARGV1} ${${ARGV0}})
@@ -9,12 +6,10 @@ macro(move_var)
 endmacro()
 
 macro(do_error)
-    #file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
     message(FATAL_ERROR ${ARGN})
 endmacro()
 
-set(DO_FRAMEWORK_UPDATE true)
-set(FRAMEWORK_UPDATE_FORCE true)
 if(DO_FRAMEWORK_UPDATE)
     include("${PROJECT_SOURCE_DIR}/cmake/idi/updater/updater_version.cmake")
     unset(DO_FRAMEWORK_UPDATE CACHE)
@@ -34,7 +29,8 @@ if(DO_FRAMEWORK_UPDATE)
 
 
     if(NOT __framework_update_mode)
-        set(__framework_update_mode "folder")
+        set(__framework_update_mode "url")
+        set(__framework_update_url "https://github.com/IDI-Systems/idi-cpp-template/archive/refs/heads/master.zip")
     endif()
 
     message(STATUS "Framework update mode: ${__framework_update_mode}")
