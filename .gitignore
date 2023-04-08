@@ -40,3 +40,4 @@ build/*
 
 src/unit_test_component/*
 .idi-framework-update
+.idi_framework_dl
