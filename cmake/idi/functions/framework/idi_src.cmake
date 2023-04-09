@@ -29,6 +29,9 @@ macro(idi_src)
 
     if (NOT IDI_IS_SHARED)
         add_library("${IDI_CORE}" STATIC "")
+        if(IDI_IS_LIBRARY)
+            add_library("${IDI_MAIN_TARGET}" ALIAS "${IDI_CORE}")
+        endif()
     endif()
 
     set(IDI_CORE ${IDI_CORE} PARENT_SCOPE)

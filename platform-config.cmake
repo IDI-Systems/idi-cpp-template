@@ -26,3 +26,5 @@ set(IDI_IS_LIBRARY false)
 # If it is set to false it will build as a static library. This requires
 # IDI_IS_LIBRARY being set to true
 set(IDI_IS_SHARED false)
+
+set(IDI_DECONFLICT_MULTIPLE true)
