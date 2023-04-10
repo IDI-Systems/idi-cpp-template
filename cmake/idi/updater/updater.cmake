@@ -104,7 +104,8 @@ if(DO_FRAMEWORK_UPDATE)
 
     file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
 
-    return()
-endif()
 
+    set(IDI_DID_UPDATE true)
+
+endif()
 
