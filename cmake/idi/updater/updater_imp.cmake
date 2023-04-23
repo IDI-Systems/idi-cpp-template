@@ -14,5 +14,8 @@ endmacro()
 
 do_replace_dir("cmake/idi/")
 do_replace_dir("src/base/")
+set(IDI_PLATFORM_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/platform-config.cmake")
+include("${IDI_PLATFORM_CONFIG}")
+file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/template_project" "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/${IDI_PROJECT_NAME}")
 do_replace_file("CMakeLists.txt")
 do_replace_file("src/CMakeLists.txt")

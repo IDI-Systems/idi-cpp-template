@@ -12,28 +12,6 @@ macro(idi_src)
     #####################################################################
     # CORE LIBRARY                                                      #
     #####################################################################
-
-    # if(IDI_IS_LIBRARY)
-    #     set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-    #     set(IDI_CORE "${IDI_MAIN_TARGET}_${__idi_version_full}")
-    #     if(IDI_IS_SHARED)
-    #         add_library("${IDI_MAIN_TARGET}" SHARED "")
-    #     endif()
-    # endif()
-
-    # if(NOT IDI_IS_LIBRARY)
-    #     set(IDI_MAIN_TARGET "${IDI_PROJECT_NAME}")
-    #     set(IDI_CORE "${IDI_PROJECT_NAME}_core_${__idi_version_full}")
-    #     target_code_coverage("${IDI_CORE}" ALL)
-    # endif()
-
-    # if(NOT IDI_IS_SHARED)
-    #     add_library("${IDI_CORE}" STATIC "")
-    #     if(IDI_IS_LIBRARY AND (NOT IDI_DECONFLICT_MULTIPLE))
-    #         add_library("${IDI_MAIN_TARGET}" ALIAS "${IDI_CORE}")
-    #     endif()
-    # endif()
-
     set(IDI_CORE "${IDI_PROJECT_NAME}_${__idi_version_full}")
     # backwards compat, since CORE is always the main target
     set(IDI_MAIN_TARGET ${IDI_CORE})
@@ -73,7 +51,6 @@ macro(idi_src)
         target_sources(
             "${IDI_PROJECT_NAME}"
             PRIVATE
-            # EDIT LIST FILES BELOW HERE
             "${CMAKE_CURRENT_LIST_DIR}/main/main.cpp"
         )
         target_link_libraries("${IDI_PROJECT_NAME}" "${IDI_CORE}")
@@ -95,7 +72,6 @@ macro(idi_src)
             target_sources(
                 "${IDI_SHARED_NAME}"
                 PRIVATE
-                # EDIT LIST FILES BELOW HERE
                 "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
             )
             install(TARGETS "${IDI_SHARED_NAME}"
@@ -107,41 +83,4 @@ macro(idi_src)
             endif()
         endif()
     endif()
-    # if((IDI_IS_LIBRARY AND IDI_IS_SHARED) OR (NOT IDI_IS_LIBRARY))
-    #     if(IDI_IS_SHARED)
-    #         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
-    #         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES C_VISIBILITY_PRESET hidden)
-
-    #         target_sources(
-    #             "${IDI_MAIN_TARGET}"
-    #             PRIVATE
-    #             # EDIT LIST FILES BELOW HERE
-    #             "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
-    #         )
-    #         install(TARGETS "${IDI_MAIN_TARGET}"
-    #                 LIBRARY FILE_SET HEADERS DESTINATION includes/${IDI_MAIN_TARGET}/public)
-    #     else()
-    #         add_executable("${IDI_MAIN_TARGET}" "")
-    #         target_sources(
-    #             "${IDI_MAIN_TARGET}"
-    #             PRIVATE
-    #             # EDIT LIST FILES BELOW HERE
-    #             "${CMAKE_CURRENT_LIST_DIR}/main/main.cpp"
-    #         )
-    #         target_link_libraries("${IDI_MAIN_TARGET}" "${IDI_CORE}")
-    #         idi_target_compile_settings("${IDI_MAIN_TARGET}")
-    #         set_target_properties("${IDI_MAIN_TARGET}" PROPERTIES LINKER_LANGUAGE CXX)
-    #         install(TARGETS "${IDI_MAIN_TARGET}"
-    #             RUNTIME)
-    #     endif()
-    #     add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/main")
-    #     get_target_property(IDI_MAIN_TARGET_SOURCES "${IDI_MAIN_TARGET}" SOURCES)
-    #         source_group(TREE ${CMAKE_CURRENT_LIST_DIR}
-    #     FILES ${IDI_MAIN_TARGET_SOURCES})
-    #     target_code_coverage("${IDI_MAIN_TARGET}" ALL OBJECTS "${IDI_CORE}")
-    # else()
-    #     install(TARGETS "${IDI_CORE}"
-    #         ARCHIVE)
-    # endif()
-
 endmacro()
