@@ -13,4 +13,5 @@ macro(idi_load_platform_config)
     include("${IDI_PLATFORM_CONFIG}")
 
     idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/post-platform-config.cmake)
+
 endmacro()

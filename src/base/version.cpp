@@ -29,7 +29,7 @@ namespace @__idi_namespace@::base {
     const std::string git_hash_short = @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
     const std::string git_hash_long = @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
     const std::string git_branch = @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
-    const bool git_is_dirty = @__idi_c_caps_namespace@_VERSION_GIT_DIRTY;
+    const bool git_is_dirty = (bool)@__idi_c_caps_namespace@_VERSION_GIT_DIRTY;
 
     const std::string build_timestamp = @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
 

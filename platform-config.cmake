@@ -26,3 +26,8 @@ set(IDI_IS_LIBRARY false)
 # If it is set to false it will build as a static library. This requires
 # IDI_IS_LIBRARY being set to true
 set(IDI_IS_SHARED false)
+
+# If IDI_DECONFLICT_MULTIPLE is set to true, then projects that include this library
+# and also use this framework will deconflict multiple versions, chosing the latest
+# version.
+set(IDI_DECONFLICT_MULTIPLE false)

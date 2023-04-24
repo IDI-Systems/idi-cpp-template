@@ -9,7 +9,7 @@
 # This is the list of all files that should be included in the core build.
 # You _should_ include .h/.hpp files here so they properly show up in IDEs.
 target_sources(
-    "${IDI_MAIN_TARGET}"
+    "${IDI_CORE}"
     PRIVATE
     # EDIT LIST FILES BELOW HERE
 )

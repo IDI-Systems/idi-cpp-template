@@ -16,7 +16,7 @@ extern "C" {
  * Export the template component function.
  * @return int
  */
-IDI_EXPORT int @__idi_new_component_name@_component_function();
+@__idi_c_caps_namespace@_EXPORT int @__idi_new_component_name@_component_function();
 
 #ifdef __cplusplus
 }
