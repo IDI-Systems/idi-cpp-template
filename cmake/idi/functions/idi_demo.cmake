@@ -15,12 +15,9 @@ function(__idi_demo demo_name demo_file)
     target_include_directories("${CURRENT_DEMO}" SYSTEM PRIVATE
         "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
-    target_link_libraries("${CURRENT_DEMO}" "${IDI_CORE}")
-    list(APPEND __LIBRARY_LIST ${CURRENT_DEMO})
-    list(APPEND __LIBRARY_LIST ${IDI_CORE})
-
-
     set(ADD_MODE "ADDITIONAL_SOURCES")
+    set(ADD_CORE true)
+
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "ADDITIONAL_LIBRARIES")
             set(ADD_MODE "ADDITIONAL_LIBRARIES")
@@ -30,6 +27,8 @@ function(__idi_demo demo_name demo_file)
             set(ADD_MODE "ADDITIONAL_INCLUDES")
         elseif(var STREQUAL "ADDITIONAL_SOURCES")
             set(ADD_MODE "ADDITIONAL_SOURCES")
+        elseif(var STREQUAL "EXCLUDE_CORE")
+            set(ADD_CORE false)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
                 target_link_libraries("${CURRENT_DEMO}" "${IDI_PROJECT_NAME}_${var}_${__idi_version_full}")
@@ -45,6 +44,13 @@ function(__idi_demo demo_name demo_file)
             endif()
         endif()
     endforeach()
+
+    if (ADD_CORE)
+        target_link_libraries("${CURRENT_DEMO}" "${IDI_CORE}")
+        list(APPEND __LIBRARY_LIST ${CURRENT_DEMO})
+        list(APPEND __LIBRARY_LIST ${IDI_CORE})
+    endif()
+
     if (IDI_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that demos link against the build tree RPATH and not
