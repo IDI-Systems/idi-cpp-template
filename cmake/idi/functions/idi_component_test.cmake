@@ -17,11 +17,6 @@ function(__idi_component_test component_name test_file)
     target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
         "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
-    # target_link_libraries("${CURRENT_LIBRARY_TEST}" "${IDI_CORE}")
-    # list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
-    # list(APPEND __LIBRARY_LIST ${IDI_CORE})
-
-
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
 
@@ -38,10 +33,10 @@ function(__idi_component_test component_name test_file)
             set(ADD_CORE false)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
-                target_link_libraries("${CURRENT_LIBRARY_TEST}" "${IDI_PROJECT_NAME}_${var}_${__idi_version_full}")
+                target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDI_PROJECT_NAME}_${var}_${__idi_version_full}")
                 list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "EXTERNAL_LIBRARIES")
-                target_link_libraries("${CURRENT_LIBRARY_TEST}" ${var})
+                target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC ${var})
                 list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "ADDITIONAL_SOURCES")
                 target_sources("${CURRENT_LIBRARY_TEST}" PRIVATE ${var})
