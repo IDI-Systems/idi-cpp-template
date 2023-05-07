@@ -5,9 +5,9 @@
  *
  */
 
-#include "version.hpp"
-#include "public/__build_info.out.h"
-#include "public/idi_version.h"
+#include "@PROJECT_NAME@/version.hpp"
+#include "@PROJECT_NAME@/public/__build_info.out.h"
+#include "@PROJECT_NAME@/public/idi_version.h"
 
 #include <string>
 

@@ -10,7 +10,7 @@
  */
 
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
-#include "@__idi_new_component_name@.hpp"
+#include "@PROJECT_NAME@/@__idi_new_component_name@.hpp"
 
 #include <catch2/catch.hpp>
 

@@ -7,9 +7,9 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include <catch2/catch.hpp>
 
-#include "public/idi_version.h"
-#include "public/version.h"
-#include "public/__build_info.out.h"
+#include "@PROJECT_NAME@/public/idi_version.h"
+#include "@PROJECT_NAME@/public/version.h"
+#include "@PROJECT_NAME@/public/__build_info.out.h"
 
 TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Public API calls.") {
