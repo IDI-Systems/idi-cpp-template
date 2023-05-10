@@ -148,7 +148,12 @@ macro(idi_init)
             add_subdirectory("demo")
         endif()
 
-        include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
+        if(IDI_IS_SUBDIRECTORY AND IDI_DECONFLICT_MULTIPLE)
+            configure_file("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake" "${CMAKE_BINARY_DIR}/${IDI_PROJECT_NAME}_${${IDI_PREFIX}_VERSION_FULL}_libraries.cmake")
+        else()
+            include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
+        endif()
+
 
         idi_cmake_hook(post-configure)
 
@@ -158,6 +163,7 @@ macro(idi_init)
             foreach(var IN LISTS IDI_DEFERRED_LIB_LIST)
                 message(STATUS "ADDING DEFERRED LIB: ${var} @ v${${var}_MAX_VERSION} located at: ${${var}_MAX_VERSION_PATH}")
                 add_library("${var}" ALIAS "${var}_${${var}_MAX_VERSION}")
+                include("${CMAKE_BINARY_DIR}/${var}_${${var}_MAX_VERSION}_libraries.cmake")
             endforeach()
         endif()
     endif()

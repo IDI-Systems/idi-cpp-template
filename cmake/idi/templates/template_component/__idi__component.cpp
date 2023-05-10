@@ -5,8 +5,8 @@
  *
  */
 
-#include "@__idi_new_component_name@.hpp"
-#include "@__idi_new_component_name@_public.h"
+#include "@PROJECT_NAME@/@__idi_new_component_name@.hpp"
+#include "@PROJECT_NAME@/public/@__idi_new_component_name@_public.h"
 
 using namespace @__idi_namespace@;
 

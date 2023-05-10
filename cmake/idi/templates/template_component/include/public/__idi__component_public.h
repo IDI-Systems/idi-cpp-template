@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "export.h"
+#include "@PROJECT_NAME@/public/export.h"
 
 #ifdef __cplusplus
 extern "C" {
