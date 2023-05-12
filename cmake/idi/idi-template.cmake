@@ -10,18 +10,18 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/version.cmake)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater.cmake")
 
-if(NOT IDI_DID_UPDATE)
-    if (IDI_ROOT_CML_V LESS IDI_ROOT_REQ_CML_V)
+if(NOT IDICMAKE_DID_UPDATE)
+    if (IDICMAKE_ROOT_CML_V LESS IDICMAKE_ROOT_REQ_CML_V)
         message(FATAL_ERROR "The root CMakeLists.txt is not at the required version for the IDI CMake framework."
         "If you updated the template recently, also update the CMakeList.txt in the root directory")
     endif()
 
-    if (IDI_SRC_CML_V LESS IDI_SRC_REQ_CML_V)
+    if (IDICMAKE_SRC_CML_V LESS IDICMAKE_SRC_REQ_CML_V)
         message(FATAL_ERROR "The CMakeLists.txt in the src directory is not at the required version for the IDI CMake framework."
         "If you updated the template recently, also update the CMakeList.txt in the src directory")
     endif()
 
-    if (IDI_BASE_CML_V LESS IDI_BASE_REQ_CML_V)
+    if (IDICMAKE_BASE_CML_V LESS IDICMAKE_BASE_REQ_CML_V)
         message(FATAL_ERROR "The CMakeLists.txt in the src/base component directory is not at the required version for the IDI CMake framework."
         "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
     endif()

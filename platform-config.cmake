@@ -10,24 +10,24 @@
 # header file titled "platform_config.h"
 
 # Set this to the name of the project. This will be the resultant binary name.
-set(IDI_PROJECT_NAME "template_project")
+set(IDICMAKE_PROJECT_NAME "template_project")
 
 # Set this to be the vendor namespace
-set(IDI_VENDOR_NAMESPACE "idi")
+set(IDICMAKE_VENDOR_NAMESPACE "idi")
 
 # Set this to be the primary namespace within the vendor namespace
 # If this is set to an empty string the vendor namespace will only be used
-set(IDI_APP_NAMESPACE "app")
+set(IDICMAKE_APP_NAMESPACE "app")
 
-# If IDI_IS_LIBRARY is set to true the project will be built as a library.
-set(IDI_IS_LIBRARY false)
+# If IDICMAKE_IS_LIBRARY is set to true the project will be built as a library.
+set(IDICMAKE_IS_LIBRARY false)
 
-# If IDI_IS_SHARED is set to true then the project will build as a shared library.
+# If IDICMAKE_IS_SHARED is set to true then the project will build as a shared library.
 # If it is set to false it will build as a static library. This requires
-# IDI_IS_LIBRARY being set to true
-set(IDI_IS_SHARED false)
+# IDICMAKE_IS_LIBRARY being set to true
+set(IDICMAKE_IS_SHARED false)
 
-# If IDI_DECONFLICT_MULTIPLE is set to true, then projects that include this library
+# If IDICMAKE_DECONFLICT_MULTIPLE is set to true, then projects that include this library
 # and also use this framework will deconflict multiple versions, chosing the latest
 # version.
-set(IDI_DECONFLICT_MULTIPLE false)
+set(IDICMAKE_DECONFLICT_MULTIPLE false)

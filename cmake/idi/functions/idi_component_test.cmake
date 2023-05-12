@@ -9,13 +9,13 @@
 function(__idi_component_test component_name test_file)
     set(__LIBRARY_LIST "${LIBRARY_LIST}")
     get_filename_component(TEST_FILE_WLE ${test_file} NAME_WLE)
-    set(CURRENT_LIBRARY_TEST "${IDI_PROJECT_NAME}_${component_name}_${TEST_FILE_WLE}_${__idi_version_full}")
+    set(CURRENT_LIBRARY_TEST "${IDICMAKE_PROJECT_NAME}_${component_name}_${TEST_FILE_WLE}_${__idi_version_full}")
 
     add_executable("${CURRENT_LIBRARY_TEST}" ${test_file})
     idi_target_compile_settings("${CURRENT_LIBRARY_TEST}")
 
     target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
-        "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
+        "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
@@ -33,7 +33,7 @@ function(__idi_component_test component_name test_file)
             set(ADD_CORE false)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
-                target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDI_PROJECT_NAME}_${var}_${__idi_version_full}")
+                target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDICMAKE_PROJECT_NAME}_${var}_${__idi_version_full}")
                 list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "EXTERNAL_LIBRARIES")
                 target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC ${var})
@@ -48,16 +48,16 @@ function(__idi_component_test component_name test_file)
     endforeach()
 
     if (ADD_CORE)
-        target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDI_CORE}")
+        target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDICMAKE_CORE}")
         list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
-        list(APPEND __LIBRARY_LIST ${IDI_CORE})
+        list(APPEND __LIBRARY_LIST ${IDICMAKE_CORE})
     else()
         target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${CURRENT_LIBRARY_NAME}")
         list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
     endif()
 
     add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}" WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-    if (IDI_IS_SHARED)
+    if (IDICMAKE_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that tests link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.
@@ -68,13 +68,13 @@ function(__idi_component_test component_name test_file)
 endfunction()
 
 macro(idi_component_test component_name test_file)
-    if(IDI_BUILD_TESTS AND (NOT IDI_IS_SHARED))
+    if(IDICMAKE_BUILD_TESTS AND (NOT IDICMAKE_IS_SHARED))
         __idi_component_test(${component_name} ${test_file} ${ARGN})
     endif()
 endmacro()
 
 macro(idi_component_test_public component_name test_file)
-    if(IDI_BUILD_TESTS)
+    if(IDICMAKE_BUILD_TESTS)
         __idi_component_test(${component_name} ${test_file} ${ARGN})
     endif()
 endmacro()

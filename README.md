@@ -36,9 +36,9 @@ $ cmake --build .   # or generated build system command (make, Visual Studio etc
 
 _Use with `cmake .. -D<argument>=<value>`._
 
-- `IDI_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file.
-- `IDI_BUILD_DEMOS` (default: `0`) - Build demo applications if applicable.
-- `IDI_BUILD_TESTS` (default: `1`) - Build unit tests. _(long)_
+- `IDICMAKE_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file.
+- `IDICMAKE_BUILD_DEMOS` (default: `0`) - Build demo applications if applicable.
+- `IDICMAKE_BUILD_TESTS` (default: `1`) - Build unit tests. _(long)_
 - `DO_TEMPLATE_COMPONENT_TEST` (default: `0`) - Generate unit test template component and build unit tests for template.
 - `NEW_COMPONENT_NAME` - Create new component.
 
@@ -70,7 +70,7 @@ Alongside the `CMakeLists.txt` file is is an `objects.cmake`. This file is where
 
 Includes are structured in a specific way to easily enable the installation or inclusion of headers from the project in other projects.
 
-The include folder in each component contains exactly one subfolder that is named after the CMake `IDI_PROJECT_NAME` configuration value. Inside that folder exists any interface header files that can be used with **static** libraries. In addition, a folder called `public` contains any headers that are used as header interfaces to a **shared** library. These generally will be C exported interfaces for shared object ABI compatibility.
+The include folder in each component contains exactly one subfolder that is named after the CMake `IDICMAKE_PROJECT_NAME` configuration value. Inside that folder exists any interface header files that can be used with **static** libraries. In addition, a folder called `public` contains any headers that are used as header interfaces to a **shared** library. These generally will be C exported interfaces for shared object ABI compatibility.
 
 Any header files that are not to be consumed by end-users should _not_ be included in the `include` folder structure. Those headers will remain private to the project and it's components (there is currently no way to restrict headers to _just_ the component in which it lives).
 
@@ -79,7 +79,7 @@ src/
  |--- some_component/
    |--- some_implementation.cpp         # built as part of the object
      |--- include/
-       |--- project_name/               # actual folder name via the IDI_PROJECT_NAME var
+       |--- project_name/               # actual folder name via the IDICMAKE_PROJECT_NAME var
          |--- some_implementation.hpp   # static library avaialable header
          |--- public/
            |--- exported_impl.h         # C exported function headers for shared lib

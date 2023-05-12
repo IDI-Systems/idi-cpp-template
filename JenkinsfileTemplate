@@ -27,7 +27,7 @@ pipeline {
             steps {
                 dir('build') {
                     deleteDir()
-                    bat 'cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.static.cmake'
+                    bat 'cmake .. -DIDICMAKE_PLATFORM_CONFIG=../platform_config.static.cmake'
                     bat 'cmake --build .'
                     bat 'ctest -C Debug'
                     junit 'reports/**_report*.xml'
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 dir('build') {
                     deleteDir()
-                    bat 'cmake .. -DIDI_PLATFORM_CONFIG=../platform_config.shared.cmake'
+                    bat 'cmake .. -DIDICMAKE_PLATFORM_CONFIG=../platform_config.shared.cmake'
                     bat 'cmake --build .'
                     bat 'ctest -C Debug'
                     junit 'reports/**_report*.xml'

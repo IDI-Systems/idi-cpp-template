@@ -12,4 +12,4 @@
 #
 
 # Any time the updater is changed this version should be incremented!!!
-set(IDI_CPP_UPDATER_VERSION 1)
+set(IDICMAKE_CPP_UPDATER_VERSION 1)

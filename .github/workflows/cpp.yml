@@ -30,7 +30,7 @@ jobs:
         mkdir -p build
         cd build
         cmake --version
-        cmake .. $CMAKE_ARGS -DIDI_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
+        cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG=../${{ fromJSON(env.CONFIGS)[matrix.type] }}
     - name: Build
       shell: bash
       run: |

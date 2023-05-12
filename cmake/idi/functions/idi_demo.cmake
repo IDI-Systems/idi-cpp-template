@@ -13,7 +13,7 @@ function(__idi_demo demo_name demo_file)
     idi_target_compile_settings("${CURRENT_DEMO}")
 
     target_include_directories("${CURRENT_DEMO}" SYSTEM PRIVATE
-        "${IDI_EXTERNAL_LIB_DIR}/Catch2/single_include")
+        "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
@@ -31,7 +31,7 @@ function(__idi_demo demo_name demo_file)
             set(ADD_CORE false)
         else()
             if(ADD_MODE STREQUAL "ADDITIONAL_LIBRARIES")
-                target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDI_PROJECT_NAME}_${var}_${__idi_version_full}")
+                target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDICMAKE_PROJECT_NAME}_${var}_${__idi_version_full}")
                 list(APPEND __LIBRARY_LIST ${var})
             elseif(ADD_MODE STREQUAL "EXTERNAL_LIBRARIES")
                 target_link_libraries("${CURRENT_DEMO}" PUBLIC ${var})
@@ -46,12 +46,12 @@ function(__idi_demo demo_name demo_file)
     endforeach()
 
     if (ADD_CORE)
-        target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDI_CORE}")
+        target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDICMAKE_CORE}")
         list(APPEND __LIBRARY_LIST ${CURRENT_DEMO})
-        list(APPEND __LIBRARY_LIST ${IDI_CORE})
+        list(APPEND __LIBRARY_LIST ${IDICMAKE_CORE})
     endif()
 
-    if (IDI_IS_SHARED)
+    if (IDICMAKE_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that demos link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.

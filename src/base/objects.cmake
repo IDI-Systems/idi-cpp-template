@@ -15,4 +15,4 @@ idi_add_sources(
 
 # This include brings in the explict cross-core includes. These are the APIs that
 # should be used from component to component in the core library.
-include("${CMAKE_CURRENT_LIST_DIR}/include/${IDI_PROJECT_NAME}/include.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/include/${IDICMAKE_PROJECT_NAME}/include.cmake")

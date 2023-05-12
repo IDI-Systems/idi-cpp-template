@@ -11,18 +11,18 @@
 # header file titled "platform_config.h"
 
 # Set this to the name of the project. This will be the resultant binary name.
-set(IDI_PROJECT_NAME "template_project")
+set(IDICMAKE_PROJECT_NAME "template_project")
 
 # Set this to be the vendor namespace
-set(IDI_VENDOR_NAMESPACE "idi")
+set(IDICMAKE_VENDOR_NAMESPACE "idi")
 
 # Set this to be the primary namespace within the vendor namespace
-set(IDI_APP_NAMESPACE "app")
+set(IDICMAKE_APP_NAMESPACE "app")
 
-# If IDI_IS_LIBRARY is set to true the project will be built as a library.
-set(IDI_IS_LIBRARY true)
+# If IDICMAKE_IS_LIBRARY is set to true the project will be built as a library.
+set(IDICMAKE_IS_LIBRARY true)
 
-# If IDI_IS_SHARED is set to true then the project will build as a shared library.
+# If IDICMAKE_IS_SHARED is set to true then the project will build as a shared library.
 # If it is set to false it will build as a static library. This reequires
-# IDI_IS_LIBRARY being set to true
-set(IDI_IS_SHARED false)
+# IDICMAKE_IS_LIBRARY being set to true
+set(IDICMAKE_IS_SHARED false)

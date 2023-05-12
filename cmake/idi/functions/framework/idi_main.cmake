@@ -8,6 +8,6 @@
 
 macro(idi_main)
     include("${CMAKE_CURRENT_LIST_DIR}/objects.cmake")
-    target_include_directories("${IDI_CORE}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
+    target_include_directories("${IDICMAKE_CORE}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
     include("${CMAKE_CURRENT_LIST_DIR}/tests/tests.cmake")
 endmacro()

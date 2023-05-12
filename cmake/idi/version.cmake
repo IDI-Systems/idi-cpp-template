@@ -10,18 +10,18 @@
 # Follow https://semver.org/ rules!
 
 # Major version is required to change if there is API breaking changes!
-set(IDI_CPP_FRAMEWORK_VERSION_MAJOR 3)
+set(IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR 3)
 
 # Minor increments on backwards compat updates!
-set(IDI_CPP_FRAMEWORK_VERSION_MINOR 0)
+set(IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR 0)
 
 # Hot fixes, which should be rare in this case.
-set(IDI_CPP_FRAMEWORK_VERSION_HOTFIX 0)
+set(IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX 0)
 
 # The following are version numbers for the ideally static CMakeList.txt files in the root
 # and src folders. If they are changed this SHALL induce a framework major version update
 # as well, since it means that the framework itself is no longer a unitary update, but requires
 # actions outside of the cmake folder in root.
-set(IDI_ROOT_REQ_CML_V 2)
-set(IDI_SRC_REQ_CML_V 1)
-set(IDI_BASE_REQ_CML_V 1)
+set(IDICMAKE_ROOT_REQ_CML_V 2)
+set(IDICMAKE_SRC_REQ_CML_V 1)
+set(IDICMAKE_BASE_REQ_CML_V 1)

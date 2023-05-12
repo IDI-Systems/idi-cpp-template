@@ -18,11 +18,11 @@ function(idi_platform_config variable type)
         endif()
     endif()
 
-    set(PLATFORM_CONFIG ${${IDI_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT})
+    set(PLATFORM_CONFIG ${${IDICMAKE_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT})
 
     if (NOT HAS_VAR)
         string(APPEND PLATFORM_CONFIG "// #define ${variable}\n\n")
-        set("${IDI_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT" ${PLATFORM_CONFIG} PARENT_SCOPE)
+        set("${IDICMAKE_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT" ${PLATFORM_CONFIG} PARENT_SCOPE)
         return()
     endif()
 
@@ -42,5 +42,5 @@ function(idi_platform_config variable type)
         message(FATAL_ERROR "The platform configuration type: ${type} is not valid.")
     endif()
 
-    set("${IDI_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT" ${PLATFORM_CONFIG} PARENT_SCOPE)
+    set("${IDICMAKE_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT" ${PLATFORM_CONFIG} PARENT_SCOPE)
 endfunction()

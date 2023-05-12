@@ -9,16 +9,16 @@
 macro(idi_configure_common_includes)
 
     #configure_file(${PROJECT_SOURCE_DIR}/idi_version.h ${CMAKE_CURRENT_LIST_DIR}/__idi_version.out.h)
-    message( STATUS "Configured CI Branch Name: ${IDI_CI_GIT_BRANCH_NAME}")
-    add_custom_target("${IDI_PROJECT_NAME}_${__idi_version_full}_GetBuildInfo" COMMAND ${CMAKE_COMMAND}
+    message( STATUS "Configured CI Branch Name: ${IDICMAKE_CI_GIT_BRANCH_NAME}")
+    add_custom_target("${IDICMAKE_PROJECT_NAME}_${__idi_version_full}_GetBuildInfo" COMMAND ${CMAKE_COMMAND}
         -Dlocal_dir="${CMAKE_CURRENT_LIST_DIR}"
         -Doutput_dir="${CMAKE_CURRENT_LIST_DIR}"
-        -Duse_git_versioning="${IDI_USE_GIT_VERSIONING}"
-        -Duse_build_timestamps="${IDI_USE_BUILD_TIMESTAMPS}"
-        -Dgit_branch_name="${IDI_CI_GIT_BRANCH_NAME}"
+        -Duse_git_versioning="${IDICMAKE_USE_GIT_VERSIONING}"
+        -Duse_build_timestamps="${IDICMAKE_USE_BUILD_TIMESTAMPS}"
+        -Dgit_branch_name="${IDICMAKE_CI_GIT_BRANCH_NAME}"
         -Didi_c_caps_namespace="${__idi_c_caps_namespace}"
         -P "${PROJECT_SOURCE_DIR}/cmake/idi/scripts/build-info.cmake"
         )
 
-    add_dependencies("${IDI_PROJECT_NAME}_base_${__idi_version_full}" "${IDI_PROJECT_NAME}_${__idi_version_full}_GetBuildInfo")
+    add_dependencies("${IDICMAKE_PROJECT_NAME}_base_${__idi_version_full}" "${IDICMAKE_PROJECT_NAME}_${__idi_version_full}_GetBuildInfo")
 endmacro()
