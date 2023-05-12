@@ -29,7 +29,7 @@ macro(idi_init)
     endif()
 
     include(${CMAKE_CURRENT_LIST_DIR}/version.cmake)
-    if(IDI_PROJECT_VERSION_MAJOR)
+    if(DEFINED IDI_PROJECT_VERSION_MAJOR)
         message(FATAL_ERROR "You may be using a version of the framework prior to version 4 and you have not updated all required files! Please make sure all cmake related files use the new cmake variable prefix IDICMAKE and not IDI")
     endif()
     set(__idi_version_major ${IDICMAKE_PROJECT_VERSION_MAJOR})
