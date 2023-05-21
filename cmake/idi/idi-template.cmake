@@ -27,6 +27,7 @@ if(NOT IDICMAKE_DID_UPDATE)
     endif()
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_sources.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_subdirectory.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_component_test.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_component.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_configure_file.cmake)
