@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
