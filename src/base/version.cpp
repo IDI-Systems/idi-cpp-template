@@ -7,49 +7,34 @@
 
 #include "@PROJECT_NAME@/version.hpp"
 #include "@PROJECT_NAME@/public/__build_info.out.h"
-#include "@PROJECT_NAME@/public/idi_version.h"
 
 #include <string>
 
 namespace @__idi_namespace@::base {
-
-    int get_version_major() {
-        return @__idi_c_caps_namespace@_VERSION_MAJOR;
-    }
-
-    int get_version_minor() {
-        return @__idi_c_caps_namespace@_VERSION_MINOR;
-    }
-
-    int get_version_patch() {
-        return @__idi_c_caps_namespace@_VERSION_PATCH;
-    }
-
-
     const std::string git_hash_short = @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
     const std::string git_hash_long = @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
     const std::string git_branch = @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
-    const bool git_is_dirty = (bool)@__idi_c_caps_namespace@_VERSION_GIT_DIRTY;
+    constexpr bool git_is_dirty = static_cast<bool>(@__idi_c_caps_namespace@_VERSION_GIT_DIRTY);
 
     const std::string build_timestamp = @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
 
-    const std::string& get_git_hash_short() {
+    const std::string& get_git_hash_short() noexcept {
         return git_hash_short;
     }
 
-    const std::string& get_git_hash_long() {
+    const std::string& get_git_hash_long() noexcept {
         return git_hash_long;
     }
 
-    const std::string& get_git_branch() {
+    const std::string& get_git_branch() noexcept {
         return git_branch;
     }
 
-    bool get_git_is_dirty() {
+    bool get_git_is_dirty() noexcept {
         return git_is_dirty;
     }
 
-    const std::string& get_build_timestamp() {
+    const std::string& get_build_timestamp() noexcept {
         return build_timestamp;
     }
 }
@@ -62,15 +47,15 @@ using namespace @__idi_namespace@;
 extern "C"
 {
 #endif
-int @__idi_c_namespace@_get_version_major() {
+int32_t @__idi_c_namespace@_get_version_major() {
     return base::get_version_major();
 }
 
-int @__idi_c_namespace@_get_version_minor() {
+int32_t @__idi_c_namespace@_get_version_minor() {
     return base::get_version_minor();
 }
 
-int @__idi_c_namespace@_get_version_patch() {
+int32_t @__idi_c_namespace@_get_version_patch() {
     return base::get_version_patch();
 }
 
