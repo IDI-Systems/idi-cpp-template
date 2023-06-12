@@ -17,21 +17,21 @@ namespace @__idi_namespace@ {
          *
          * @return int
          */
-        int get_version_major();
+        constexpr int get_version_major();
 
         /**
          * Get the minor version number of the current version of the project.
          *
          * @return int
          */
-        int get_version_minor();
+        constexpr int get_version_minor();
 
         /**
          * Get the patch version number of the current version of the project.
          *
          * @return int
          */
-        int get_version_patch();
+        constexpr int get_version_patch();
 
         /**
          * Get the short version of the git hash
@@ -60,7 +60,7 @@ namespace @__idi_namespace@ {
          * @return true If the git repo is dirty
          * @return false If the git repo is not dirty
          */
-        bool get_git_is_dirty();
+        constexpr bool get_git_is_dirty();
 
         /**
          * Gets the build timestamp in UTC time

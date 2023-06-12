@@ -12,49 +12,38 @@
 #include <string>
 
 namespace @__idi_namespace@::base {
-
-    int get_version_major() {
+    constexpr int get_version_major() {
         return @__idi_c_caps_namespace@_VERSION_MAJOR;
     }
 
-    int get_version_minor() {
+    constexpr int get_version_minor() {
         return @__idi_c_caps_namespace@_VERSION_MINOR;
     }
 
-    int get_version_patch() {
+    constexpr int get_version_patch() {
         return @__idi_c_caps_namespace@_VERSION_PATCH;
     }
 
-
-    constexpr std::string_view git_hash_short = @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
-    constexpr std::string_view git_hash_long = @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
-    constexpr std::string_view git_branch = @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
-    constexpr bool git_is_dirty = @__idi_c_caps_namespace@_VERSION_GIT_DIRTY == 1;
-
-    constexpr std::string_view build_timestamp = @__idi_c_caps_namespace@_BUILD_TIMESTAMP; //NOLINT
-
     std::string_view get_git_hash_short() {
-        return git_hash_short;
+        return @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
     }
 
     std::string_view get_git_hash_long() {
-        return git_hash_long;
+        return @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
     }
 
     std::string_view get_git_branch() {
-        return git_branch;
+        return @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
     }
 
-    bool get_git_is_dirty() {
-        return git_is_dirty;
+    constexpr bool get_git_is_dirty() {
+        return (@__idi_c_caps_namespace@_VERSION_GIT_DIRTY == 1);
     }
 
     std::string_view get_build_timestamp() {
-        return build_timestamp;
+        return @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
     }
 }
-
-
 
 using namespace @__idi_namespace@;
 
@@ -75,23 +64,23 @@ int @__idi_c_namespace@_get_version_patch() {
 }
 
 const char * @__idi_c_namespace@_get_git_hash_short() {
-    return base::git_hash_short.data();
+    return @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
 }
 
 const char * @__idi_c_namespace@_get_git_hash_long() {
-    return base::git_hash_long.data();
+    return @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
 }
 
 const char * @__idi_c_namespace@_get_git_branch() {
-    return base::git_branch.data();
+    return @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
 }
 
 bool @__idi_c_namespace@_get_git_is_dirty() {
-    return base::git_is_dirty;
+    return base::get_git_is_dirty();
 }
 
 const char * @__idi_c_namespace@_get_build_timestamp() {
-    return base::build_timestamp.data();
+    return @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
 }
 
 #ifdef __cplusplus
