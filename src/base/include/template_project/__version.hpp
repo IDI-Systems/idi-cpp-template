@@ -36,23 +36,23 @@ namespace @__idi_namespace@ {
         /**
          * Get the short version of the git hash
          *
-         * @return std::string
+         * @return std::string_view
          */
-        const std::string& get_git_hash_short();
+        std::string_view get_git_hash_short();
 
         /**
          * Get the long version of the git hash
          *
-         * @return std::string
+         * @return std::string_view
          */
-        const std::string& get_git_hash_long();
+        std::string_view get_git_hash_long();
 
         /**
          * Get the git branch at build time
          *
-         * @return std::string
+         * @return std::string_view
          */
-        const std::string& get_git_branch();
+        std::string_view get_git_branch();
 
         /**
          * Get if the git repo is dirty at build time.
@@ -67,8 +67,8 @@ namespace @__idi_namespace@ {
          *
          * Ex: 2022-02-04T02:04:14Z
          *
-         * @return std::string reference to timestamp.
+         * @return std::string_view reference to timestamp.
          */
-        const std::string& get_build_timestamp();
+        std::string_view get_build_timestamp();
     }
 }

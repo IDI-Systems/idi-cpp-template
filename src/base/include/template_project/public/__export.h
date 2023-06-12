@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
+// NOLINTBEGIN
 #pragma once
 
 #include "platform_config.h"
@@ -23,3 +24,4 @@
 #define @__idi_c_caps_namespace@_EXPORT
 
 #endif // @__idi_c_caps_namespace@_IS_SHARED
+// NOLINTEND

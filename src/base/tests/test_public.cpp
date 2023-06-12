@@ -4,6 +4,7 @@
  * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
+// NOLINTBEGIN
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include <catch2/catch.hpp>
 
@@ -28,3 +29,4 @@ TEST_CASE("Git information are correctly set and returned.", "[base]") {
         REQUIRE_THAT( @__idi_c_namespace@_get_build_timestamp(), Catch::Equals(@__idi_c_caps_namespace@_BUILD_TIMESTAMP) );
     }
 }
+// NOLINTEND

@@ -6,6 +6,8 @@
  * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
+// NOLINTBEGIN
 #pragma once
 
 ${${IDICMAKE_PROJECT_NAME}_PLATFORM_CONFIG_OUTPUT}
+// NOLINTEND
