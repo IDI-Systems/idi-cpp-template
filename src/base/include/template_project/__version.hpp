@@ -12,32 +12,34 @@
 #include "@PROJECT_NAME@/public/__build_info.out.h"
 #include "@PROJECT_NAME@/public/idi_version.h"
 
+#include <cstdint>
+
 namespace @__idi_namespace@ {
     namespace base {
         /**
          * Get the major version number of the current version of the project.
          *
-         * @return int
+         * @return int32_t
          */
-        inline consteval int get_version_major() {
+        inline consteval int32_t get_version_major() {
             return @__idi_c_caps_namespace@_VERSION_MAJOR;
         }
 
         /**
          * Get the minor version number of the current version of the project.
          *
-         * @return int
+         * @return int32_t
          */
-        inline consteval int get_version_minor() {
+        inline consteval int32_t get_version_minor() {
             return @__idi_c_caps_namespace@_VERSION_MINOR;
         }
 
         /**
          * Get the patch version number of the current version of the project.
          *
-         * @return int
+         * @return int32_t
          */
-        inline consteval int get_version_patch() {
+        inline consteval int32_t get_version_patch() {
             return @__idi_c_caps_namespace@_VERSION_PATCH;
         }
 

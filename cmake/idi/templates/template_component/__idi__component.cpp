@@ -11,11 +11,11 @@
 using namespace @__idi_namespace@;
 
 namespace @__idi_namespace@::@__idi_new_component_name@ {
-    int component_function() {
+    int32_t component_function() {
         return 42;
     }
 }
 
-int @__idi_new_component_name@_component_function() {
+int32_t @__idi_new_component_name@_component_function() {
     return @__idi_new_component_name@::component_function();
 }

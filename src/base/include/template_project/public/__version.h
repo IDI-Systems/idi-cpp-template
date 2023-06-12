@@ -12,6 +12,8 @@
 #include "@PROJECT_NAME@/public/__build_info.out.h"
 #include "@PROJECT_NAME@/public/idi_version.h"
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -19,25 +21,25 @@ extern "C"
 
 /**
  * Get the major version number of the current version of the project.
- * @return int
+ * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int @__idi_c_namespace@_get_version_major() {
+@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_major() {
     return @__idi_c_caps_namespace@_VERSION_MAJOR;
 }
 
 /**
  * Get the minor version number of the current version of the project.
- * @return int
+ * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int @__idi_c_namespace@_get_version_minor() {
+@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_minor() {
     return @__idi_c_caps_namespace@_VERSION_MINOR;
 }
 
 /**
  * Get the patch version number of the current version of the project.
- * @return int
+ * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int @__idi_c_namespace@_get_version_patch() {
+@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_patch() {
     return @__idi_c_caps_namespace@_VERSION_PATCH;
 }
 
