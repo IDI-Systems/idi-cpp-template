@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
+// NOLINTBEGIN
 #pragma once
 
 // Below here are defines configured via CMake
@@ -21,3 +22,4 @@
 #ifndef @__idi_c_caps_namespace@_VERSION_PATCH
 #define @__idi_c_caps_namespace@_VERSION_PATCH @__idi_version_patch@
 #endif
+// NOLINTEND

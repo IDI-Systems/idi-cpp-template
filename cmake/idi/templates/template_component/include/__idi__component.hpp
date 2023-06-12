@@ -8,10 +8,10 @@
 
 /**
 * Demonstration component function.
-* @return int
+* @return int32_t
 */
 namespace @__idi_namespace@ {
     namespace @__idi_new_component_name@ {
-        int component_function();
+        int32_t component_function();
     }
 }

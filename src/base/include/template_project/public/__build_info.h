@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2023 International Development & Integration Systems LLC
  *
  */
+// NOLINTBEGIN
 #pragma once
 
 // Below here are defines configured via CMake
@@ -29,3 +30,4 @@
 #ifndef @__idi_c_caps_namespace@_BUILD_TIMESTAMP
 #define @__idi_c_caps_namespace@_BUILD_TIMESTAMP "@__idi_build_timestamp@"
 #endif
+// NOLINTEND
