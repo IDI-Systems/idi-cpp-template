@@ -1,0 +1,2 @@
+# Disable all checks in the lib directory
+Checks:          '-*'

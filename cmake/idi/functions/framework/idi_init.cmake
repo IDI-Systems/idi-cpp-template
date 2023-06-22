@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2022 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2023 International Development & Integration Systems LLC
 #
 # Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
 #
@@ -36,6 +36,12 @@ macro(idi_init)
     set(__idi_version_minor ${IDICMAKE_PROJECT_VERSION_MINOR})
     set(__idi_version_patch ${IDICMAKE_PROJECT_VERSION_PATCH})
     set(__idi_version_full "${IDICMAKE_PROJECT_VERSION_MAJOR}.${IDICMAKE_PROJECT_VERSION_MINOR}.${IDICMAKE_PROJECT_VERSION_PATCH}")
+
+    if(NOT IDICMAKE_IS_SUBDIRECTORY)
+        idi_custom_build_types()
+    endif()
+
+    message(STATUS "----------- CONFIG TYPE: ${CMAKE_CONFIGURATION_TYPES}")
 
     if(NOT (TARGET "${IDICMAKE_PROJECT_NAME}_${__idi_version_full}"))
         idi_cmake_hook(pre-options)

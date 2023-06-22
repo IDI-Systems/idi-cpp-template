@@ -1,1 +1,65 @@
-Checks:          -*,cppcoreguidelines-*,cert-*,clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-security*,clang-analyzer-unix-*,performance-*,modernize-*,readability-*,hicpp-*,-modernize-use-trailing-return-type
+Checks:          -*,cppcoreguidelines-*,cert-*,clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-security*,clang-analyzer-unix-*,performance-*,modernize-*,readability-*,hicpp-*,-modernize-use-trailing-return-type,-modernize-macro-to-enum
+HeaderFilterRegex: "src/.*"
+CheckOptions:
+    - key: cppcoreguidelines-macro-usage.AllowedRegexp
+      value: "IDI*"
+
+# Style enforcement
+# Overall
+    - key: readability-identifier-length.IgnoredParameterNames
+      value: "^[abcnxyz]_$"
+    - key: readability-identifier-length.IgnoredLoopCounterNames
+      value: "^([ijk_]|it)$"
+    - key: readability-identifier-length.IgnoredVariableNames
+      value: "^it$"
+    - key: readability-identifier-naming.GetConfigPerFile
+      value: true
+    - key: readability-identifier-naming.IgnoreMainLikeFunctions
+      value: true
+# Macro Naming Rules
+    - key: readability-identifier-naming.MacroDefinitionCase
+      value: "UPPER_CASE"
+# Global Constant Naming Rules
+    - key: readability-identifier-naming.GlobalConstantCase
+      value: "UPPER_CASE"
+# Namespace Naming Rules
+    - key: readability-identifier-naming.NamespaceCase
+      value: "lower_case"
+# Template Naming Rules
+    - key: readability-identifier-naming.ClassCase
+      value: "CamelCase"
+# Class Naming Rules
+    - key: readability-identifier-naming.ClassCase
+      value: "CamelCase"
+    # Class Members (aka statics)
+    - key: readability-identifier-naming.ClassMemberCase
+      value: "lower_case"
+    - key: readability-identifier-naming.ClassMemberIgnoredRegexp
+      value: "_.[a-z0-9_]+"
+    - key: readability-identifier-naming.ClassMethodCase
+      value: "lower_case"
+    - key: readability-identifier-naming.PrivateClassMemberPrefix
+      value: "_"
+    # Methods / Members (aka instance class methods/members)
+    - key: readability-identifier-naming.MemberCase
+      value: "lower_case"
+    - key: readability-identifier-naming.MethodCase
+      value: "lower_case"
+    - key: readability-identifier-naming.PrivateMemberPrefix
+      value: "_"
+    - key: readability-identifier-naming.ProtectedMemberPrefix
+      value: "_"
+    - key: readability-identifier-naming.PrivateMethodPrefix
+      value: "_"
+    - key: readability-identifier-naming.ProtectedMethodPrefix
+      value: "_"
+# Function Naming Rules
+    - key: readability-identifier-naming.FunctionCase
+      value: "lower_case"
+    - key: readability-identifier-naming.ParameterCase
+      value: "lower_case"
+    - key: readability-identifier-naming.ParameterSuffix
+      value: "_"
+# Local Variable Naming Rules
+    - key: readability-identifier-naming.LocalVariableCase
+      value: "lower_case"

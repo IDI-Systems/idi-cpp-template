@@ -1,7 +1,7 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * @copyright Copyright (c) 2022 International Development & Integration
+ * @copyright Copyright (c) 2023 International Development & Integration
  *
  * Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
  *

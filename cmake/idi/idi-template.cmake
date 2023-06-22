@@ -1,7 +1,7 @@
 #
 # @author Cliff Foster (Nou) <cliff@idi-systems.com>
 #
-# @copyright Copyright (c) 2022 International Development & Integration Systems LLC
+# @copyright Copyright (c) 2023 International Development & Integration Systems LLC
 #
 # Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
 #
@@ -26,6 +26,7 @@ if(NOT IDICMAKE_DID_UPDATE)
         "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
     endif()
 
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_custom_build_type.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_sources.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_subdirectory.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_component_test.cmake)
@@ -37,6 +38,7 @@ if(NOT IDICMAKE_DID_UPDATE)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/misc.cmake)
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_configure_base_includes.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_custom_build_types.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_init.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_load_platform_config.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_main.cmake)
