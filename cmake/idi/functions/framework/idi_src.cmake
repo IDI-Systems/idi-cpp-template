@@ -12,9 +12,7 @@ macro(idi_src)
     #####################################################################
     # CORE LIBRARY                                                      #
     #####################################################################
-    set(IDICMAKE_CORE "${IDICMAKE_PROJECT_NAME}_${__idi_version_full}")
-    # backwards compat, since CORE is always the main target
-    set(IDICMAKE_MAIN_TARGET ${IDICMAKE_CORE})
+    set(IDICMAKE_CORE "${IDICMAKE_PROJECT_NAME}_core")
 
     if(IDICMAKE_IS_LIBRARY AND IDICMAKE_IS_SHARED)
         set(IDICMAKE_SHARED_NAME ${IDICMAKE_CORE})
