@@ -8,6 +8,7 @@
 
 macro(idi_src)
     include(CMakePrintHelpers)
+    init_code_coverage()
     add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
     #####################################################################
     # CORE LIBRARY                                                      #

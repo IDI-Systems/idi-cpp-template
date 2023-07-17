@@ -9,5 +9,5 @@
 
 set(IDICMAKE_MSVC_PRIVATE_COMPILE_OPTIONS /W4 /WX /Zc:__cplusplus /MP /std:c++latest)
 set(IDICMAKE_MSVC_PRIVATE_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
-set(IDICMAKE_GNU_PRIVATE_COMPILE_OPTIONS -Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions)
+set(IDICMAKE_GNU_PRIVATE_COMPILE_OPTIONS -Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions -fprofile-instr-generate -fcoverage-mapping)
 set(IDICMAKE_PRIVATE_COMPILE_FEATURES cxx_std_20)

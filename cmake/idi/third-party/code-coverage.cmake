@@ -74,116 +74,117 @@
 # ~~~
 
 # Options
-option(
-  CODE_COVERAGE
-  "Builds targets with code coverage instrumentation. (Requires GCC or Clang)"
-  OFF)
+macro(init_code_coverage)
+    option(
+    CODE_COVERAGE
+    "Builds targets with code coverage instrumentation. (Requires GCC or Clang)"
+    OFF)
 
-# Programs
-find_program(LLVM_COV_PATH NAMES llvm-cov llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10)
-find_program(LLVM_PROFDATA_PATH NAMES llvm-profdata llvm-profdata-13 llvm-profdata-12 llvm-profdata-11 llvm-profdata-10)
-find_program(LCOV_PATH lcov)
-find_program(GENHTML_PATH genhtml)
-# Hide behind the 'advanced' mode flag for GUI/ccmake
-mark_as_advanced(FORCE LLVM_COV_PATH LLVM_PROFDATA_PATH LCOV_PATH GENHTML_PATH)
+    # Programs
+    find_program(LLVM_COV_PATH NAMES llvm-cov llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10)
+    find_program(LLVM_PROFDATA_PATH NAMES llvm-profdata llvm-profdata-13 llvm-profdata-12 llvm-profdata-11 llvm-profdata-10)
+    find_program(LCOV_PATH lcov)
+    find_program(GENHTML_PATH genhtml)
+    # Hide behind the 'advanced' mode flag for GUI/ccmake
+    mark_as_advanced(FORCE LLVM_COV_PATH LLVM_PROFDATA_PATH LCOV_PATH GENHTML_PATH)
 
-# Variables
-set(CMAKE_COVERAGE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ccov)
-set_property(GLOBAL PROPERTY JOB_POOLS ccov_serial_pool=1)
+    # Variables
+    set(CMAKE_COVERAGE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ccov)
+    set_property(GLOBAL PROPERTY JOB_POOLS ccov_serial_pool=1)
 
-# Common initialization/checks
-if(CODE_COVERAGE AND NOT CODE_COVERAGE_ADDED)
-  set(CODE_COVERAGE_ADDED ON)
+    # Common initialization/checks
+    if(CODE_COVERAGE AND NOT CODE_COVERAGE_ADDED)
+    set(CODE_COVERAGE_ADDED ON)
 
-  # Common Targets
-  add_custom_target(
-    ccov-preprocessing
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-            ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}
-    DEPENDS ccov-clean)
-
-  if(CMAKE_C_COMPILER_ID MATCHES "(Apple)?[Cc]lang"
-     OR CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?[Cc]lang")
-    # Messages
-    message(STATUS "Building with llvm Code Coverage Tools")
-
-    if(NOT LLVM_COV_PATH)
-      message(FATAL_ERROR "llvm-cov not found! Aborting.")
-    else()
-      # Version number checking for 'EXCLUDE' compatibility
-      message(STATUS "Using ${LLVM_COV_PATH} for llvm-cov")
-      execute_process(COMMAND ${LLVM_COV_PATH} --version
-                      OUTPUT_VARIABLE LLVM_COV_VERSION_CALL_OUTPUT)
-      string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" LLVM_COV_VERSION
-                   ${LLVM_COV_VERSION_CALL_OUTPUT})
-
-      if(LLVM_COV_VERSION VERSION_LESS "7.0.0")
-        message(
-          WARNING
-            "target_code_coverage()/add_code_coverage_all_targets() 'EXCLUDE' option only available on llvm-cov >= 7.0.0"
-        )
-      endif()
-    endif()
-
-    # Targets
-    if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
-      add_custom_target(
-        ccov-clean
-        COMMAND ${CMAKE_COMMAND} -E remove -f
-                ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/binaries.list
-        COMMAND ${CMAKE_COMMAND} -E remove -f
-                ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/profraw.list)
-    else()
-      add_custom_target(
-        ccov-clean
-        COMMAND ${CMAKE_COMMAND} -E rm -f
-                ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/binaries.list
-        COMMAND ${CMAKE_COMMAND} -E rm -f
-                ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/profraw.list)
-    endif()
-
-    # Used to get the shared object file list before doing the main all-
-    # processing
+    # Common Targets
     add_custom_target(
-      ccov-libs
-      COMMAND ;
-      COMMENT "libs ready for coverage report.")
+        ccov-preprocessing
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+                ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}
+        DEPENDS ccov-clean)
 
-  elseif(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES
-                                              "GNU")
-    # Messages
-    message(STATUS "Building with lcov Code Coverage Tools")
+    if(CMAKE_C_COMPILER_ID MATCHES "(Apple)?[Cc]lang"
+        OR CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?[Cc]lang")
+        # Messages
+        message(STATUS "Building with llvm Code Coverage Tools")
 
-    if(CMAKE_BUILD_TYPE)
-      string(TOUPPER ${CMAKE_BUILD_TYPE} upper_build_type)
-      if(NOT ${upper_build_type} STREQUAL "DEBUG")
+        if(NOT LLVM_COV_PATH)
+        message(FATAL_ERROR "llvm-cov not found! Aborting.")
+        else()
+        # Version number checking for 'EXCLUDE' compatibility
+        message(STATUS "Using ${LLVM_COV_PATH} for llvm-cov")
+        execute_process(COMMAND ${LLVM_COV_PATH} --version
+                        OUTPUT_VARIABLE LLVM_COV_VERSION_CALL_OUTPUT)
+        string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" LLVM_COV_VERSION
+                    ${LLVM_COV_VERSION_CALL_OUTPUT})
+
+        if(LLVM_COV_VERSION VERSION_LESS "7.0.0")
+            message(
+            WARNING
+                "target_code_coverage()/add_code_coverage_all_targets() 'EXCLUDE' option only available on llvm-cov >= 7.0.0"
+            )
+        endif()
+        endif()
+
+        # Targets
+        if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
+        add_custom_target(
+            ccov-clean
+            COMMAND ${CMAKE_COMMAND} -E remove -f
+                    ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/binaries.list
+            COMMAND ${CMAKE_COMMAND} -E remove -f
+                    ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/profraw.list)
+        else()
+        add_custom_target(
+            ccov-clean
+            COMMAND ${CMAKE_COMMAND} -E rm -f
+                    ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/binaries.list
+            COMMAND ${CMAKE_COMMAND} -E rm -f
+                    ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/profraw.list)
+        endif()
+
+        # Used to get the shared object file list before doing the main all-
+        # processing
+        add_custom_target(
+        ccov-libs
+        COMMAND ;
+        COMMENT "libs ready for coverage report.")
+
+    elseif(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES
+                                                "GNU")
+        # Messages
+        message(STATUS "Building with lcov Code Coverage Tools")
+
+        if(CMAKE_BUILD_TYPE)
+        string(TOUPPER ${CMAKE_BUILD_TYPE} upper_build_type)
+        if(NOT ${upper_build_type} STREQUAL "DEBUG")
+            message(
+            WARNING
+                "Code coverage results with an optimized (non-Debug) build may be misleading"
+            )
+        endif()
+        else()
         message(
-          WARNING
+            WARNING
             "Code coverage results with an optimized (non-Debug) build may be misleading"
         )
-      endif()
+        endif()
+        if(NOT LCOV_PATH)
+        message(FATAL_ERROR "lcov not found! Aborting...")
+        endif()
+        if(NOT GENHTML_PATH)
+        message(FATAL_ERROR "genhtml not found! Aborting...")
+        endif()
+
+        # Targets
+        add_custom_target(ccov-clean COMMAND ${LCOV_PATH} --directory
+                                            ${CMAKE_BINARY_DIR} --zerocounters)
+
     else()
-      message(
-        WARNING
-          "Code coverage results with an optimized (non-Debug) build may be misleading"
-      )
+        message(FATAL_ERROR "Code coverage requires Clang or GCC. Aborting.")
     endif()
-    if(NOT LCOV_PATH)
-      message(FATAL_ERROR "lcov not found! Aborting...")
     endif()
-    if(NOT GENHTML_PATH)
-      message(FATAL_ERROR "genhtml not found! Aborting...")
-    endif()
-
-    # Targets
-    add_custom_target(ccov-clean COMMAND ${LCOV_PATH} --directory
-                                         ${CMAKE_BINARY_DIR} --zerocounters)
-
-  else()
-    message(FATAL_ERROR "Code coverage requires Clang or GCC. Aborting.")
-  endif()
-endif()
-
+endmacro()
 # Adds code coverage instrumentation to a library, or instrumentation/targets
 # for an executable target.
 # ~~~
