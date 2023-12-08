@@ -5,7 +5,7 @@
  *
  */
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
-#include "version.h"
+#include "@PROJECT_NAME@/public/version.h"
 
 #include <catch2/catch.hpp>
 
