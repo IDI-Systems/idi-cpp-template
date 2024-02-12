@@ -19,7 +19,7 @@ build-linux:
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script:
-    - apt-get install -y -qq jq
+    - apt-get update && apt-get install -y -qq jq
   script:
     - cmake --version && $CC --version && $CXX --version
     - mkdir -p build && cd build
