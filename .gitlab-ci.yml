@@ -15,7 +15,7 @@ build-linux:
     CONFIGS: '{ "exe": "platform_config.exe.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
   image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:$COMPILER
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-14|clang-18)$/))
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-14|clang-14)$/)) # clang-14 image has a bug with libc++13
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script:
