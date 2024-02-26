@@ -12,7 +12,7 @@ macro(idi_src)
     #####################################################################
     # CORE LIBRARY                                                      #
     #####################################################################
-    set(IDICMAKE_CORE "${IDICMAKE_PROJECT_NAME}_${__idi_version_full}")
+    set(IDICMAKE_CORE "${IDICMAKE_PROJECT_NAME}_core")
     # backwards compat, since CORE is always the main target
     set(IDICMAKE_MAIN_TARGET ${IDICMAKE_CORE})
 

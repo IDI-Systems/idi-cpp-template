@@ -37,7 +37,7 @@ macro(idi_init)
     set(__idi_version_patch ${IDICMAKE_PROJECT_VERSION_PATCH})
     set(__idi_version_full "${IDICMAKE_PROJECT_VERSION_MAJOR}.${IDICMAKE_PROJECT_VERSION_MINOR}.${IDICMAKE_PROJECT_VERSION_PATCH}")
 
-    if(NOT (TARGET "${IDICMAKE_PROJECT_NAME}_${__idi_version_full}"))
+    if(NOT (TARGET "${IDICMAKE_PROJECT_NAME}"))
         idi_cmake_hook(pre-options)
 
         # backwards compat with old configuration for naming
