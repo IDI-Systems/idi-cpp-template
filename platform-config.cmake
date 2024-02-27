@@ -25,4 +25,4 @@ set(IDICMAKE_IS_LIBRARY true)
 # If IDICMAKE_IS_SHARED is set to true then the project will build as a shared library.
 # If it is set to false it will build as a static library. This requires
 # IDICMAKE_IS_LIBRARY being set to true
-set(IDICMAKE_IS_SHARED true)
+set(IDICMAKE_IS_SHARED false)

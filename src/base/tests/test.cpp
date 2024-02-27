@@ -23,10 +23,10 @@ TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
 }
 
 TEST_CASE("Git information are correctly set and returned.", "[base]") {
-    REQUIRE(@__idi_namespace@::base::get_git_hash_short() == @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT);
-    REQUIRE(@__idi_namespace@::base::get_git_hash_long() == @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL);
-    REQUIRE(@__idi_namespace@::base::get_git_branch() == @__idi_c_caps_namespace@_VERSION_GIT_BRANCH);
-    REQUIRE(@__idi_namespace@::base::get_git_is_dirty() == @__idi_c_caps_namespace@_VERSION_GIT_DIRTY);
-    REQUIRE(@__idi_namespace@::base::get_build_timestamp() == @__idi_c_caps_namespace@_BUILD_TIMESTAMP);
+    REQUIRE(@__idi_namespace@::base::get_git_hash_short().compare(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT) == 0);
+    REQUIRE(@__idi_namespace@::base::get_git_hash_long().compare(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL) == 0);
+    REQUIRE(@__idi_namespace@::base::get_git_branch().compare(@__idi_c_caps_namespace@_VERSION_GIT_BRANCH) == 0);
+    REQUIRE(@__idi_namespace@::base::get_git_is_dirty() == static_cast<bool>(@__idi_c_caps_namespace@_VERSION_GIT_DIRTY));
+    REQUIRE(@__idi_namespace@::base::get_build_timestamp().compare(@__idi_c_caps_namespace@_BUILD_TIMESTAMP) == 0);
 }
 // NOLINTEND

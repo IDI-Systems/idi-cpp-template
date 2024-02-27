@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 #include "public/version.h"
 #include "@PROJECT_NAME@/public/__build_info.out.h"
