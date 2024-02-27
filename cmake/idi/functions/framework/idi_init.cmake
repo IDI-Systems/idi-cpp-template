@@ -8,6 +8,7 @@
 
 macro(idi_init)
     include(CTest)
+    include(FetchContent)
 
     idi_cmake_hook(pre-init)
 
@@ -122,20 +123,20 @@ macro(idi_init)
         # Define a nice short hand for 3rd party external library folders
         set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 
+        FetchContent_Declare(Catch2
+        GIT_REPOSITORY    https://github.com/catchorg/Catch2.git
+        GIT_TAG           v3.5.2
+        )
+        FetchContent_MakeAvailable(Catch2)
+
         # Add the main source folder.
         idi_cmake_hook(pre-source)
         add_subdirectory("src")
         idi_cmake_hook(post-source)
 
-        # Catch is included by default as a submodule
-        if(NOT TARGET Catch2)
-            add_subdirectory(lib/Catch2)
-        endif()
-
         if(IDICMAKE_BUILD_DEMOS)
             add_subdirectory("demo")
         endif()
-
 
         include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 

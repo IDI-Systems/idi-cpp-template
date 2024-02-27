@@ -6,7 +6,9 @@
  */
 // NOLINTBEGIN
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
 
 #include "@PROJECT_NAME@/public/idi_version.h"
 #include "@PROJECT_NAME@/public/version.h"
@@ -22,11 +24,11 @@ TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
 
 TEST_CASE("Git information are correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
-        REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_short(), Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT) );
-        REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_long(), Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL) );
-        REQUIRE_THAT( @__idi_c_namespace@_get_git_branch(), Catch::Equals(@__idi_c_caps_namespace@_VERSION_GIT_BRANCH) );
+        REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_short(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT) );
+        REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_long(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL) );
+        REQUIRE_THAT( @__idi_c_namespace@_get_git_branch(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_VERSION_GIT_BRANCH) );
         REQUIRE( @__idi_c_namespace@_get_git_is_dirty() == static_cast<bool>(@__idi_c_caps_namespace@_VERSION_GIT_DIRTY) );
-        REQUIRE_THAT( @__idi_c_namespace@_get_build_timestamp(), Catch::Equals(@__idi_c_caps_namespace@_BUILD_TIMESTAMP) );
+        REQUIRE_THAT( @__idi_c_namespace@_get_build_timestamp(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_BUILD_TIMESTAMP) );
     }
 }
 // NOLINTEND

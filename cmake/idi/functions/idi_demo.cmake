@@ -12,8 +12,10 @@ function(__idi_demo demo_name demo_file)
     add_executable("${CURRENT_DEMO}" ${demo_file})
     idi_target_compile_settings("${CURRENT_DEMO}")
 
-    target_include_directories("${CURRENT_DEMO}" SYSTEM PRIVATE
-        "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
+    # target_include_directories("${CURRENT_DEMO}" SYSTEM PRIVATE
+    #     "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
+
+    target_link_libraries("${CURRENT_DEMO}" PRIVATE Catch2::Catch2WithMain)
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)

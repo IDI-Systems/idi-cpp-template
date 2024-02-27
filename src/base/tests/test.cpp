@@ -6,11 +6,13 @@
  */
 // NOLINTBEGIN
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
+
 #include "@PROJECT_NAME@/public/idi_version.h"
 #include "@PROJECT_NAME@/public/__build_info.out.h"
 #include "@PROJECT_NAME@/version.hpp"
-
-#include <catch2/catch.hpp>
 
 TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
