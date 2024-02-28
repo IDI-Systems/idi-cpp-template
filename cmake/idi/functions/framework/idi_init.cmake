@@ -123,13 +123,7 @@ macro(idi_init)
         # Define a nice short hand for 3rd party external library folders
         set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
 
-        FetchContent_Declare(Catch2
-        GIT_REPOSITORY    https://github.com/catchorg/Catch2.git
-        GIT_TAG           v3.5.2
-        EXCLUDE_FROM_ALL
-        SYSTEM
-        )
-        FetchContent_MakeAvailable(Catch2)
+        idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.5.2)
 
         # Add the main source folder.
         idi_cmake_hook(pre-source)

@@ -26,6 +26,7 @@ if(NOT IDICMAKE_DID_UPDATE)
         "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
     endif()
 
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_dependency.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_sources.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_subdirectory.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_component_test.cmake)
