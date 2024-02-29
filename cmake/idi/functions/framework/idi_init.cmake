@@ -122,6 +122,7 @@ macro(idi_init)
 
         # Define a nice short hand for 3rd party external library folders
         set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
+        set(IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/.third-party")
 
         idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.5.2)
 
