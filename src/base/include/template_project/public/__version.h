@@ -23,7 +23,7 @@ extern "C"
  * Get the major version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_major() {
+inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_major() {
     return @__idi_c_caps_namespace@_VERSION_MAJOR;
 }
 
@@ -31,7 +31,7 @@ extern "C"
  * Get the minor version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_minor() {
+inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_minor() {
     return @__idi_c_caps_namespace@_VERSION_MINOR;
 }
 
@@ -39,7 +39,7 @@ extern "C"
  * Get the patch version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_patch() {
+inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_patch() {
     return @__idi_c_caps_namespace@_VERSION_PATCH;
 }
 
@@ -48,7 +48,7 @@ extern "C"
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_short() {
+inline @__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_short() {
     return @__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT;
 }
 
@@ -57,7 +57,7 @@ extern "C"
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_long() {
+inline @__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_long() {
     return @__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL;
 }
 
@@ -67,7 +67,7 @@ extern "C"
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_branch() {
+inline @__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_branch() {
     return @__idi_c_caps_namespace@_VERSION_GIT_BRANCH;
 }
 
@@ -77,7 +77,7 @@ extern "C"
  * @return true If the git repo is dirty
  * @return false If the git repo is not dirty
  */
-@__idi_c_caps_namespace@_EXPORT bool @__idi_c_namespace@_get_git_is_dirty() {
+inline @__idi_c_caps_namespace@_EXPORT bool @__idi_c_namespace@_get_git_is_dirty() {
     return (@__idi_c_caps_namespace@_VERSION_GIT_DIRTY == 1);
 }
 
@@ -88,7 +88,7 @@ extern "C"
  *
  * @return std::string reference to timestamp.
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_build_timestamp() {
+inline @__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_build_timestamp() {
     return @__idi_c_caps_namespace@_BUILD_TIMESTAMP;
 }
 
