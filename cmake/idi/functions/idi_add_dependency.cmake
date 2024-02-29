@@ -180,7 +180,11 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
         cpm_parse_option("${OPTION}")
         set(${OPTION_KEY} "${OPTION_VALUE}")
     endforeach()
-    add_subdirectory(${IDI_DEP_SOURCE_DIR} ${IDI_DEP_BINARY_DIR} EXCLUDE_FROM_ALL SYSTEM)
+    if (IDI_DEP_THIRD_PARTY)
+        add_subdirectory(${IDI_DEP_SOURCE_DIR} ${IDI_DEP_BINARY_DIR} EXCLUDE_FROM_ALL SYSTEM)
+    else()
+        add_subdirectory(${IDI_DEP_SOURCE_DIR} ${IDI_DEP_BINARY_DIR})
+    endif()
     message(STATUS "Added dependency ${IDI_DEP_NAME}")
 endfunction()
 
