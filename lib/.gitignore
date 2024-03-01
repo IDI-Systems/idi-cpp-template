@@ -8,6 +8,3 @@
 # AND BE VERY ANNOYING
 # If you do, you'll need to go through and do `git rm --cached path/to/dependency`
 # for each one!
-
-# add subfolders that you need to track as such
-#!some-folder/*
