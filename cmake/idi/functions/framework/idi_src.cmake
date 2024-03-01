@@ -16,14 +16,10 @@ macro(idi_src)
     # backwards compat, since CORE is always the main target
     set(IDICMAKE_MAIN_TARGET ${IDICMAKE_CORE})
 
-    if(IDICMAKE_IS_LIBRARY AND IDICMAKE_IS_SHARED)
-        set(IDICMAKE_SHARED_NAME ${IDICMAKE_CORE})
-        add_library("${IDICMAKE_CORE}" SHARED "")
-        message(STATUS "------ Added SHARED Library ${IDICMAKE_CORE}")
-    else()
-        add_library("${IDICMAKE_CORE}" STATIC "")
-        message(STATUS "------ Added STATIC Library ${IDICMAKE_CORE}")
-    endif()
+
+    add_library("${IDICMAKE_CORE}" STATIC "")
+    message(STATUS "------ Added STATIC Library ${IDICMAKE_CORE}")
+
 
     set(IDICMAKE_CORE ${IDICMAKE_CORE} PARENT_SCOPE)
     idi_target_compile_settings("${IDICMAKE_CORE}")
@@ -62,10 +58,15 @@ macro(idi_src)
     else()
         if(IDICMAKE_IS_SHARED)
             add_library("${IDICMAKE_PROJECT_NAME}" SHARED "")
+            target_link_libraries("${IDICMAKE_PROJECT_NAME}" PUBLIC "${IDICMAKE_CORE}")
             set(IDICMAKE_SHARED_NAME ${IDICMAKE_PROJECT_NAME})
 
             set_target_properties("${IDICMAKE_SHARED_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
             set_target_properties("${IDICMAKE_SHARED_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
+
+            if (MSVC)
+                set_target_properties(${IDICMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:${IDICMAKE_CORE}")
+            endif()
 
             target_sources(
                 "${IDICMAKE_SHARED_NAME}"

@@ -20,9 +20,9 @@ set(IDICMAKE_VENDOR_NAMESPACE "idi")
 set(IDICMAKE_APP_NAMESPACE "app")
 
 # If IDICMAKE_IS_LIBRARY is set to true the project will be built as a library.
-set(IDICMAKE_IS_LIBRARY false)
+set(IDICMAKE_IS_LIBRARY true)
 
 # If IDICMAKE_IS_SHARED is set to true then the project will build as a shared library.
 # If it is set to false it will build as a static library. This requires
 # IDICMAKE_IS_LIBRARY being set to true
-set(IDICMAKE_IS_SHARED false)
+set(IDICMAKE_IS_SHARED true)
