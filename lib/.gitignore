@@ -3,7 +3,7 @@
 # a subdirectory for commiting, add it as an exception _after_ the */* rule.
 
 # DO NOT REMOVE THIS LINE, ESPECIALLY DO NOT REMOVE IT WHILE COMMITTING
-*/*
+*/**
 # IF THIS LINE IS REMOVED ALL DEPENDENCIES WILL BECOME PHANTOM SUBMODULES
 # AND BE VERY ANNOYING
 
