@@ -2,7 +2,7 @@
 # All subdirectories are ignored by default. If you specifically want to enable
 # a subdirectory for commiting, add it as an exception _after_ the */** rule.
 
-# DO NOT REMOVE THIS LINE, ESPECIALLY DO NOT REMOVE IT WHILE COMMITTING
+# DO NOT REMOVE THESE LINES, ESPECIALLY DO NOT REMOVE IT WHILE COMMITTING
 .third-party/
 first-party/
 # IF THIS LINE IS REMOVED ALL DEPENDENCIES WILL BECOME PHANTOM SUBMODULES
