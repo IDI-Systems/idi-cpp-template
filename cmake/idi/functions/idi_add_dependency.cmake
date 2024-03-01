@@ -116,7 +116,7 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
             set(IDI_DO_POPULATE true)
         endif()
     else()
-        set(IDI_DEP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/lib/${IDI_DEP_NAME}")
+        set(IDI_DEP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/lib/first-party/${IDI_DEP_NAME}")
         set(IDI_DEP_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/${IDI_DEP_NAME_LOWER}")
         if(EXISTS ${IDI_DEP_SOURCE_DIR} AND EXISTS "${IDI_DEP_SOURCE_DIR}/.git")
 
