@@ -21,7 +21,7 @@ namespace @__idi_namespace@::base {
      *
      * @return int32_t
      */
-    inline consteval int32_t get_version_major() {
+    inline consteval uint32_t get_version_major() {
         return @__idi_c_caps_namespace@_VERSION_MAJOR;
     }
 
@@ -30,7 +30,7 @@ namespace @__idi_namespace@::base {
      *
      * @return int32_t
      */
-    inline consteval int32_t get_version_minor() {
+    inline consteval uint32_t get_version_minor() {
         return @__idi_c_caps_namespace@_VERSION_MINOR;
     }
 
@@ -39,7 +39,7 @@ namespace @__idi_namespace@::base {
      *
      * @return int32_t
      */
-    inline consteval int32_t get_version_patch() {
+    inline consteval uint32_t get_version_patch() {
         return @__idi_c_caps_namespace@_VERSION_PATCH;
     }
 

@@ -11,7 +11,7 @@
 
 #include "platform_config.h"
 
-#ifdef @__idi_c_caps_namespace@_IS_SHARED
+#ifdef @__idi_c_caps_namespace@_IS_LIBRARY
 
 #ifdef _WIN32
 #define @__idi_c_caps_namespace@_EXPORT __declspec(dllexport)
@@ -23,5 +23,5 @@
 
 #define @__idi_c_caps_namespace@_EXPORT
 
-#endif // @__idi_c_caps_namespace@_IS_SHARED
+#endif // @__idi_c_caps_namespace@_IS_LIBRARY
 // NOLINTEND

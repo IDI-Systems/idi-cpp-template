@@ -23,7 +23,7 @@ extern "C"
  * Get the major version number of the current version of the project.
  * @return int32_t
  */
-inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_major() {
+inline @__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_major() {
     return @__idi_c_caps_namespace@_VERSION_MAJOR;
 }
 
@@ -31,7 +31,7 @@ inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_m
  * Get the minor version number of the current version of the project.
  * @return int32_t
  */
-inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_minor() {
+inline @__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_minor() {
     return @__idi_c_caps_namespace@_VERSION_MINOR;
 }
 
@@ -39,7 +39,7 @@ inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_m
  * Get the patch version number of the current version of the project.
  * @return int32_t
  */
-inline @__idi_c_caps_namespace@_EXPORT int32_t @__idi_c_namespace@_get_version_patch() {
+inline @__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_patch() {
     return @__idi_c_caps_namespace@_VERSION_PATCH;
 }
 
