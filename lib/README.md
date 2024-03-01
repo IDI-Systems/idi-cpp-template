@@ -24,7 +24,7 @@ idi_add_third_party_dependency(
 )
 ```
 
-Both functions are identical in signature, but with slight differences in that `idi_add_third_party_dependency()` will place dependencies in `lib/.third-party` instead of directly in `lib/` and `idi_add_first_party_dependency()` will _not_ replace files if the configuration is wiped out, but warn instead about untracked/modified files and mismatching git checkout information.
+Both functions are identical in signature, but with slight differences in that `idi_add_third_party_dependency()` will place dependencies in `lib/third-party` instead of directly in `lib/first-party` and `idi_add_first_party_dependency()` will _not_ replace files if the configuration is wiped out, but warn instead about untracked/modified files and mismatching git checkout information.
 
 The value of `<name>` should be the same as the underlying CMake `project()` name to make sure that if multiple dependencies use it, it has a higher chance of matching and preventing duplicate dependencies.
 
@@ -37,7 +37,7 @@ The value of `<name>` should be the same as the underlying CMake `project()` nam
 
 ### CMake Variables
 
-`IDICMAKE_EXTERNAL_LIB_DIR` points to the root library folder
+`IDICMAKE_EXTERNAL_LIB_DIR` points to the first-party library folder
 
 `IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR` points to the third party library directory.
 
