@@ -58,15 +58,11 @@ macro(idi_src)
     else()
         if(IDICMAKE_IS_SHARED)
             add_library("${IDICMAKE_PROJECT_NAME}" SHARED "")
-            target_link_libraries("${IDICMAKE_PROJECT_NAME}" PUBLIC "${IDICMAKE_CORE}")
+            target_link_libraries("${IDICMAKE_PROJECT_NAME}" PUBLIC "$<LINK_LIBRARY:WHOLE_ARCHIVE,${IDICMAKE_CORE}>")
             set(IDICMAKE_SHARED_NAME ${IDICMAKE_PROJECT_NAME})
 
             set_target_properties("${IDICMAKE_SHARED_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
             set_target_properties("${IDICMAKE_SHARED_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
-
-            if (MSVC)
-                set_target_properties(${IDICMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:${IDICMAKE_CORE}")
-            endif()
 
             target_sources(
                 "${IDICMAKE_SHARED_NAME}"
