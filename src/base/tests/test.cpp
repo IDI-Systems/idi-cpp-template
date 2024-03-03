@@ -22,7 +22,7 @@ TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     }
 }
 
-TEST_CASE("Git information are correctly set and returned.", "[base]") {
+TEST_CASE("Git information is correctly set and returned.", "[base]") {
     REQUIRE(@__idi_namespace@::base::get_git_hash_short().compare(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT) == 0);
     REQUIRE(@__idi_namespace@::base::get_git_hash_long().compare(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL) == 0);
     REQUIRE(@__idi_namespace@::base::get_git_branch().compare(@__idi_c_caps_namespace@_VERSION_GIT_BRANCH) == 0);

@@ -22,7 +22,7 @@ TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
     }
 }
 
-TEST_CASE("Git information are correctly set and returned.", "[base]") {
+TEST_CASE("Git information is correctly set and returned.", "[base]") {
     SECTION("Internal API calls.") {
         REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_short(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_SHORT) );
         REQUIRE_THAT( @__idi_c_namespace@_get_git_hash_long(), Catch::Matchers::Equals(@__idi_c_caps_namespace@_VERSION_GIT_HASH_FULL) );
