@@ -62,3 +62,8 @@ target_include_directories(asio SYSTEM INTERFACE ${IDICMAKE_EXTERNAL_THIRD_PARTY
 # Git Submodules
 
 Use git submodules as you would in any other project. Do not place them in the first or third party folders used with the CMake dependency system as they will be ignored and possibly not tracked correctly by git.
+
+
+# Migration Considerations
+
+If moving from a previous submodule system, it is best to make sure that you go from a top-down approach to migrating. Make sure the root project is updated to accept CMake dependencies, then update any dependencies that may also be using this system.
