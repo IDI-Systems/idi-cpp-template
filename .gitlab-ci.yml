@@ -20,6 +20,8 @@ build-linux:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script:
     - apt-get update && apt-get install -y -qq jq
+    - git config --global credential.helper store
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
   script:
     - cmake --version && $CC --version && $CXX --version
     - mkdir -p build && cd build
