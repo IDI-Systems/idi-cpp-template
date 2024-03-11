@@ -71,6 +71,39 @@ function(idi_get_repo_information REPO_DIR)
             "${IDI_GET_REPO_BRANCH}"
             PARENT_SCOPE
         )
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} "branch" "--show-current" WORKING_DIRECTORY ${REPO_DIR} OUTPUT_VARIABLE IDI_TEST_IS_TRACKING_BRANCH)
+    if("${IDI_TEST_IS_TRACKING_BRANCH}" STREQUAL "")
+        set(IDI_REPO_IS_TRACKING_BRANCH
+                false
+                PARENT_SCOPE
+            )
+    else()
+        set(IDI_REPO_IS_TRACKING_BRANCH
+            true
+            PARENT_SCOPE
+        )
+    endif()
+    set(IDI_REPO_BRANCH_IS_AHEAD
+            false
+            PARENT_SCOPE
+        )
+    if(IDI_REPO_IS_TRACKING_BRANCH)
+        execute_process(COMMAND ${GIT_EXECUTABLE} "fetch" WORKING_DIRECTORY ${REPO_DIR} OUTPUT_VARIABLE JUNK)
+        execute_process(COMMAND ${GIT_EXECUTABLE} "status" "-sb" WORKING_DIRECTORY ${REPO_DIR} OUTPUT_VARIABLE IDI_TEST_IS_UP_TO_DATE)
+        string(REGEX MATCHALL "##.*\[behind [0-9]+\]$" IDI_TEST_BEHIND ${IDI_TEST_IS_UP_TO_DATE})
+        if (IDI_TEST_BEHIND)
+            set(IDI_REPO_BRANCH_IS_AHEAD
+                    true
+                    PARENT_SCOPE
+                )
+        else()
+            set(IDI_REPO_BRANCH_IS_AHEAD
+                false
+                PARENT_SCOPE
+            )
+        endif()
+    endif()
 endfunction()
 
 function(idi_commit_starts_with ACTUAL_SHA1 CHECK_SHA1)
@@ -104,11 +137,13 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
 
             idi_get_repo_information(${IDI_DEP_SOURCE_DIR})
 
-            message("${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
-            message("${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
-            message("${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
-            message("${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
-            message("${IDI_DEP_NAME} IDI_REPO_BRANCH: ${IDI_REPO_BRANCH}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_BRANCH: ${IDI_REPO_BRANCH}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_IS_TRACKING_BRANCH: ${IDI_REPO_IS_TRACKING_BRANCH}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_BRANCH_IS_AHEAD: ${IDI_REPO_BRANCH_IS_AHEAD}")
 
             if(NOT IDI_REPO_IS_PORCELAIN)
                 message(WARNING "Third-party dependency '${IDI_DEP_NAME}' has uncomitted or untracked files.")
@@ -124,6 +159,11 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
                 set(IDI_DO_POPULATE true)
             endif()
 
+            if(IDI_REPO_IS_PORCELAIN AND IDI_REPO_IS_TRACKING_BRANCH AND IDI_REPO_BRANCH_IS_AHEAD)
+                message(STATUS "Updating ${IDI_DEP_NAME} to current head of branch '${IDI_DEP_TAG}'")
+                set(IDI_DO_POPULATE true)
+            endif()
+
         else()
             set(IDI_DO_POPULATE true)
         endif()
@@ -134,12 +174,13 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
 
             idi_get_repo_information(${IDI_DEP_SOURCE_DIR})
 
-            message("${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
-            message("${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
-            message("${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
-            message("${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
-            message("${IDI_DEP_NAME} IDI_REPO_BRANCH: ${IDI_REPO_BRANCH}")
-
+            message(DEBUG "${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_BRANCH: ${IDI_REPO_BRANCH}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_IS_TRACKING_BRANCH: ${IDI_REPO_IS_TRACKING_BRANCH}")
+            message(DEBUG "${IDI_DEP_NAME} IDI_REPO_BRANCH_IS_AHEAD: ${IDI_REPO_BRANCH_IS_AHEAD}")
 
             if(NOT IDI_REPO_IS_PORCELAIN)
                 message(WARNING "First-party dependency '${IDI_DEP_NAME}' has uncomitted or untracked files.")
@@ -158,6 +199,12 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
                 set(IDI_REPO_SAME_COMMIT false)
             endif()
 
+            if(IDI_REPO_IS_PORCELAIN AND IDI_REPO_IS_TRACKING_BRANCH AND IDI_REPO_BRANCH_IS_AHEAD)
+                message(STATUS "Updating ${IDI_DEP_NAME} to current head of branch '${IDI_DEP_TAG}'")
+                set(IDI_DO_POPULATE true)
+            endif()
+
+
             if(IDI_SYNC_DEPENDENCIES)
                 if(NOT IDI_REPO_IS_PORCELAIN)
                     message(FATAL_ERROR "Attempted to sync dependencies but first-party dependency '${IDI_DEP_NAME}' has uncomitted or untracked files, commit or stash changes and try again.")
@@ -172,7 +219,7 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
     endif()
 
     if(${IDI_DO_POPULATE})
-        message(STATUS "Adding dependency '${IDI_DEP_NAME}' from ${IDI_DEP_URL} at tag ${IDI_DEP_TAG}")
+        message(STATUS "Populating dependency '${IDI_DEP_NAME}' from ${IDI_DEP_URL} at ref ${IDI_DEP_TAG}")
         FetchContent_Declare(
             ${IDI_DEP_NAME}
             GIT_REPOSITORY ${IDI_DEP_URL}
@@ -183,13 +230,13 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
         )
 
         if(${${IDI_DEP_NAME_LOWER}_POPULATED})
-            message(STATUS "${IDI_DEP_NAME} already populated, skipping.")
+            message(DEBUG "${IDI_DEP_NAME} already populated, skipping.")
             return()
         endif()
 
         FetchContent_Populate(${IDI_DEP_NAME})
     else()
-        message(STATUS "${IDI_DEP_NAME} already exists, skipping download.")
+        message(DEBUG "${IDI_DEP_NAME} already exists, skipping download.")
     endif()
 
     foreach(OPTION ${IDI_DEP_OPTIONS})
