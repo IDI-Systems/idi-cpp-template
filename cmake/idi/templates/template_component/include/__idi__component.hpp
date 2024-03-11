@@ -6,6 +6,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 /**
 * Demonstration component function.
 * @return int32_t

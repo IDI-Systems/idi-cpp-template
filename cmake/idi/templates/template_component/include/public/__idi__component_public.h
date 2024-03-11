@@ -8,6 +8,8 @@
 
 #include "@PROJECT_NAME@/public/export.h"
 
+#include <cstdint>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
