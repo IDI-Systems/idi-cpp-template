@@ -120,8 +120,7 @@ macro(idi_init)
 
         idi_new_component()
 
-
-
+        # Make sure we don't pollute a top level project that doesn't use our folder scheme for dependencies
         if(NOT IDICMAKE_IS_SUBDIRECTORY)
             set(IDICMAKE_TOP_LEVEL_CMAKE_DEPENDENCY_SUPPORT  1 CACHE BOOL "")
             set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/first-party")
@@ -136,10 +135,6 @@ macro(idi_init)
             set(IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR "${CMAKE_SOURCE_DIR}/lib/third-party")
             endif()
         endif()
-
-
-        # Define a nice short hand for 3rd party external library folders
-
 
         idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.5.2)
 
