@@ -61,4 +61,4 @@ target_include_directories(asio SYSTEM INTERFACE ${IDICMAKE_EXTERNAL_THIRD_PARTY
 
 # Git Submodules
 
-Use git submodules as you would in any other project. Ideally follow the same pattern for folder placement, with third party libraries being placed in the `lib/.third-party` folder.
+Use git submodules as you would in any other project. Do not place them in the first or third party folders used with the CMake dependency system as they will be ignored and possibly not tracked correctly by git.
