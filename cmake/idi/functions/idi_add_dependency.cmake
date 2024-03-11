@@ -73,6 +73,15 @@ function(idi_get_repo_information REPO_DIR)
         )
 endfunction()
 
+function(idi_commit_starts_with ACTUAL_SHA1 CHECK_SHA1)
+    set(IDI_REPO_SHA1_SAME false)
+    string(FIND "${ACTUAL_SHA1}" "${CHECK_SHA1}" IDI_STARTS_WITH_SHA1)
+    if("${IDI_STARTS_WITH_SHA1}" EQUAL 0)
+        set(IDI_REPO_SHA1_SAME true)
+    endif()
+    return(PROPAGATE IDI_REPO_SHA1_SAME)
+endfunction()
+
 function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD_PARTY)
     set(options DOWNLOAD_ONLY)
     set(multiValueArgs DEP_OPTIONS)
@@ -95,6 +104,7 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
 
             idi_get_repo_information(${IDI_DEP_SOURCE_DIR})
 
+            message("${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
             message("${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
             message("${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
             message("${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
@@ -104,9 +114,11 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
                 message(WARNING "Third-party dependency '${IDI_DEP_NAME}' has uncomitted or untracked files.")
             endif()
 
+            idi_commit_starts_with("${IDI_REPO_SHA1}" "${IDI_DEP_TAG}")
+
             if (
                 (NOT ("${IDI_REPO_TAG}" STREQUAL "${IDI_DEP_TAG}")) AND
-                (NOT ("${IDI_REPO_SHA1}" STREQUAL "${IDI_DEP_TAG}")) AND
+                (NOT IDI_REPO_SHA1_SAME) AND
                 (NOT ("${IDI_REPO_BRANCH}" STREQUAL "${IDI_DEP_TAG}"))
                 )
                 set(IDI_DO_POPULATE true)
@@ -122,6 +134,7 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
 
             idi_get_repo_information(${IDI_DEP_SOURCE_DIR})
 
+            message("${IDI_DEP_NAME} IDI_DEP_TAG: ${IDI_DEP_TAG}")
             message("${IDI_DEP_NAME} IDI_REPO_IS_PORCELAIN: ${IDI_REPO_IS_PORCELAIN}")
             message("${IDI_DEP_NAME} IDI_REPO_TAG: ${IDI_REPO_TAG}")
             message("${IDI_DEP_NAME} IDI_REPO_SHA1: ${IDI_REPO_SHA1}")
@@ -132,11 +145,13 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
                 message(WARNING "First-party dependency '${IDI_DEP_NAME}' has uncomitted or untracked files.")
             endif()
 
+            idi_commit_starts_with("${IDI_REPO_SHA1}" "${IDI_DEP_TAG}")
+
             set(IDI_REPO_SAME_COMMIT true)
 
             if (
                 (NOT ("${IDI_REPO_TAG}" STREQUAL "${IDI_DEP_TAG}")) AND
-                (NOT ("${IDI_REPO_SHA1}" STREQUAL "${IDI_DEP_TAG}")) AND
+                (NOT IDI_REPO_SHA1_SAME) AND
                 (NOT ("${IDI_REPO_BRANCH}" STREQUAL "${IDI_DEP_TAG}"))
                 )
                 message(WARNING "First-party dependency '${IDI_DEP_NAME}' is not on the same commit as defined by configuration. ${IDI_DEP_TAG} != ${IDI_REPO_TAG}|${IDI_REPO_SHA1}|${IDI_REPO_BRANCH}")
