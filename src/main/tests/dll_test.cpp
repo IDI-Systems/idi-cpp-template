@@ -7,12 +7,14 @@
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
 #include "@PROJECT_NAME@/public/version.h"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
 
-TEST_CASE("Version numbers are correctly set and returned.", "[base]") {
+TEST_CASE("Version number is valid.", "[main]") {
     SECTION("Public API calls.") {
-        REQUIRE(@__idi_c_namespace@_get_version_major() != -1);
-        REQUIRE(@__idi_c_namespace@_get_version_minor() != -1);
-        REQUIRE(@__idi_c_namespace@_get_version_patch() != -1);
+        REQUIRE_FALSE((@__idi_c_namespace@_get_version_major() == 0
+                    && @__idi_c_namespace@_get_version_minor() == 0
+                    && @__idi_c_namespace@_get_version_patch() == 0));
     }
 }

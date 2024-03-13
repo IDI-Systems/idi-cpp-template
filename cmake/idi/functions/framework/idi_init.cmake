@@ -8,6 +8,7 @@
 
 macro(idi_init)
     include(CTest)
+    include(FetchContent)
 
     idi_cmake_hook(pre-init)
 
@@ -119,23 +120,32 @@ macro(idi_init)
 
         idi_new_component()
 
-        # Define a nice short hand for 3rd party external library folders
-        set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib")
+        # Make sure we don't pollute a top level project that doesn't use our folder scheme for dependencies
+        if(NOT IDICMAKE_IS_SUBDIRECTORY)
+            set(IDICMAKE_TOP_LEVEL_CMAKE_DEPENDENCY_SUPPORT  1 CACHE BOOL "")
+            set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/first-party")
+            set(IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/third-party")
+        else()
+            if(NOT IDICMAKE_TOP_LEVEL_CMAKE_DEPENDENCY_SUPPORT)
+                message(STATUS "Top level project does not support the IDI CMake dependency structure, placing dependencies in local lib folder.")
+                set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/first-party")
+                set(IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/third-party")
+            else()
+            set(IDICMAKE_EXTERNAL_LIB_DIR "${CMAKE_SOURCE_DIR}/lib/first-party")
+            set(IDICMAKE_EXTERNAL_THIRD_PARTY_LIB_DIR "${CMAKE_SOURCE_DIR}/lib/third-party")
+            endif()
+        endif()
+
+        idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.5.2)
 
         # Add the main source folder.
         idi_cmake_hook(pre-source)
         add_subdirectory("src")
         idi_cmake_hook(post-source)
 
-        # Catch is included by default as a submodule
-        if(NOT TARGET Catch2)
-            add_subdirectory(lib/Catch2)
-        endif()
-
         if(IDICMAKE_BUILD_DEMOS)
             add_subdirectory("demo")
         endif()
-
 
         include("${CMAKE_CURRENT_LIST_DIR}/lib/libraries.cmake")
 

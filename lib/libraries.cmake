@@ -1,4 +1,2 @@
 # Include libraries here.
-# Catch2 is included by deault, no need to re-add it here.
-
-# add_subdirectory(${IDI_EXTERNAL_LIB_DIR}/lib_folder)
+# Catch2 is included by default, no need to re-add it here.

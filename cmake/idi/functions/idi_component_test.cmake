@@ -14,8 +14,10 @@ function(__idi_component_test component_name test_file)
     add_executable("${CURRENT_LIBRARY_TEST}" ${test_file})
     idi_target_compile_settings("${CURRENT_LIBRARY_TEST}")
 
-    target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
-        "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
+    # target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
+    #     "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
+
+    target_link_libraries("${CURRENT_LIBRARY_TEST}" PRIVATE Catch2::Catch2WithMain)
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
