@@ -14,6 +14,8 @@
 #
 # MIT License
 
+set(IDICMAKE_DEP_NAME_LIST "" CACHE INTERNAL "")
+
 # splits a package option
 function(cpm_parse_option OPTION)
   string(REGEX MATCH "^[^ ]+" OPTION_KEY "${OPTION}")
@@ -115,7 +117,7 @@ function(idi_commit_starts_with ACTUAL_SHA1 CHECK_SHA1)
     return(PROPAGATE IDI_REPO_SHA1_SAME)
 endfunction()
 
-function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD_PARTY)
+function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD_PARTY IDI_DEP_CALLED_FROM)
     set(options DOWNLOAD_ONLY)
     set(multiValueArgs DEP_OPTIONS)
     cmake_parse_arguments(IDI "${options}" "${oneValueArgs}"
@@ -123,10 +125,21 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
 
     string(TOLOWER ${IDI_DEP_NAME} IDI_DEP_NAME_LOWER)
 
-    if(TARGET ${IDI_DEP_NAME})
+    set(__IDICMAKE_DEP_NAME_LIST "${IDICMAKE_DEP_NAME_LIST}")
+
+    list(FIND __IDICMAKE_DEP_NAME_LIST ${IDI_DEP_NAME_LOWER} IDI_DEP_FOUND)
+
+    message(TRACE "Dependency list before check: ${IDI_DEP_CALLED_FROM}:${IDI_DEP_NAME_LOWER}: ${__IDICMAKE_DEP_NAME_LIST}")
+
+    if(NOT IDI_DEP_FOUND EQUAL -1)
         message(STATUS "${IDI_DEP_NAME} already added, skipping.")
         return()
     endif()
+
+    list(APPEND __IDICMAKE_DEP_NAME_LIST  ${IDI_DEP_NAME_LOWER})
+    set(IDICMAKE_DEP_NAME_LIST "${__IDICMAKE_DEP_NAME_LIST}" CACHE INTERNAL "" FORCE)
+
+    message(TRACE "Dependency list after check: ${IDI_DEP_CALLED_FROM}:${IDI_DEP_NAME_LOWER}: ${IDICMAKE_DEP_NAME_LIST}")
 
     set(IDI_DO_POPULATE false)
 
@@ -254,10 +267,10 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
     message(STATUS "Added dependency ${IDI_DEP_NAME}")
 endfunction()
 
-function(idi_add_third_party_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG)
-    __idi_add_dependency(${IDI_DEP_NAME} ${IDI_DEP_URL} ${IDI_DEP_TAG} true ${ARGN})
-endfunction()
+macro(idi_add_third_party_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG)
+    __idi_add_dependency(${IDI_DEP_NAME} ${IDI_DEP_URL} ${IDI_DEP_TAG} true ${CMAKE_CURRENT_LIST_DIR} ${ARGN})
+endmacro()
 
-function(idi_add_first_party_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG)
-    __idi_add_dependency(${IDI_DEP_NAME} ${IDI_DEP_URL} ${IDI_DEP_TAG} false ${ARGN})
-endfunction()
+macro(idi_add_first_party_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG)
+    __idi_add_dependency(${IDI_DEP_NAME} ${IDI_DEP_URL} ${IDI_DEP_TAG} false ${CMAKE_CURRENT_LIST_DIR} ${ARGN})
+endmacro()
