@@ -6,15 +6,10 @@ This is a template for starting new C++ projects that conform to the IDI C++ pro
 
 ### Requirements
 
-- CMake >= 3.23
+- CMake >= 3.26
 - GCC 11+ / Clang 11+ / MSVC (VS2019+)
 
-**Initialized submodules:**
-
-```sh
-$ git submodule init
-$ git submodule update
-```
+_Dependencies are automatically fetched during CMake configuration._
 
 ### Build
 
