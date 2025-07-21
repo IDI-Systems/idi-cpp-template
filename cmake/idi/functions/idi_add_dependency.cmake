@@ -247,7 +247,7 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
             return()
         endif()
 
-        FetchContent_Populate(${IDI_DEP_NAME})
+        FetchContent_MakeAvailable(${IDI_DEP_NAME})
     else()
         message(DEBUG "${IDI_DEP_NAME} already exists, skipping download.")
     endif()
