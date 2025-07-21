@@ -3,7 +3,7 @@
  *
  * Functions for getting the version number of the project
  *
- * @copyright Copyright (c) 2024 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2025 International Development & Integration Systems LLC
  *
  */
 #pragma once

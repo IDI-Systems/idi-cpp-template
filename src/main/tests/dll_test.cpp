@@ -1,7 +1,7 @@
 /**
  * @author Cliff Foster (Nou) <cliff@idi-systems.com>
  *
- * @copyright Copyright (c) 2024 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2025 International Development & Integration Systems LLC
  *
  */
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
