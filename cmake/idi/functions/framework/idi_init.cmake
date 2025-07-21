@@ -136,7 +136,7 @@ macro(idi_init)
             endif()
         endif()
 
-        idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.5.2)
+        idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.8.1)
 
         # Add the main source folder.
         idi_cmake_hook(pre-source)

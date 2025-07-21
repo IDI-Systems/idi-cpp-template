@@ -240,6 +240,8 @@ function(__idi_add_dependency IDI_DEP_NAME IDI_DEP_URL IDI_DEP_TAG IDI_DEP_THIRD
             SOURCE_DIR ${IDI_DEP_SOURCE_DIR}
             EXCLUDE_FROM_ALL
             SYSTEM
+            # prevent FetchContent_MakeAvailable from adding it, we want to control when to add it
+            SOURCE_SUBDIR pathThatDoesNotExist
         )
 
         if(${${IDI_DEP_NAME_LOWER}_POPULATED})
