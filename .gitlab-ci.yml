@@ -11,27 +11,52 @@ build-linux:
     matrix:
       - COMPILER: [gcc-11, gcc-12, gcc-13, clang-11.0.1, clang-12, clang-13, clang-14, clang-15, clang-16, clang-17]
         TYPE: [exe, static, shared]
-  variables:
-    CONFIGS: '{ "exe": "platform_config.exe.cmake", "static": "platform_config.static.cmake", "shared": "platform_config.shared.cmake" }'
   image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:$COMPILER
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-14|clang-14)$/)) # clang-14 image has a bug with libc++13
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
-  before_script:
-    - apt-get update && apt-get install -y -qq jq
+  before_script: # This is required for pulling dependencies on projects
     - git config --global credential.helper store
     - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
   script:
     - cmake --version && $CC --version && $CXX --version
     - mkdir -p build && cd build
-    - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG=../$(echo $CONFIGS | jq -r .$TYPE)
+    - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG=../platform-config.$TYPE.cmake
     - cmake --build . -j 8
     - ctest -C Debug --output-junit ctest.xml
   interruptible: true
   artifacts:
     when: always
     name: "idi-cpp-template-$TYPE-$COMPILER-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build/ctest.xml
+    reports:
+      junit: build/ctest.xml
+
+build-windows:
+  stage: build
+  tags: [windows, beefy]
+  parallel:
+    matrix:
+      - TYPE: [exe, static, shared]
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
+  before_script: # This is required for pulling dependencies on projects
+    - git config --system credential.helper store
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}`n" > ~/.git-credentials
+  script:
+    - cmake --version
+    - mkdir -p build
+    - cd build
+    - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG="../platform-config.$TYPE.cmake"
+    - cmake --build . -j 8
+    - ctest -C Debug --output-junit ctest.xml
+  interruptible: true
+  artifacts:
+    when: always
+    name: "idi-cpp-template-$TYPE-win64-$CI_COMMIT_SHORT_SHA"
     paths:
       - build/ctest.xml
     reports:
