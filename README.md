@@ -31,7 +31,7 @@ $ cmake --build .   # or generated build system command (make, Visual Studio etc
 
 _Use with `cmake .. -D<argument>=<value>`._
 
-- `IDICMAKE_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file.
+- `<PROJECT_NAME>_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file.
 - `IDICMAKE_BUILD_DEMOS` (default: `0`) - Build demo applications if applicable.
 - `IDICMAKE_BUILD_TESTS` (default: `1`) - Build unit tests. _(long)_
 - `DO_TEMPLATE_COMPONENT_TEST` (default: `0`) - Generate unit test template component and build unit tests for template.

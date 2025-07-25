@@ -11,7 +11,8 @@ macro(idi_load_platform_config)
     idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/platform-local-options.cmake)
     idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/pre-configure.cmake)
 
-    set(IDICMAKE_PLATFORM_CONFIG "${CMAKE_CURRENT_LIST_DIR}/platform-config.cmake" CACHE FILEPATH "Platform config definitions file")
+    set("${IDICMAKE_PREFIX}_PLATFORM_CONFIG" "${CMAKE_CURRENT_LIST_DIR}/platform-config.cmake" CACHE FILEPATH "Platform config definitions file")
+    set(IDICMAKE_PLATFORM_CONFIG "${${IDICMAKE_PREFIX}_PLATFORM_CONFIG}")
     include("${IDICMAKE_PLATFORM_CONFIG}")
 
     idi_cmake_hook_abs(${CMAKE_CURRENT_LIST_DIR}/cmake-hooks/post-platform-config.cmake)

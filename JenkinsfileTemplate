@@ -16,7 +16,7 @@ pipeline {
             steps {
                 dir('build') {
                     deleteDir()
-                    bat 'cmake .. -DDO_TEMPLATE_COMPONENT_TEST=1'
+                    bat 'cmake .. -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1'
                     bat 'cmake --build .'
                     bat 'ctest -C Debug'
                     junit 'reports/**_report*.xml'
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 dir('build') {
                     deleteDir()
-                    bat 'cmake .. -DIDICMAKE_PLATFORM_CONFIG=../platform_config.static.cmake'
+                    bat 'cmake .. -DTEMPLATE_PROJECT_PLATFORM_CONFIG=../platform-config.static.cmake'
                     bat 'cmake --build .'
                     bat 'ctest -C Debug'
                     junit 'reports/**_report*.xml'
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 dir('build') {
                     deleteDir()
-                    bat 'cmake .. -DIDICMAKE_PLATFORM_CONFIG=../platform_config.shared.cmake'
+                    bat 'cmake .. -DTEMPLATE_PROJECT_PLATFORM_CONFIG=../platform-config.shared.cmake'
                     bat 'cmake --build .'
                     bat 'ctest -C Debug'
                     junit 'reports/**_report*.xml'
