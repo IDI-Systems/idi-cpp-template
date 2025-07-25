@@ -22,7 +22,7 @@ build-linux:
   script:
     - cmake --version && $CC --version && $CXX --version
     - mkdir -p build && cd build
-    - cmake .. $CMAKE_ARGS -DTEMPLATE_PROJECT_PLATFORM_CONFIG=../platform-config.$TYPE.cmake
+    - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG=../platform-config.$TYPE.cmake
     - cmake --build . -j 8
     - ctest -C Debug --output-junit ctest.xml
   interruptible: true
