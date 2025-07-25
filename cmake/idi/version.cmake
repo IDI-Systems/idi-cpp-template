@@ -13,7 +13,7 @@
 set(IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR 5)
 
 # Minor increments on backwards compat updates!
-set(IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR 2)
+set(IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR 3)
 
 # Hot fixes, which should be rare in this case.
 set(IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX 0)
