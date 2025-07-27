@@ -17,7 +17,7 @@ build-linux:
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script: # This is required for pulling dependencies on projects
-    - git config --global credential.helper store
+    #- git config --global credential.helper store # done in cmake-cpp image
     - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
   script:
     - cmake --version && $CC --version && $CXX --version
@@ -44,8 +44,8 @@ build-windows:
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script: # This is required for pulling dependencies on projects
-    - git config --system credential.helper store
-    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}`n" > ~/.git-credentials
+    #- git config --system credential.helper manager # done in cmake-cpp image
+    - cmdkey /generic:git:https://${env:CI_SERVER_HOST} /user:gitlab-ci-token /pass:${env:CI_JOB_TOKEN}
   script:
     - cmake --version
     - mkdir -p build
