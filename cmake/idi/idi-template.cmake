@@ -11,19 +11,19 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/version.cmake)
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater.cmake")
 
 if(NOT IDICMAKE_DID_UPDATE AND NOT IDICMAKE_TEMPLATE_LOADED)
-    if (IDICMAKE_ROOT_CML_V LESS IDICMAKE_ROOT_REQ_CML_V)
+    if(IDICMAKE_ROOT_CML_V LESS IDICMAKE_ROOT_REQ_CML_V)
         message(FATAL_ERROR "The root CMakeLists.txt is not at the required version for the IDI CMake framework."
-        "If you updated the template recently, also update the CMakeList.txt in the root directory")
+            "If you updated the template recently, also update the CMakeList.txt in the root directory")
     endif()
 
-    if (IDICMAKE_SRC_CML_V LESS IDICMAKE_SRC_REQ_CML_V)
+    if(IDICMAKE_SRC_CML_V LESS IDICMAKE_SRC_REQ_CML_V)
         message(FATAL_ERROR "The CMakeLists.txt in the src directory is not at the required version for the IDI CMake framework."
-        "If you updated the template recently, also update the CMakeList.txt in the src directory")
+            "If you updated the template recently, also update the CMakeList.txt in the src directory")
     endif()
 
-    if (IDICMAKE_BASE_CML_V LESS IDICMAKE_BASE_REQ_CML_V)
+    if(IDICMAKE_BASE_CML_V LESS IDICMAKE_BASE_REQ_CML_V)
         message(FATAL_ERROR "The CMakeLists.txt in the src/base component directory is not at the required version for the IDI CMake framework."
-        "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
+            "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
     endif()
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_dependency.cmake)
@@ -44,7 +44,7 @@ if(NOT IDICMAKE_DID_UPDATE AND NOT IDICMAKE_TEMPLATE_LOADED)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_new_component.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_src.cmake)
 
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/third-party/code-coverage.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_code_coverage.cmake)
 
     set(IDICMAKE_TEMPLATE_LOADED true)
 endif()
