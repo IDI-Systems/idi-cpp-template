@@ -24,7 +24,20 @@
 
 include_guard(GLOBAL)
 
-option(CODE_COVERAGE "Build targets with code coverage instrumentation. (Requires GCC or Clang)" OFF)
+# CODE_COVERAGE is intentionally NOT cached so it must be explicitly passed
+# each time: cmake .. -DCODE_COVERAGE=ON
+if(NOT DEFINED CODE_COVERAGE)
+    set(CODE_COVERAGE OFF)
+endif()
+
+# Force Debug build type for accurate coverage results
+if(CODE_COVERAGE)
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message(STATUS "[Coverage] CODE_COVERAGE is ON — forcing CMAKE_BUILD_TYPE to Debug (was: '${CMAKE_BUILD_TYPE}')")
+        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type forced to Debug for coverage" FORCE)
+    endif()
+    message(STATUS "[Coverage] *** CODE COVERAGE BUILD ENABLED — Debug mode, no optimizations (-O0 -g) ***")
+endif()
 
 # --- Internal global properties for tracking coverage state ---
 
