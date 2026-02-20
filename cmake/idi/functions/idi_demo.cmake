@@ -47,13 +47,13 @@ function(__idi_demo demo_name demo_file)
         endif()
     endforeach()
 
-    if (ADD_CORE)
+    if(ADD_CORE)
         target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDICMAKE_CORE}")
         list(APPEND __LIBRARY_LIST ${CURRENT_DEMO})
         list(APPEND __LIBRARY_LIST ${IDICMAKE_CORE})
     endif()
 
-    if (IDICMAKE_IS_SHARED)
+    if(IDICMAKE_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that demos link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.

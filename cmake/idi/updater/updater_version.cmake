@@ -8,4 +8,4 @@
 # This is the _framework_ **updater** version number, and is NOT related to the underlying project.
 
 # Any time the updater is changed this version should be incremented!!!
-set(IDICMAKE_CPP_UPDATER_VERSION 3)
+set(IDICMAKE_CPP_UPDATER_VERSION 4)

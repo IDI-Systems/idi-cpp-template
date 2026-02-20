@@ -36,7 +36,7 @@ if(DO_FRAMEWORK_UPDATE)
     message(STATUS "Framework update mode: ${__framework_update_mode}")
 
     if(__framework_update_mode STREQUAL "folder")
-        if (NOT __framework_update_folder_loc)
+        if(NOT __framework_update_folder_loc)
             do_error("FRAMEWORK_UPDATE_MODE is 'folder', but FRAMEWORK_UPDATE_FOLDER_LOC is not defined!")
         endif()
 
@@ -44,13 +44,13 @@ if(DO_FRAMEWORK_UPDATE)
             PATTERN ".idi-framework-update" EXCLUDE
             PATTERN "build" EXCLUDE
             PATTERN ".git" EXCLUDE
-            )
+        )
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The folder provided via FRAMEWORK_UPDATE_FOLDER_LOC does not appear to be a valid template update!")
         endif()
     elseif(__framework_update_mode STREQUAL "file")
-        if (NOT __framework_update_file_loc)
+        if(NOT __framework_update_file_loc)
             do_error("FRAMEWORK_UPDATE_MODE is 'file', but FRAMEWORK_UPDATE_FILE_LOC is not defined!")
         endif()
 
@@ -82,17 +82,17 @@ if(DO_FRAMEWORK_UPDATE)
     set(OLD_IDICMAKE_BASE_REQ_CML_V ${IDICMAKE_BASE_REQ_CML_V})
 
     include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake")
+    if(EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/version.cmake")
+        include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/version.cmake")
+    endif()
 
-    if ((OLD_IDICMAKE_CPP_UPDATER_VERSION EQUAL IDICMAKE_CPP_UPDATER_VERSION) AND
-        (OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR EQUAL IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR) AND
-        (OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR EQUAL IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR) AND
-        (OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX EQUAL IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX) AND
-        (OLD_IDICMAKE_ROOT_REQ_CML_V EQUAL IDICMAKE_ROOT_REQ_CML_V) AND
-        (OLD_IDICMAKE_SRC_REQ_CML_V EQUAL IDICMAKE_SRC_REQ_CML_V) AND
-        (OLD_IDICMAKE_BASE_REQ_CML_V EQUAL IDICMAKE_BASE_REQ_CML_V)
-        )
+    set(__old_ver "${OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR}.${OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR}.${OLD_IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX}")
+    set(__new_ver "${IDICMAKE_CPP_FRAMEWORK_VERSION_MAJOR}.${IDICMAKE_CPP_FRAMEWORK_VERSION_MINOR}.${IDICMAKE_CPP_FRAMEWORK_VERSION_HOTFIX}")
+
+    if((__old_ver VERSION_GREATER_EQUAL __new_ver) AND
+        (OLD_IDICMAKE_CPP_UPDATER_VERSION GREATER_EQUAL IDICMAKE_CPP_UPDATER_VERSION))
         if(NOT __framework_update_force)
-            do_error("Framework is already up-to-date! Run with FRAMEWORK_UPDATE_FORCE to force an update.")
+            do_error("Framework is already up-to-date or newer! Local: ${__old_ver} (updater v${OLD_IDICMAKE_CPP_UPDATER_VERSION}), Update: ${__new_ver} (updater v${IDICMAKE_CPP_UPDATER_VERSION}). Run with FRAMEWORK_UPDATE_FORCE to force an update.")
         endif()
     endif()
 
