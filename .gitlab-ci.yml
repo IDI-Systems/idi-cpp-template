@@ -61,3 +61,30 @@ build-windows:
       - build/ctest.xml
     reports:
       junit: build/ctest.xml
+
+.coverage: # Remove '.' to enable
+  stage: deploy
+  tags: [general, beefy]
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:gcc-14
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
+      when: manual
+    - if: $CI_PIPELINE_SOURCE = "merge_request_event" # Only on merge requests
+    - if: $CI_COMMIT_TAG # Only on tag push event
+  before_script: # This is required for pulling dependencies on projects
+    #- git config --global credential.helper store # done in cmake-cpp image
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
+  script:
+    - cmake --version && $CC --version && $CXX --version && lcov --version && gcovr --version
+    - mkdir -p build && cd build
+    - cmake .. $CMAKE_ARGS -DCODE_COVERAGE=ON
+    - cmake --build . --target ccov-all-xml
+  interruptible: true
+  artifacts:
+    name: "idi-cpp-template-coverage-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build/reports/coverage/coverage.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: build/reports/coverage/coverage.xml
