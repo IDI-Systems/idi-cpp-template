@@ -113,7 +113,6 @@ Enable coverage by passing `-DCODE_COVERAGE=ON` at configure time:
 ```sh
 $ cd build
 $ cmake .. -DCODE_COVERAGE=ON
-$ cmake --build .
 ```
 
 Then run one of the coverage build targets:
