@@ -183,8 +183,17 @@ function(_idicmake_create_coverage_targets)
         return()
     endif()
 
-    # Locate coverage tools
-    find_program(GCOV_PATH gcov)
+    # Locate coverage tools — prefer version-matched gcov for the active compiler.
+    # GCC N produces .gcno/.gcda files that require gcov-N to read.
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        string(REGEX MATCH "^[0-9]+" _gcc_major "${CMAKE_CXX_COMPILER_VERSION}")
+        find_program(GCOV_PATH gcov-${_gcc_major})
+        if(NOT GCOV_PATH)
+            find_program(GCOV_PATH gcov)
+        endif()
+    else()
+        find_program(GCOV_PATH gcov)
+    endif()
     find_program(LCOV_PATH lcov)
     find_program(GENHTML_PATH genhtml)
     find_program(GCOVR_PATH gcovr)
@@ -292,6 +301,8 @@ function(_idicmake_create_coverage_targets)
                 COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}"
                 ${_run_commands}
                 COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
+                --gcov-executable ${GCOV_PATH}
+                --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
                 --xml-pretty -o "${_report_dir}/coverage.xml"
                 COMMAND ${CMAKE_COMMAND} -E echo
                 "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
@@ -315,10 +326,14 @@ function(_idicmake_create_coverage_targets)
             ${_run_commands}
             # Generate HTML report
             COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
+            --gcov-executable ${GCOV_PATH}
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
             --html --html-details
             -o "${_report_dir}/html/index.html"
             # Generate XML report
             COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
+            --gcov-executable ${GCOV_PATH}
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
             --xml-pretty -o "${_report_dir}/coverage.xml"
             COMMAND ${CMAKE_COMMAND} -E echo
             "[Coverage] HTML report:   ${_report_dir}/html/index.html"
