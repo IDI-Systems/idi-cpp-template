@@ -17,10 +17,9 @@ function(__idi_component_test component_name test_file)
     # target_include_directories("${CURRENT_LIBRARY_TEST}" SYSTEM PRIVATE
     #     "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
-    target_link_libraries("${CURRENT_LIBRARY_TEST}" PRIVATE Catch2::Catch2WithMain)
-
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
+    set(ADD_CATCH true)
 
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "ADDITIONAL_LIBRARIES")
@@ -31,6 +30,8 @@ function(__idi_component_test component_name test_file)
             set(ADD_MODE "ADDITIONAL_INCLUDES")
         elseif(var STREQUAL "ADDITIONAL_SOURCES")
             set(ADD_MODE "ADDITIONAL_SOURCES")
+        elseif(var STREQUAL "NO_CATCH")
+            set(ADD_CATCH false)
         elseif(var STREQUAL "EXCLUDE_CORE")
             set(ADD_CORE false)
         else()
@@ -49,7 +50,11 @@ function(__idi_component_test component_name test_file)
         endif()
     endforeach()
 
-    if (ADD_CORE)
+    if(ADD_CATCH)
+        target_link_libraries("${CURRENT_LIBRARY_TEST}" PRIVATE Catch2::Catch2WithMain)
+    endif()
+
+    if(ADD_CORE)
         target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDICMAKE_CORE}")
         list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
         list(APPEND __LIBRARY_LIST ${IDICMAKE_CORE})
@@ -59,7 +64,7 @@ function(__idi_component_test component_name test_file)
     endif()
 
     add_test(NAME "${CURRENT_LIBRARY_TEST}" COMMAND "${CURRENT_LIBRARY_TEST}" WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-    if (IDICMAKE_IS_SHARED)
+    if(IDICMAKE_IS_SHARED)
         # setting target BUILD_WITH_INSTALL_RPATH to OFF for a shared library
         # will make sure that tests link against the build tree RPATH and not
         # the system install dir, this lets tests for the .so on linux.

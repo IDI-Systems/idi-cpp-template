@@ -15,10 +15,11 @@ function(__idi_demo demo_name demo_file)
     # target_include_directories("${CURRENT_DEMO}" SYSTEM PRIVATE
     #     "${IDICMAKE_EXTERNAL_LIB_DIR}/Catch2/single_include")
 
-    target_link_libraries("${CURRENT_DEMO}" PRIVATE Catch2::Catch2WithMain)
+
 
     set(ADD_MODE "ADDITIONAL_SOURCES")
     set(ADD_CORE true)
+    set(ADD_CATCH true)
 
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "ADDITIONAL_LIBRARIES")
@@ -29,6 +30,8 @@ function(__idi_demo demo_name demo_file)
             set(ADD_MODE "ADDITIONAL_INCLUDES")
         elseif(var STREQUAL "ADDITIONAL_SOURCES")
             set(ADD_MODE "ADDITIONAL_SOURCES")
+        elseif(var STREQUAL "NO_CATCH")
+            set(ADD_CATCH false)
         elseif(var STREQUAL "EXCLUDE_CORE")
             set(ADD_CORE false)
         else()
@@ -46,6 +49,10 @@ function(__idi_demo demo_name demo_file)
             endif()
         endif()
     endforeach()
+
+    if(ADD_CATCH)
+        target_link_libraries("${CURRENT_DEMO}" PRIVATE Catch2::Catch2WithMain)
+    endif()
 
     if(ADD_CORE)
         target_link_libraries("${CURRENT_DEMO}" PUBLIC "${IDICMAKE_CORE}")
