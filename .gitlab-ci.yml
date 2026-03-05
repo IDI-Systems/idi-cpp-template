@@ -9,11 +9,11 @@ build-linux:
   stage: build
   parallel:
     matrix:
-      - COMPILER: [gcc-11, gcc-12, gcc-13, clang-11.0.1, clang-12, clang-13, clang-14, clang-15, clang-16, clang-17]
+      - COMPILER: [gcc-11, gcc-12, gcc-13, gcc-14, gcc-15, clang-11.0.1, clang-12, clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19, clang-20, clang-21]
         TYPE: [exe, static, shared]
   image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:$COMPILER
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-14|clang-14)$/)) # clang-14 image has a bug with libc++13
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && (($COMPILER =~ /(gcc-16|clang-14|clang-21)$/)) # clang-14 image has a bug with libc++13
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
   before_script: # This is required for pulling dependencies on projects
@@ -24,7 +24,7 @@ build-linux:
     - mkdir -p build && cd build
     - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG=../platform-config.$TYPE.cmake
     - cmake --build . -j 8
-    - ctest -C Debug --output-junit ctest.xml
+    - ctest -C Debug --output-on-failure --output-junit ctest.xml
   interruptible: true
   artifacts:
     when: always
@@ -52,7 +52,7 @@ build-windows:
     - cd build
     - cmake .. $CMAKE_ARGS -DIDICMAKE_PLATFORM_CONFIG="../platform-config.$TYPE.cmake"
     - cmake --build . -j 8
-    - ctest -C Debug --output-junit ctest.xml
+    - ctest -C Debug --output-on-failure --output-junit ctest.xml
   interruptible: true
   artifacts:
     when: always
