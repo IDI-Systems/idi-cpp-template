@@ -127,6 +127,9 @@ macro(idi_src)
                 file(MAKE_DIRECTORY "${_umbrella_dir}/${IDICMAKE_PROJECT_NAME}")
                 file(WRITE "${_umbrella_file}" "${_umbrella_content}")
                 target_include_directories("${IDICMAKE_PROJECT_NAME}_public" INTERFACE "${_umbrella_dir}")
+                # Also expose to core so all targets in the project can
+                # use the umbrella header.
+                target_include_directories("${IDICMAKE_CORE}" PUBLIC "${_umbrella_dir}")
 
                 # Install the umbrella header alongside the other public headers
                 install(FILES "${_umbrella_file}"
