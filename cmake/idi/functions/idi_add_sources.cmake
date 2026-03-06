@@ -65,4 +65,17 @@ function(idi_add_public_includes)
     #   - core_public_includes: used by shared-library installs (public only)
     target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
     target_sources("${CURRENT_LIBRARY_NAME}" PUBLIC FILE_SET core_public_includes TYPE HEADERS BASE_DIRS ${CURRENT_LIBRARY_DIR}/include FILES ${FILE_LIST})
+
+    # Record this component's include/ base directory so the _public
+    # consumer target can expose it.  Only components that call
+    # idi_add_public_includes() with actual files will be recorded.
+    if(IDICMAKE_IS_SHARED AND FILE_LIST)
+        set_property(GLOBAL APPEND PROPERTY IDICMAKE_PUBLIC_INCLUDE_DIRS
+            "${CURRENT_LIBRARY_DIR}/include")
+        # Also record relative paths for umbrella-header generation.
+        foreach(_hdr IN LISTS FILE_LIST)
+            file(RELATIVE_PATH _rel "${CURRENT_LIBRARY_DIR}/include" "${_hdr}")
+            set_property(GLOBAL APPEND PROPERTY IDICMAKE_PUBLIC_HEADER_RELPATHS "${_rel}")
+        endforeach()
+    endif()
 endfunction()
