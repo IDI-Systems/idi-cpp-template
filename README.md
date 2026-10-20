@@ -178,7 +178,7 @@ This will:
 
 1. Download/extract/copy the update source into a temporary `.idi-framework-update` directory.
 2. Compare the incoming framework version against the current one.
-3. If an update is available, replace the framework files (`cmake/idi/`, `src/base/`, root `CMakeLists.txt`, `src/CMakeLists.txt`, and `lib/.gitignore`).
+3. If an update is available, replace the framework files (`cmake/idi/`, `src/base/`, `.claude/skills/idi-cmake/`, root `CMakeLists.txt`, `src/CMakeLists.txt`, and `lib/.gitignore`).
 4. Rename the base component's include directory to match your `IDICMAKE_PROJECT_NAME`.
 5. Clean up the temporary directory and set `IDICMAKE_DID_UPDATE` so the rest of configuration is skipped — you must re-run `cmake ..` after an update to configure normally.
 
@@ -225,6 +225,7 @@ The updater replaces only the framework-managed files:
 |---|---|
 | `cmake/idi/` | Entire framework directory (functions, updater, templates, scripts) |
 | `src/base/` | Base component boilerplate (include directory is renamed to match your project) |
+| `.claude/skills/idi-cmake/` | Claude Code skill describing this framework version |
 | `CMakeLists.txt` | Root CMake file |
 | `src/CMakeLists.txt` | Source directory CMake file |
 | `lib/.gitignore` | Library gitignore |
@@ -234,6 +235,12 @@ Your project-specific files are **not touched**: `platform-config.cmake`, `platf
 ### Version Checks
 
 After updating, the framework validates that your root and `src/` CMakeLists.txt files meet the minimum required version numbers (`IDICMAKE_ROOT_REQ_CML_V`, `IDICMAKE_SRC_REQ_CML_V`, `IDICMAKE_BASE_REQ_CML_V`). If the update replaced these files, they will already be at the correct version. If a major framework update changes the required versions, the updater will replace these files automatically.
+
+## Claude Code Skill
+
+The template ships a [Claude Code](https://claude.com/claude-code) skill in `.claude/skills/idi-cmake/`. Claude loads it automatically when working on CMake files, components, dependencies, tests, installs, or framework updates in any project built from this template (or invoke it with `/idi-cmake`). It is framework-owned and refreshed by the updater, so it always matches the project's framework version. Put project-specific notes in your own `CLAUDE.md` rather than editing the skill.
+
+When changing the framework, update the skill in the same commit; see `.claude/skills/idi-cmake/reference/maintaining.md`.
 
 ## License
 

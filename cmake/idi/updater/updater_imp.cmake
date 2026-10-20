@@ -16,6 +16,7 @@ endmacro()
 
 do_replace_dir("cmake/idi/")
 do_replace_dir("src/base/")
+do_replace_dir(".claude/skills/idi-cmake/")
 set(IDICMAKE_PLATFORM_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/platform-config.cmake")
 include("${IDICMAKE_PLATFORM_CONFIG}")
 if(DEFINED IDI_PROJECT_NAME)
