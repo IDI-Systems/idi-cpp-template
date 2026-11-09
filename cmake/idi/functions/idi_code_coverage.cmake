@@ -8,24 +8,29 @@
 #   target_code_coverage(<target> [ALL] [OBJECTS <targets...>] [EXCLUDE <patterns...>])
 #   add_code_coverage_all_targets([EXCLUDE <patterns...>])
 #
-# Cache Options:
-#   CODE_COVERAGE - Enable code coverage instrumentation (default: OFF)
+# Variables (set with -D, or in a cmake hook):
+#   CODE_COVERAGE                 - Enable code coverage instrumentation (default: OFF)
+#   IDICMAKE_COVERAGE_FAIL_UNDER  - Fail ccov-all / ccov-all-xml when line coverage is below this percent (default: unset)
+#   IDICMAKE_COVERAGE_CTEST_ARGS  - Extra arguments for the ctest run (e.g. --timeout;120)
 #
 # Custom Build Targets (created when CODE_COVERAGE=ON):
-#   ccov-all       - Run all registered tests and generate aggregate HTML coverage report
-#   ccov-all-xml   - Generate Cobertura XML coverage report (requires gcovr, for CI)
+#   ccov-all       - Reset counters, run every ctest test, then write the HTML report (+ Cobertura XML if gcovr
+#                    is found) and print "Code Coverage: NN.NN%"
+#   ccov-all-xml   - Same test run, Cobertura XML only (requires gcovr, for CI)
 #   ccov-clean     - Remove generated coverage data and reports
 #
 # Report output directory: ${CMAKE_BINARY_DIR}/reports/coverage/
 #
-# Supported compilers: GCC, Clang
+# Exclude patterns are globs. Absolute patterns and patterns starting with '*' are used as is;
+# any other pattern is taken relative to the project root (e.g. "protobuf/*" -> "<root>/protobuf/*").
+#
+# Supported compilers: GCC (gcov-<major>), Clang (llvm-cov-<major> gcov)
 # Supported report tools: lcov + genhtml, gcovr (at least one recommended)
 #
 
 include_guard(GLOBAL)
 
-# CODE_COVERAGE is intentionally NOT cached so it must be explicitly passed
-# each time: cmake .. -DCODE_COVERAGE=ON
+# CODE_COVERAGE is intentionally NOT an option() so it must be explicitly passed: cmake .. -DCODE_COVERAGE=ON
 if(NOT DEFINED CODE_COVERAGE)
     set(CODE_COVERAGE OFF)
 endif()
@@ -54,6 +59,25 @@ define_property(GLOBAL PROPERTY IDICMAKE_COVERAGE_EXCLUDES
 set_property(GLOBAL PROPERTY IDICMAKE_COVERAGE_EXCLUDES "")
 
 set_property(GLOBAL PROPERTY _IDICMAKE_COVERAGE_ALL_SCHEDULED FALSE)
+set_property(GLOBAL PROPERTY _IDICMAKE_COVERAGE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/../scripts/coverage-summary.cmake")
+
+# ---------------------------------------------------------------------------
+# Internal: make a relative exclude glob absolute (relative to the project root).
+# ---------------------------------------------------------------------------
+function(_idicmake_coverage_normalize_pattern OUT_VAR PATTERN)
+    if(IS_ABSOLUTE "${PATTERN}" OR PATTERN MATCHES "^\\*")
+        set(${OUT_VAR} "${PATTERN}" PARENT_SCOPE)
+    else()
+        set(${OUT_VAR} "${PROJECT_SOURCE_DIR}/${PATTERN}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(_idicmake_coverage_add_excludes)
+    foreach(_pattern IN LISTS ARGN)
+        _idicmake_coverage_normalize_pattern(_abs "${_pattern}")
+        set_property(GLOBAL APPEND PROPERTY IDICMAKE_COVERAGE_EXCLUDES "${_abs}")
+    endforeach()
+endfunction()
 
 # ---------------------------------------------------------------------------
 # target_code_coverage(<target> [ALL] [OBJECTS <targets...>] [EXCLUDE <patterns...>])
@@ -64,7 +88,7 @@ set_property(GLOBAL PROPERTY _IDICMAKE_COVERAGE_ALL_SCHEDULED FALSE)
 #   <target>  - The CMake target to instrument
 #   ALL       - Register this executable target for the aggregate 'ccov-all' report
 #   OBJECTS   - Additional library/object targets to also instrument for coverage
-#   EXCLUDE   - File patterns to exclude from coverage analysis for this target
+#   EXCLUDE   - File patterns to exclude from the coverage reports
 #
 # Behavior by target type:
 #   OBJECT_LIBRARY / STATIC_LIBRARY : adds --coverage compile flag
@@ -81,12 +105,10 @@ function(target_code_coverage TARGET_NAME)
         return()
     endif()
 
-    # Parse arguments
     set(_options ALL)
     set(_multi OBJECTS EXCLUDE)
     cmake_parse_arguments(COV "${_options}" "" "${_multi}" ${ARGN})
 
-    # Validate target
     if(NOT TARGET ${TARGET_NAME})
         message(WARNING "[Coverage] Target '${TARGET_NAME}' does not exist. Skipping.")
         return()
@@ -94,15 +116,12 @@ function(target_code_coverage TARGET_NAME)
 
     get_target_property(_target_type ${TARGET_NAME} TYPE)
 
-    # Skip interface libraries
     if(_target_type STREQUAL "INTERFACE_LIBRARY")
         return()
     endif()
 
-    # Add coverage compile flags
     target_compile_options(${TARGET_NAME} PRIVATE --coverage)
 
-    # Add coverage link flags for targets that link
     if(_target_type STREQUAL "EXECUTABLE" OR _target_type STREQUAL "SHARED_LIBRARY")
         target_link_options(${TARGET_NAME} PRIVATE --coverage)
     endif()
@@ -120,15 +139,11 @@ function(target_code_coverage TARGET_NAME)
         endif()
     endforeach()
 
-    # Register executable targets for aggregate coverage
     if(COV_ALL AND _target_type STREQUAL "EXECUTABLE")
         set_property(GLOBAL APPEND PROPERTY IDICMAKE_COVERAGE_TARGETS ${TARGET_NAME})
     endif()
 
-    # Store exclude patterns globally
-    foreach(_pattern ${COV_EXCLUDE})
-        set_property(GLOBAL APPEND PROPERTY IDICMAKE_COVERAGE_EXCLUDES "${_pattern}")
-    endforeach()
+    _idicmake_coverage_add_excludes(${COV_EXCLUDE})
 endfunction()
 
 # ---------------------------------------------------------------------------
@@ -137,22 +152,16 @@ endfunction()
 # Schedules creation of aggregate coverage targets. The actual target creation
 # is deferred to the end of root directory processing so that all
 # target_code_coverage(ALL) registrations have been processed.
-#
-# Arguments:
-#   EXCLUDE - Additional glob patterns to exclude from the aggregate report
 # ---------------------------------------------------------------------------
 function(add_code_coverage_all_targets)
     if(NOT CODE_COVERAGE)
         return()
     endif()
 
-    # Parse arguments
     set(_multi EXCLUDE)
     cmake_parse_arguments(COV "" "" "${_multi}" ${ARGN})
 
-    foreach(_pattern ${COV_EXCLUDE})
-        set_property(GLOBAL APPEND PROPERTY IDICMAKE_COVERAGE_EXCLUDES "${_pattern}")
-    endforeach()
+    _idicmake_coverage_add_excludes(${COV_EXCLUDE})
 
     # Schedule deferred target creation (once only)
     get_property(_scheduled GLOBAL PROPERTY _IDICMAKE_COVERAGE_ALL_SCHEDULED)
@@ -163,13 +172,46 @@ function(add_code_coverage_all_targets)
 endfunction()
 
 # ---------------------------------------------------------------------------
-# Internal helper: Convert a glob pattern to a regex pattern for gcovr.
-# Only handles * -> .* conversion which covers the patterns used in this project.
+# Internal helper: convert a glob pattern to a regex for gcovr's --exclude.
 # ---------------------------------------------------------------------------
 function(_idicmake_glob_to_regex OUT_VAR GLOB_PATTERN)
-    string(REPLACE "." "\\." _regex "${GLOB_PATTERN}")
+    string(REGEX REPLACE "([][.+?^$(){}|\\\\])" "\\\\\\1" _regex "${GLOB_PATTERN}")
     string(REPLACE "*" ".*" _regex "${_regex}")
     set(${OUT_VAR} "${_regex}" PARENT_SCOPE)
+endfunction()
+
+# ---------------------------------------------------------------------------
+# Internal: find the gcov tool that matches the compiler.
+#   GCC N needs gcov-N; Clang needs "llvm-cov gcov" from the same LLVM version.
+# Sets _gcov_tool (single executable, for lcov) and _gcovr_gcov (string for gcovr) in the caller.
+# ---------------------------------------------------------------------------
+function(_idicmake_find_gcov_tool)
+    string(REGEX MATCH "^[0-9]+" _major "${CMAKE_CXX_COMPILER_VERSION}")
+    get_filename_component(_compiler_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        find_program(IDICMAKE_LLVM_COV_PATH NAMES llvm-cov-${_major} llvm-cov HINTS "${_compiler_dir}")
+        if(IDICMAKE_LLVM_COV_PATH)
+            if(WIN32)
+                # lcov is not used on Windows; gcovr accepts a command with arguments.
+                set(_gcov_tool "" PARENT_SCOPE)
+                set(_gcovr_gcov "${IDICMAKE_LLVM_COV_PATH} gcov" PARENT_SCOPE)
+            else()
+                # lcov's --gcov-tool takes a single executable, so wrap "llvm-cov gcov" in a script.
+                set(_wrapper "${CMAKE_BINARY_DIR}/coverage/llvm-gcov.sh")
+                file(WRITE "${_wrapper}" "#!/bin/sh\nexec \"${IDICMAKE_LLVM_COV_PATH}\" gcov \"$@\"\n")
+                file(CHMOD "${_wrapper}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+                set(_gcov_tool "${_wrapper}" PARENT_SCOPE)
+                set(_gcovr_gcov "${_wrapper}" PARENT_SCOPE)
+            endif()
+            return()
+        endif()
+        message(WARNING "[Coverage] Clang compiler but llvm-cov not found; falling back to gcov, which may not read Clang's coverage files.")
+    endif()
+
+    find_program(GCOV_PATH NAMES gcov-${_major} gcov HINTS "${_compiler_dir}")
+    set(_gcov_tool "${GCOV_PATH}" PARENT_SCOPE)
+    set(_gcovr_gcov "${GCOV_PATH}" PARENT_SCOPE)
 endfunction()
 
 # ---------------------------------------------------------------------------
@@ -177,45 +219,55 @@ endfunction()
 # Runs at the end of root directory processing after all targets are registered.
 # ---------------------------------------------------------------------------
 function(_idicmake_create_coverage_targets)
-    # Verify compiler support
     if(NOT (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
         message(WARNING "[Coverage] Code coverage requires GCC or Clang (found: ${CMAKE_CXX_COMPILER_ID}). Coverage targets not created.")
         return()
     endif()
 
-    # Locate coverage tools — prefer version-matched gcov for the active compiler.
-    # GCC N produces .gcno/.gcda files that require gcov-N to read.
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        string(REGEX MATCH "^[0-9]+" _gcc_major "${CMAKE_CXX_COMPILER_VERSION}")
-        find_program(GCOV_PATH gcov-${_gcc_major})
-        if(NOT GCOV_PATH)
-            find_program(GCOV_PATH gcov)
-        endif()
-    else()
-        find_program(GCOV_PATH gcov)
-    endif()
+    _idicmake_find_gcov_tool()
     find_program(LCOV_PATH lcov)
     find_program(GENHTML_PATH genhtml)
     find_program(GCOVR_PATH gcovr)
 
-    if(NOT GCOV_PATH)
+    if(NOT _gcovr_gcov)
         message(WARNING "[Coverage] gcov not found! Coverage report targets will not be created.")
         return()
     endif()
 
-    # Report tool availability
+    # lcov needs a single gcov executable (no Windows "llvm-cov gcov" string form)
+    if(NOT _gcov_tool)
+        set(LCOV_PATH "")
+    endif()
+
+    # lcov 2.x reports problems that 1.x ignored and needs them suppressed explicitly; 1.x rejects these names.
+    set(_lcov_capture_ignore "")
+    set(_lcov_remove_ignore "")
+    set(_lcov_rc "")
+    if(LCOV_PATH)
+        execute_process(COMMAND ${LCOV_PATH} --version OUTPUT_VARIABLE _lcov_version_out ERROR_QUIET)
+        string(REGEX MATCH "version ([0-9]+)" _m "${_lcov_version_out}")
+        if(CMAKE_MATCH_1 GREATER_EQUAL 2)
+            if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+                # llvm-cov gcov output has no function end lines and reports line 0 for static initializers.
+                set(_lcov_rc --rc derive_function_end_line=0)
+                set(_lcov_capture_ignore --ignore-errors negative,negative,inconsistent,inconsistent,format,format,unsupported,unsupported)
+                set(_lcov_remove_ignore --ignore-errors unused,unused,inconsistent,inconsistent,unsupported,unsupported)
+            else()
+                set(_lcov_capture_ignore --ignore-errors negative,negative,inconsistent,inconsistent)
+                set(_lcov_remove_ignore --ignore-errors unused,unused)
+            endif()
+        endif()
+    endif()
+
     message(STATUS "[Coverage] Code coverage enabled (compiler: ${CMAKE_CXX_COMPILER_ID})")
-    message(STATUS "[Coverage]   gcov:    ${GCOV_PATH}")
+    message(STATUS "[Coverage]   gcov:    ${_gcovr_gcov}")
     message(STATUS "[Coverage]   lcov:    ${LCOV_PATH}")
     message(STATUS "[Coverage]   genhtml: ${GENHTML_PATH}")
     message(STATUS "[Coverage]   gcovr:   ${GCOVR_PATH}")
 
-    # Retrieve registered targets and exclude patterns
     get_property(_coverage_targets GLOBAL PROPERTY IDICMAKE_COVERAGE_TARGETS)
     get_property(_coverage_excludes GLOBAL PROPERTY IDICMAKE_COVERAGE_EXCLUDES)
-    if(_coverage_excludes)
-        list(REMOVE_DUPLICATES _coverage_excludes)
-    endif()
+    get_property(_summary_script GLOBAL PROPERTY _IDICMAKE_COVERAGE_SCRIPT)
 
     if(NOT _coverage_targets)
         message(STATUS "[Coverage] No test targets registered for aggregate coverage.")
@@ -227,16 +279,12 @@ function(_idicmake_create_coverage_targets)
         message(STATUS "[Coverage]   - ${_target}")
     endforeach()
 
-    # Build the list of test execution commands and dependencies
-    set(_run_commands "")
-    set(_depends_list "")
-    foreach(_target ${_coverage_targets})
-        list(APPEND _run_commands COMMAND $<TARGET_FILE:${_target}>)
-        list(APPEND _depends_list ${_target})
+    # Patterns appended to the property directly (e.g. from a hook) may still be relative
+    set(_all_excludes "")
+    foreach(_pattern IN LISTS _coverage_excludes)
+        _idicmake_coverage_normalize_pattern(_abs "${_pattern}")
+        list(APPEND _all_excludes "${_abs}")
     endforeach()
-
-    # Combine user excludes with standard exclusion patterns
-    set(_all_excludes ${_coverage_excludes})
     list(APPEND _all_excludes
         "/usr/*"
         "*/Catch2/*"
@@ -247,116 +295,86 @@ function(_idicmake_create_coverage_targets)
 
     set(_report_dir "${CMAKE_BINARY_DIR}/reports/coverage")
 
+    # Steps shared by every report target: reset counters, then run all tests through ctest so tests a project
+    # registers with plain add_test() (scripts, system tests) count too. A failing test fails the target.
+    set(_reset_and_run
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}"
+        COMMAND ${CMAKE_COMMAND} -DACTION=zero -DBUILD_DIR=${CMAKE_BINARY_DIR} -P "${_summary_script}"
+        COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} -C $<CONFIG> --output-on-failure ${IDICMAKE_COVERAGE_CTEST_ARGS}
+    )
+
+    set(_gcovr_args "")
+    if(GCOVR_PATH)
+        set(_gcovr_args -r ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}
+            --gcov-executable "${_gcovr_gcov}"
+            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file)
+        foreach(_pattern ${_all_excludes})
+            _idicmake_glob_to_regex(_regex "${_pattern}")
+            list(APPEND _gcovr_args -e "${_regex}")
+        endforeach()
+    endif()
+
+    set(_fail_under "")
+    if(DEFINED IDICMAKE_COVERAGE_FAIL_UNDER AND NOT IDICMAKE_COVERAGE_FAIL_UNDER STREQUAL "")
+        set(_fail_under "-DFAIL_UNDER=${IDICMAKE_COVERAGE_FAIL_UNDER}")
+    endif()
+
     # -----------------------------------------------------------------
-    # Create ccov-all target based on available tools
-    # Preference: lcov+genhtml > gcovr > basic (gcov data only)
+    # ccov-all — preference: lcov+genhtml > gcovr > basic (gcov data only)
     # -----------------------------------------------------------------
     if(LCOV_PATH AND GENHTML_PATH)
-        # --- lcov + genhtml path ---
-        set(_lcov_remove_args "")
-        foreach(_pattern ${_all_excludes})
-            list(APPEND _lcov_remove_args "${_pattern}")
-        endforeach()
-
-        add_custom_target(ccov-all
-            # Create report directory
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}"
-            # Zero counters from any previous run
-            COMMAND ${LCOV_PATH} --directory ${CMAKE_BINARY_DIR} --zerocounters
-            --gcov-tool ${GCOV_PATH}
-            # Run all test executables
-            ${_run_commands}
-            # Capture coverage data
-            COMMAND ${LCOV_PATH} --directory ${CMAKE_BINARY_DIR} --capture
-            --output-file "${_report_dir}/coverage.info"
-            --gcov-tool ${GCOV_PATH}
-            # Remove excluded paths (--ignore-errors unused: lcov 2.0+ errors on patterns that match nothing)
-            COMMAND ${LCOV_PATH} --remove "${_report_dir}/coverage.info"
-            ${_lcov_remove_args}
-            --output-file "${_report_dir}/coverage.info"
-            --gcov-tool ${GCOV_PATH}
-            --ignore-errors unused,unused
-            # Generate HTML report
-            COMMAND ${GENHTML_PATH} "${_report_dir}/coverage.info"
-            --output-directory "${_report_dir}/html"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] HTML report: ${_report_dir}/html/index.html"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] LCOV info:   ${_report_dir}/coverage.info"
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            DEPENDS ${_depends_list}
-            COMMENT "Generating aggregate code coverage report (lcov + genhtml)"
-            VERBATIM
-        )
-
-        # If gcovr is also available, add an XML report target for CI integration
+        set(_xml_commands "")
         if(GCOVR_PATH)
-            set(_gcovr_excludes "")
-            foreach(_pattern ${_all_excludes})
-                _idicmake_glob_to_regex(_regex "${_pattern}")
-                list(APPEND _gcovr_excludes -e "${_regex}")
-            endforeach()
-
-            add_custom_target(ccov-all-xml
-                COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}"
-                ${_run_commands}
-                COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
-                --gcov-executable ${GCOV_PATH}
-                --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
-                --xml-pretty -o "${_report_dir}/coverage.xml"
-                COMMAND ${CMAKE_COMMAND} -E echo
-                "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                DEPENDS ${_depends_list}
-                COMMENT "Generating Cobertura XML code coverage report (gcovr)"
-                VERBATIM
+            set(_xml_commands
+                COMMAND ${GCOVR_PATH} ${_gcovr_args} --xml-pretty -o "${_report_dir}/coverage.xml"
+                COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
             )
         endif()
 
-    elseif(GCOVR_PATH)
-        # --- gcovr path (HTML + XML) ---
-        set(_gcovr_excludes "")
-        foreach(_pattern ${_all_excludes})
-            _idicmake_glob_to_regex(_regex "${_pattern}")
-            list(APPEND _gcovr_excludes -e "${_regex}")
-        endforeach()
-
         add_custom_target(ccov-all
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}/html"
-            ${_run_commands}
-            # Generate HTML report
-            COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
-            --gcov-executable ${GCOV_PATH}
-            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
-            --html --html-details
-            -o "${_report_dir}/html/index.html"
-            # Generate XML report
-            COMMAND ${GCOVR_PATH} -r ${CMAKE_SOURCE_DIR} ${_gcovr_excludes}
-            --gcov-executable ${GCOV_PATH}
-            --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
-            --xml-pretty -o "${_report_dir}/coverage.xml"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] HTML report:   ${_report_dir}/html/index.html"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
+            ${_reset_and_run}
+            COMMAND ${LCOV_PATH} --directory ${CMAKE_BINARY_DIR} --capture --quiet
+                --output-file "${_report_dir}/coverage.info"
+                --gcov-tool ${_gcov_tool}
+                ${_lcov_rc} ${_lcov_capture_ignore}
+            COMMAND ${LCOV_PATH} --remove "${_report_dir}/coverage.info" ${_all_excludes} --quiet
+                --output-file "${_report_dir}/coverage.info"
+                --gcov-tool ${_gcov_tool}
+                ${_lcov_rc} ${_lcov_remove_ignore}
+            COMMAND ${GENHTML_PATH} "${_report_dir}/coverage.info" --quiet ${_lcov_rc}
+                --output-directory "${_report_dir}/html"
+            ${_xml_commands}
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] HTML report: ${_report_dir}/html/index.html"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] LCOV info:   ${_report_dir}/coverage.info"
+            COMMAND ${CMAKE_COMMAND} -DACTION=summary "-DINFO_FILE=${_report_dir}/coverage.info" ${_fail_under} -P "${_summary_script}"
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            DEPENDS ${_depends_list}
+            DEPENDS ${_coverage_targets}
+            COMMENT "Generating aggregate code coverage report (lcov + genhtml)"
+            VERBATIM
+        )
+    elseif(GCOVR_PATH)
+        add_custom_target(ccov-all
+            ${_reset_and_run}
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${_report_dir}/html"
+            COMMAND ${GCOVR_PATH} ${_gcovr_args}
+                --html-details "${_report_dir}/html/index.html"
+                --xml-pretty -o "${_report_dir}/coverage.xml"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] HTML report:   ${_report_dir}/html/index.html"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
+            COMMAND ${CMAKE_COMMAND} -DACTION=summary "-DXML_FILE=${_report_dir}/coverage.xml" ${_fail_under} -P "${_summary_script}"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS ${_coverage_targets}
             COMMENT "Generating aggregate code coverage report (gcovr)"
             VERBATIM
         )
-
     else()
-        # --- Basic: no report tools, just run tests to generate .gcda files ---
         add_custom_target(ccov-all
-            ${_run_commands}
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] Raw coverage data (.gcda/.gcno) generated in ${CMAKE_BINARY_DIR}"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage] Install lcov+genhtml or gcovr for HTML/XML report generation:"
-            COMMAND ${CMAKE_COMMAND} -E echo
-            "[Coverage]   apt install lcov   OR   pip install gcovr"
+            ${_reset_and_run}
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] Raw coverage data (.gcda/.gcno) generated in ${CMAKE_BINARY_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] Install lcov+genhtml or gcovr for HTML/XML report generation:"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage]   apt install lcov   OR   pip install gcovr"
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            DEPENDS ${_depends_list}
+            DEPENDS ${_coverage_targets}
             COMMENT "Running tests for coverage data collection (no report tools found)"
             VERBATIM
         )
@@ -365,17 +383,30 @@ function(_idicmake_create_coverage_targets)
         message(STATUS "[Coverage]     apt install lcov   OR   pip install gcovr")
     endif()
 
-    # --- Always create ccov-clean target ---
+    # XML-only target for CI
+    if(GCOVR_PATH)
+        add_custom_target(ccov-all-xml
+            ${_reset_and_run}
+            COMMAND ${GCOVR_PATH} ${_gcovr_args} --xml-pretty -o "${_report_dir}/coverage.xml"
+            COMMAND ${CMAKE_COMMAND} -E echo "[Coverage] Cobertura XML: ${_report_dir}/coverage.xml"
+            COMMAND ${CMAKE_COMMAND} -DACTION=summary "-DXML_FILE=${_report_dir}/coverage.xml" ${_fail_under} -P "${_summary_script}"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS ${_coverage_targets}
+            COMMENT "Generating Cobertura XML code coverage report (gcovr)"
+            VERBATIM
+        )
+    endif()
+
     add_custom_target(ccov-clean
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${_report_dir}"
-        COMMENT "Removing coverage reports from ${_report_dir}"
+        COMMAND ${CMAKE_COMMAND} -DACTION=zero -DBUILD_DIR=${CMAKE_BINARY_DIR} -P "${_summary_script}"
+        COMMENT "Removing coverage reports from ${_report_dir} and resetting counters"
+        VERBATIM
     )
 
-    if(_coverage_excludes)
-        message(STATUS "[Coverage] Exclude patterns:")
-        foreach(_pattern ${_coverage_excludes})
-            message(STATUS "[Coverage]   - ${_pattern}")
-        endforeach()
-    endif()
+    message(STATUS "[Coverage] Exclude patterns:")
+    foreach(_pattern ${_all_excludes})
+        message(STATUS "[Coverage]   - ${_pattern}")
+    endforeach()
     message(STATUS "[Coverage] Report directory: ${_report_dir}/")
 endfunction()

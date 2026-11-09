@@ -45,6 +45,8 @@ if(NOT IDICMAKE_DID_UPDATE AND NOT IDICMAKE_TEMPLATE_LOADED)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/framework/idi_src.cmake)
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_code_coverage.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_lint.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_docs.cmake)
 
     set(IDICMAKE_TEMPLATE_LOADED true)
 endif()

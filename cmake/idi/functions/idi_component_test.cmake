@@ -72,7 +72,7 @@ function(__idi_component_test component_name test_file)
         # the system install dir, this lets tests for the .so on linux.
         set_property(TARGET ${CURRENT_LIBRARY_TEST} PROPERTY BUILD_WITH_INSTALL_RPATH OFF)
     endif()
-    target_code_coverage("${CURRENT_LIBRARY_TEST}" ALL OBJECTS "${__LIBRARY_LIST}" EXCLUDE tests/* lib/*)
+    target_code_coverage("${CURRENT_LIBRARY_TEST}" ALL OBJECTS "${__LIBRARY_LIST}" EXCLUDE "*/tests/*" "${PROJECT_SOURCE_DIR}/lib/*")
     # message(WARNING "TEST LIBS: ${__LIBRARY_LIST}")
 endfunction()
 

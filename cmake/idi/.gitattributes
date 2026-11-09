@@ -1,0 +1,4 @@
+# Line endings for the framework tools (delivered by the updater with cmake/idi/).
+*.bat text eol=crlf
+*.sh text eol=lf
+tools/pre-commit text eol=lf

@@ -32,6 +32,8 @@
 *.app
 
 build/*
+# Wrapper build dirs (build-lint/, build-coverage/) and any other build-* dir
+build-*/
 .vscode/*
 
 *.out.cpp

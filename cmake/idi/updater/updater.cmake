@@ -6,8 +6,20 @@ macro(move_var)
 endmacro()
 
 macro(do_error)
-    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+    file(REMOVE_RECURSE ${__framework_update_tmp_dir})
+    file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl")
     message(FATAL_ERROR ${ARGN})
+endmacro()
+
+# Archives (e.g. GitHub's archive/<ref>.zip) usually hold a single top-level folder: use it as the update root.
+macro(descend_single_folder)
+    if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
+        file(GLOB __framework_update_entries "${FRAMEWORK_UPDATE_DIR}/*")
+        list(LENGTH __framework_update_entries __framework_update_entry_count)
+        if(__framework_update_entry_count EQUAL 1 AND IS_DIRECTORY "${__framework_update_entries}")
+            set(FRAMEWORK_UPDATE_DIR "${__framework_update_entries}")
+        endif()
+    endif()
 endmacro()
 
 if(DO_FRAMEWORK_UPDATE)
@@ -23,6 +35,7 @@ if(DO_FRAMEWORK_UPDATE)
     message(STATUS "Updating IDI CMake Framework!")
 
     set(FRAMEWORK_UPDATE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.idi-framework-update")
+    set(__framework_update_tmp_dir "${FRAMEWORK_UPDATE_DIR}")
 
     file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
     file(MAKE_DIRECTORY ${FRAMEWORK_UPDATE_DIR})
@@ -44,6 +57,9 @@ if(DO_FRAMEWORK_UPDATE)
             PATTERN ".idi-framework-update" EXCLUDE
             PATTERN "build" EXCLUDE
             PATTERN ".git" EXCLUDE
+            PATTERN "third-party" EXCLUDE
+            PATTERN "first-party" EXCLUDE
+            PATTERN "worktrees" EXCLUDE
         )
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
@@ -54,15 +70,27 @@ if(DO_FRAMEWORK_UPDATE)
             do_error("FRAMEWORK_UPDATE_MODE is 'file', but FRAMEWORK_UPDATE_FILE_LOC is not defined!")
         endif()
 
-        file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${__framework_update_file_loc}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+        if(IS_ABSOLUTE "${__framework_update_file_loc}")
+            set(__framework_update_archive "${__framework_update_file_loc}")
+        else()
+            set(__framework_update_archive "${CMAKE_CURRENT_SOURCE_DIR}/${__framework_update_file_loc}")
+        endif()
+        file(ARCHIVE_EXTRACT INPUT "${__framework_update_archive}" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+        descend_single_folder()
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The file provided via FRAMEWORK_UPDATE_FILE_LOC does not appear to be a valid template update!")
         endif()
     elseif(__framework_update_mode STREQUAL "url")
-        file(DOWNLOAD ${__framework_update_url} "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl")
+        file(DOWNLOAD ${__framework_update_url} "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl" STATUS __framework_update_dl_status)
+        list(GET __framework_update_dl_status 0 __framework_update_dl_code)
+        if(NOT __framework_update_dl_code EQUAL 0)
+            do_error("Downloading ${__framework_update_url} failed: ${__framework_update_dl_status}")
+        endif()
 
         file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl" DESTINATION ${FRAMEWORK_UPDATE_DIR})
+        file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/.idi_framework_dl")
+        descend_single_folder()
 
         if(NOT (EXISTS "${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/updater_version.cmake"))
             do_error("The downloaded file provided via FRAMEWORK_UPDATE_URL does not appear to be a valid template update!")
@@ -102,8 +130,10 @@ if(DO_FRAMEWORK_UPDATE)
         include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/updater/updater_imp.cmake")
     endif()
 
-    file(REMOVE_RECURSE ${FRAMEWORK_UPDATE_DIR})
+    file(REMOVE_RECURSE ${__framework_update_tmp_dir})
 
+    message(STATUS "IDI CMake Framework updated: ${__old_ver} -> ${__new_ver}. Run cmake again to configure the project.")
+    message(STATUS "Tip: cmake/idi/tools/update.sh (or update.bat) previews, verifies and can commit future updates.")
 
     set(IDICMAKE_DID_UPDATE true)
 

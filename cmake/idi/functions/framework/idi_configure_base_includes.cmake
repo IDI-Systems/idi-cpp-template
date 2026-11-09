@@ -18,6 +18,9 @@ macro(idi_configure_common_includes)
         -Dgit_branch_name="${IDICMAKE_CI_GIT_BRANCH_NAME}"
         -Didi_c_caps_namespace="${__idi_c_caps_namespace}"
         -P "${PROJECT_SOURCE_DIR}/cmake/idi/scripts/build-info.cmake"
+        # Declared so Ninja re-checks the header after this step and recompiles its users when the git
+        # state changes mid-build (e.g. a working tree that turns dirty right after a framework update).
+        BYPRODUCTS "${CMAKE_CURRENT_LIST_DIR}/__build_info.out.h"
         )
 
     add_dependencies("${IDICMAKE_PROJECT_NAME}_base" "${IDICMAKE_PROJECT_NAME}_GetBuildInfo")

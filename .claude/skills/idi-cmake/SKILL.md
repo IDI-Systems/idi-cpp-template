@@ -1,6 +1,6 @@
 ---
 name: idi-cmake
-description: How the IDI C++ CMake template/framework (cmake/idi/, idi_* functions, IDICMAKE_* variables) works and how to work inside a project built on it. Use whenever editing CMakeLists.txt or *.cmake files in a project that has cmake/idi/idi-template.cmake; adding or changing a component, sources, headers, or public (shared-library) headers; adding a dependency (idi_add_first_party_dependency / idi_add_third_party_dependency); adding tests, demos, or coverage; changing build type (exe/static/shared), options, compile flags, or platform_config.h defines; installing or consuming the project from another project; updating the framework (DO_FRAMEWORK_UPDATE); starting a new project from the template; or changing the framework itself.
+description: How the IDI C++ CMake template/framework (cmake/idi/, idi_* functions, IDICMAKE_* variables) works and how to work inside a project built on it. Use whenever editing CMakeLists.txt or *.cmake files in a project that has cmake/idi/idi-template.cmake; adding or changing a component, sources, headers, or public (shared-library) headers; adding a dependency (idi_add_first_party_dependency / idi_add_third_party_dependency); adding tests, demos, or coverage; running or configuring lint (clang-format/clang-tidy), coverage or Doxygen docs; changing build type (exe/static/shared), options, compile flags, or platform_config.h defines; installing or consuming the project from another project; updating the framework (DO_FRAMEWORK_UPDATE); starting a new project from the template; or changing the framework itself.
 ---
 
 # IDI C++ CMake framework
@@ -52,6 +52,7 @@ or component instead.
 | `src/CMakeLists.txt` | `src/components.cmake`, `src/main/**`, every other `src/<component>/` |
 | `lib/.gitignore` | `lib/libraries.cmake`, `demo/**`, `cmake-hooks/**` |
 | `.claude/skills/idi-cmake/**` (this skill) | CI files, `README.md`, dotfiles, `CLAUDE.md` |
+| `cmake/idi/tools/*` (lint/coverage/docs/update scripts), `cmake/idi/CHANGELOG.md` | `new_component.{sh,bat}`, `docs/` |
 
 Exception: when working **in the template repository itself** (the
 `idi-cpp-template` / `cmake-cpp` repo), template-owned files are the product —
@@ -65,9 +66,10 @@ changes how every following bare argument is treated.
 
 **Add a component** — scaffold it, don't hand-write it:
 ```sh
-cmake -S . -B build -DNEW_COMPONENT_NAME=foo   # creates src/foo/ from cmake/idi/templates/template_component
+./new_component.sh foo                          # or: cmake -S . -B build -DNEW_COMPONENT_NAME=foo
 ```
-It overwrites without asking, so make sure `src/foo/` doesn't exist first.
+Creates `src/foo/` from `cmake/idi/templates/template_component`. The script refuses an
+existing `src/foo/` and invalid names; the raw cmake form overwrites without asking.
 Then add `add_subdirectory(foo)` to `src/components.cmake` (the framework only
 prints a reminder) and re-configure. Edit dependencies on other components in
 `src/foo/CMakeLists.txt`: `idi_component(foo base other_component EXTERNAL_LIBRARIES spdlog::spdlog)`.
@@ -112,21 +114,38 @@ to every framework target). Per-target tweaks: `cmake-hooks/post-target-compile-
 path is resolved against the directory cmake runs in, not the build dir: `../platform-config.*.cmake`
 is right only when running `cmake ..` from inside the build dir (as CI does).
 
-**Coverage** — `cmake -B build-cov -DCODE_COVERAGE=ON && cmake --build build-cov --target ccov-all`
+**Coverage** — `cmake/idi/tools/coverage.sh` (own `build-coverage/` dir; `--fail-under N`), or
+`cmake -B build-cov -DCODE_COVERAGE=ON && cmake --build build-cov && cmake --build build-cov --target ccov-all`
 (GCC/Clang only; forces Debug; use a separate build dir since the `-D` sticks in the cache).
+Runs every ctest test; prints `Code Coverage: NN.NN%`.
 
-**Update the framework** — `cmake -B build -DDO_FRAMEWORK_UPDATE=ON`
-(optional `-DFRAMEWORK_UPDATE_MODE=url|file|folder` + `FRAMEWORK_UPDATE_URL` /
-`_FILE_LOC` / `_FOLDER_LOC`, `-DFRAMEWORK_UPDATE_FORCE=ON`). The configure stops
-after updating; run cmake again. Review `git diff` afterwards: anything lost
-in a template-owned file was a project change in the wrong place.
+**Lint** — `cmake/idi/tools/lint.sh` (format check + clang-tidy gate; `--fix --format-only`
+reformats, `--clang-version N` pins tools, `--demos` adds `demo/` (off by default), files as
+arguments limit the check), or the
+`format` / `format-check` / `tidy` / `tidy-report` / `lint` targets. Naming rules come from
+the project's `.clang-tidy`; dirs/excludes/gate checks from `IDICMAKE_LINT_*` (set in
+`cmake-hooks/post-options.cmake`). Code you write in a project should pass `lint.sh`.
+
+**Docs** — `cmake/idi/tools/docs.sh` or `cmake --build build --target docs` → `build/docs/html/`.
+Documents component `include/` headers (public ones only for shared libraries); front page
+`docs/mainpage.md`. Override Doxyfile keys with `DOXYGEN_<KEY>` in a hook.
+
+**Update the framework** — `cmake/idi/tools/update.sh --check` previews (versions, every
+changed/new/**deleted** file in the managed paths, changelog), then `update.sh` applies,
+rebuilds and runs ctest (`--commit`, `--ref <tag>`, `--folder <dir>`, `--file <zip>`, `-y`).
+It needs a clean git tree. Files it would delete in `src/base/` etc. are project files in the
+wrong place: move them into a project component or hook *before* updating. Low-level form:
+`cmake -B build -DDO_FRAMEWORK_UPDATE=ON` (+ `-DFRAMEWORK_UPDATE_MODE=url|file|folder` and
+`FRAMEWORK_UPDATE_URL` / `_FILE_LOC` / `_FOLDER_LOC`, `-DFRAMEWORK_UPDATE_FORCE=ON`); it stops
+after updating, run cmake again. Projects on ≤ 6.3.2 must use the cmake form once (with a local
+folder or archive). Per-release manual steps: `cmake/idi/CHANGELOG.md`.
 
 **Start a new project from the template** — see "New project checklist" in
 `reference/build-install.md`.
 
 ## Reference files
 
-- `reference/functions.md` — every public `idi_*` function and macro: signature, keywords, behavior.
+- `reference/functions.md` — every public `idi_*` function and macro: signature, keywords, behavior; coverage, lint and docs targets and variables.
 - `reference/layout.md` — component anatomy, base component, `src/main`, hook order and scoping, scaffolding placeholders.
 - `reference/build-install.md` — options and variables, build types, generated headers (export/version/build info/umbrella), install layout, consuming from another project, CI, new-project checklist.
 - `reference/maintaining.md` — changing the framework itself: versioning rules, updater, keeping this skill in sync, known issues.
