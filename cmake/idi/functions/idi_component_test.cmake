@@ -59,7 +59,9 @@ function(__idi_component_test component_name test_file)
         list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
         list(APPEND __LIBRARY_LIST ${IDICMAKE_CORE})
     else()
-        target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${CURRENT_LIBRARY_NAME}")
+        # Link the component under test by name: CURRENT_LIBRARY_NAME belongs to idi_component_setup's function
+        # scope and is not reliably set where tests.cmake runs.
+        target_link_libraries("${CURRENT_LIBRARY_TEST}" PUBLIC "${IDICMAKE_PROJECT_NAME}_${component_name}")
         list(APPEND __LIBRARY_LIST ${CURRENT_LIBRARY_TEST})
     endif()
 

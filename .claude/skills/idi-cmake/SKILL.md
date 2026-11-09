@@ -27,6 +27,9 @@ framework version shipped alongside it in `cmake/idi/` (see
   static consumers and other components) and
   `src/<component>/include/<proj>/public/` (C-ABI exported API of the shared
   library, decorated with `<CNS>_EXPORT`).
+- A shared library's C++ contract headers (for consumers that must not link it,
+  e.g. a plugin opened by a loader) go in a `HEADER_ONLY` component named
+  `contracts` → consumers link `<proj>_contracts`, never `<proj>_public`.
 - `<proj>` = `IDICMAKE_PROJECT_NAME`. `<P>` = its upper-case form (option
   prefix). `<CNS>` = upper-case `vendor_app` C namespace (macro prefix, e.g.
   `IDI_APP`). C++ namespace is `vendor::app`.
@@ -105,7 +108,9 @@ to every framework target). Per-target tweaks: `cmake-hooks/post-target-compile-
 (target name is `${compile_target}`). Defaults: C++20, `-Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions`, MSVC `/W4 /WX`.
 
 **Switch build type** — edit `IDICMAKE_IS_LIBRARY`/`IDICMAKE_IS_SHARED`, or pass
-`-DIDICMAKE_PLATFORM_CONFIG=../platform-config.shared.cmake` (also `.static`, `.exe`).
+`-DIDICMAKE_PLATFORM_CONFIG=$PWD/platform-config.shared.cmake` (also `.static`, `.exe`). A relative
+path is resolved against the directory cmake runs in, not the build dir: `../platform-config.*.cmake`
+is right only when running `cmake ..` from inside the build dir (as CI does).
 
 **Coverage** — `cmake -B build-cov -DCODE_COVERAGE=ON && cmake --build build-cov --target ccov-all`
 (GCC/Clang only; forces Debug; use a separate build dir since the `-D` sticks in the cache).

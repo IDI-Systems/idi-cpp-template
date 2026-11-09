@@ -80,6 +80,12 @@ src/
            |--- exported_impl.h         # C exported function headers for shared lib
  ```
 
+### Header-Only Components and Contracts
+
+A component declared with `idi_component(<name> HEADER_ONLY ...)` is an `INTERFACE` library with no sources. In a **shared** library project, a header-only component is the way to publish C++ headers that other projects compile against *without linking the shared library*: for example the port definitions, interface contracts and data types of a plugin that is loaded at run time by a loader. By convention such a component is called `contracts`, so consumers link `<project_name>_contracts`. All of its headers are installed (under `includes/<project_name>/`), not only `public` ones, and its dependencies should be header-only too.
+
+The `<project_name>_public` target is different: it exposes the C ABI headers and links the shared library itself, so it is not for consumers of a plugin that a loader loads.
+
  ### Component Include Files
 
 The `include/project_name` folder will also include a `include.cmake` file that declares the header files. This file also includes the `public/public.cmake` file. See the documentation below for `idi_add_includes` and `idi_add_public_includes` respectively for more information.

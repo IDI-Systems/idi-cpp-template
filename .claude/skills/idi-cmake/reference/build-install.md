@@ -56,6 +56,12 @@ templates and gitignored; never edit or commit them.
 - `<proj>/public/version.h` → C API `<cns>_get_version_*`, `_get_git_hash_short/long`,
   `_get_git_branch`, `_get_git_is_dirty`, `_get_build_timestamp`; C++ equivalents in
   `<proj>/version.hpp` (`vendor::app::base`).
+- `export.h`, `platform_config.h`, `idi_version.h`, `version.h` and `version.hpp` are
+  forwarding headers that only include their `__*.out.*` file. They are byte-identical
+  in every project, so since 6.3.2 they have **no `#pragma once`** (the `.out` files,
+  unique per project, carry the guard): GCC merges `#pragma once` files with the same
+  content, size and mtime second, which silently dropped a second project's `version.h`
+  from a translation unit including both.
 - `__build_info.out.h` is regenerated **at build time** by the `<proj>_GetBuildInfo`
   target (`cmake/idi/scripts/build-info.cmake`).
 - Shared builds: umbrella header `build/generated/<proj>/<proj>.h` including every
@@ -65,7 +71,8 @@ templates and gitignored; never edit or commit them.
 
 - Headers: `includes/<proj>/<proj>/...` (note `includes`, not `include`). Static
   and exe builds install all `idi_add_includes` + public headers; shared builds
-  install only public headers + the umbrella header.
+  install only public headers + the umbrella header, plus every header of a
+  `HEADER_ONLY` component.
 - Executable: `RUNTIME` (`bin/`). Shared lib: `LIBRARY` (`lib/` on Linux).
 - No `install(EXPORT)`, no `<proj>Config.cmake`: **`find_package(<proj>)` is not
   supported.** Static-library builds don't install the `.a`/`.lib`.
@@ -86,6 +93,15 @@ is skipped via `if(NOT TARGET <proj>)`.
 Link targets: `<proj>` (the static or shared library), `<proj>_public` (shared:
 only public headers — preferred for consumers), or individual `<proj>_<component>`
 object libraries.
+
+**Contracts of a run-time loaded shared library (plugins).** `<proj>_public`
+links the shared library (`$<LINK_ONLY:<proj>>`), so it is wrong for a host or
+another plugin that must not link a plugin the loader opens at run time. Such a
+project publishes its C++ contract headers (port definitions, interface
+contracts, type ids, schemas) in a `HEADER_ONLY` component named `contracts`;
+consumers link `<proj>_contracts`, an `INTERFACE` target that carries only
+include dirs and its own header-only dependencies. Shared builds install its
+headers under `includes/<proj>/<proj>/`.
 
 ## CI
 

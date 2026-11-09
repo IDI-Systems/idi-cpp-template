@@ -81,13 +81,21 @@ function(idi_component_setup component_name)
     #     target_include_directories(${CURRENT_LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/)
     # endif()
     if(IDICMAKE_IS_SHARED)
-        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
-        set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
-        install(TARGETS "${CURRENT_LIBRARY_NAME}"
-                FILE_SET core_public_includes DESTINATION includes/${IDICMAKE_PROJECT_NAME}
-        )
-        target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-
+        if (HEADER_ONLY)
+            # A header-only component of a shared library is a contract (C++ headers that consumers compile against
+            # without linking the library), so all of its headers are installed and its include dir is INTERFACE.
+            install(TARGETS "${CURRENT_LIBRARY_NAME}"
+                FILE_SET core_includes DESTINATION includes/${IDICMAKE_PROJECT_NAME}
+            )
+            target_include_directories(${CURRENT_LIBRARY_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
+        else()
+            set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES CXX_VISIBILITY_PRESET hidden)
+            set_target_properties("${CURRENT_LIBRARY_NAME}" PROPERTIES C_VISIBILITY_PRESET hidden)
+            install(TARGETS "${CURRENT_LIBRARY_NAME}"
+                    FILE_SET core_public_includes DESTINATION includes/${IDICMAKE_PROJECT_NAME}
+            )
+            target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+        endif()
     else()
         install(TARGETS "${CURRENT_LIBRARY_NAME}"
             FILE_SET core_includes DESTINATION includes/${IDICMAKE_PROJECT_NAME}
@@ -108,11 +116,17 @@ function(idi_component_setup component_name)
     idi_cmake_hook(post-component)
 endfunction()
 
+# idi_component_setup is a function, so the variables it sets do not reach the component's directory scope.
+# Set the ones tests.cmake and later component code may rely on here.
 macro(idi_component component_name)
     idi_component_setup(${component_name} ${ARGN})
+    set(CURRENT_LIBRARY_NAME "${IDICMAKE_PROJECT_NAME}_${component_name}")
+    set(CURRENT_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}")
     include("${CMAKE_CURRENT_LIST_DIR}/tests/tests.cmake")
 endmacro()
 
 macro(idi_component_no_tests component_name)
     idi_component_setup(${component_name} ${ARGN})
+    set(CURRENT_LIBRARY_NAME "${IDICMAKE_PROJECT_NAME}_${component_name}")
+    set(CURRENT_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}")
 endmacro()

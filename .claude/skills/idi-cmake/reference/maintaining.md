@@ -47,10 +47,16 @@ Test with `-DDO_TEMPLATE_COMPONENT_TEST=1` (builds `src/unit_test_component`).
 
 ```sh
 for t in exe static shared; do
-  cmake -S . -B build-$t -DIDICMAKE_PLATFORM_CONFIG=../platform-config.$t.cmake -DDO_TEMPLATE_COMPONENT_TEST=1 \
+  cmake -S . -B build-$t -DIDICMAKE_PLATFORM_CONFIG=$PWD/platform-config.$t.cmake -DDO_TEMPLATE_COMPONENT_TEST=1 \
         -DTEMPLATE_PROJECT_BUILD_DEMOS=1 && cmake --build build-$t && ctest --test-dir build-$t -C Debug
 done
 ```
+The platform config path must be absolute (or relative to the directory cmake runs in). If
+configure fails before the platform config loads, the `unit_test_component` scaffold is written
+with an empty project name (`include/` without the `<proj>` folder): delete `src/unit_test_component/`
+before re-running. A HEADER_ONLY component is not covered by the matrix; when touching header-only or
+test code, add one (with an `EXCLUDE_CORE` `idi_component_test_public`) in a scratch copy and build shared.
+
 Updater test: copy an older checkout (or a derived project) somewhere, then
 `cmake -S <copy> -B <copy>/build -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=folder -DFRAMEWORK_UPDATE_FOLDER_LOC=$PWD`,
 re-run cmake, build, ctest.
@@ -71,7 +77,19 @@ grep -rhoE "^(function|macro)\((idi_[a-z_]+|target_code_coverage|add_code_covera
   | sed -E 's/.*\(//' | sort -u | while read f; do grep -q "$f" .claude/skills/idi-cmake/reference/functions.md || echo "undocumented: $f"; done
 ```
 
-## Known issues (as of framework 6.3.0)
+## Rules learned the hard way
+
+- Never put `#pragma once` in a header whose content is the same in every derived project
+  (a forwarding header, or anything without the project name or namespace in it). GCC treats
+  `#pragma once` files with identical content, size and mtime second as one file, and the
+  updater writes every project's copy in the same second. Either leave the guard out (when the
+  file only includes a guarded, project-unique header) or make the content project-specific by
+  configuring it. Fixed for the base forwarding headers in 6.3.2.
+- Code that runs in a component's directory scope (`tests/tests.cmake`, the component's
+  `CMakeLists.txt`) cannot see variables set inside `idi_component_setup` (a function). Pass the
+  component name instead, or set the variable in the `idi_component*` macro.
+
+## Known issues (as of framework 6.3.2)
 
 - `<P>_DO_TEMPLATE_COMPONENT_TEST` is defined and mirrored to
   `IDICMAKE_DO_TEMPLATE_COMPONENT_TEST`, but `idi_new_component.cmake` and

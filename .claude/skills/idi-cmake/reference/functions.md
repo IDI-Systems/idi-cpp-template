@@ -20,6 +20,10 @@ idi_component(<name> [HEADER_ONLY]
 idi_component_no_tests(<name> ...)                    # same, skips tests/tests.cmake
 ```
 - Creates `${IDICMAKE_PROJECT_NAME}_<name>`: `OBJECT` library (or `INTERFACE` with `HEADER_ONLY`).
+- `HEADER_ONLY` works in every build type. In a shared build it gets an `INTERFACE` include dir, no visibility
+  settings, and installs all its headers (`core_includes`), not only public ones: it is the project's contract
+  package (convention: a component named `contracts`, see build-install.md "Consuming"). Fixed in 6.3.1; before,
+  a header-only component failed to configure in shared builds.
 - `ADDITIONAL_LIBRARIES`: other components by **bare name**; links `<proj>_<component>` PUBLIC.
 - `EXTERNAL_LIBRARIES`: any CMake target, linked PUBLIC (INTERFACE if header-only).
 - `ADDITIONAL_INCLUDES`: `SYSTEM PRIVATE` include dirs. `ADDITIONAL_SOURCES`: PRIVATE sources.
@@ -27,6 +31,9 @@ idi_component_no_tests(<name> ...)                    # same, skips tests/tests.
 - Includes `objects.cmake`, links the component into `${IDICMAKE_CORE}`, adds `include/` as a PUBLIC include, sets up install file sets, PIC (shared or `<P>_FORCE_PIC`), hidden visibility (shared), coverage.
 - `idi_component` then includes `tests/tests.cmake`.
 - Sets `CURRENT_LIBRARY_NAME` / `CURRENT_LIBRARY_DIR` while `objects.cmake` and the `*-component` hooks run.
+  Since 6.3.2 the `idi_component` / `idi_component_no_tests` macros also set both in the component's directory
+  scope, so `tests/tests.cmake` and the rest of the component's `CMakeLists.txt` see this component's values
+  (before, they saw an empty or stale value: `idi_component_setup` is a function).
 
 ## Sources and headers — `idi_add_sources.cmake`
 
@@ -84,7 +91,10 @@ idi_component_test_public(<component> <test_file> ...)
 ```
 - Executable + CTest test named `<proj>_<component>_<test file stem>`, run from the runtime output dir (`build/bin`).
 - Links `Catch2::Catch2WithMain` (unless `NO_CATCH`) and `${IDICMAKE_CORE}`
-  (with `EXCLUDE_CORE`: only the current component `${CURRENT_LIBRARY_NAME}`).
+  (with `EXCLUDE_CORE`: only `<proj>_<component>`, the component named in the call, plus whatever you list).
+  `EXCLUDE_CORE` suits a `HEADER_ONLY` contracts component: the test proves the headers stand alone. Before
+  6.3.2 it linked `${CURRENT_LIBRARY_NAME}`, which was empty or stale at that point, so projects linked the
+  component again via `EXTERNAL_LIBRARIES <proj>_<component>`; that still works and can be dropped.
 - Only built when `<P>_BUILD_TESTS` is on. `idi_component_test` is **skipped in
   shared builds**; `idi_component_test_public` always runs — use it for tests of
   the exported C API.
