@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#
+# @author Cliff Foster (Nou) <cliff@idi-systems.com>
+#
+# @copyright Copyright (c) 2025 International Development & Integration Systems LLC
+#
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
+# idi-cmake pre-commit hook: clang-format check of the staged C/C++ files.
+#
+# Install once per clone:   cmake --build build --target install-git-hooks
+# Skip for one commit:      git commit --no-verify
+#
+# Uses the lint settings (dirs, excludes, clang-format path) from build/idi-lint-config.cmake when that
+# exists (set IDI_LINT_BUILD_DIR to use another build directory), otherwise the framework defaults.
+# Set CLANG_FORMAT to pick a specific clang-format binary. Never blocks a commit when tools are missing.
+#
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+TOP="$(git rev-parse --show-toplevel)"
+SCRIPT="$ROOT/cmake/idi/scripts/lint.cmake"
+
+if ! command -v cmake >/dev/null 2>&1; then
+    echo "pre-commit: cmake not found, skipping the format check" >&2
+    exit 0
+fi
+
+# Staged files (added, copied, modified, renamed), as absolute paths
+FILES=()
+while IFS= read -r -d '' f; do
+    FILES+=("$TOP/$f")
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+if [[ ${#FILES[@]} -eq 0 ]]; then
+    exit 0
+fi
+FILE_LIST="$(IFS=';'; echo "${FILES[*]}")"
+
+BUILD_DIR="${IDI_LINT_BUILD_DIR:-$ROOT/build}"
+ARGS=(-DMODE=format-check -DLINT_SOFT_MISSING_TOOLS=ON "-DFILES=$FILE_LIST")
+if [[ -f "$BUILD_DIR/idi-lint-config.cmake" ]]; then
+    ARGS+=("-DLINT_CONFIG=$BUILD_DIR/idi-lint-config.cmake")
+else
+    ARGS+=("-DLINT_SOURCE_DIR=$ROOT")
+fi
+
+if ! OUTPUT="$(cmake "${ARGS[@]}" -P "$SCRIPT" 2>&1)"; then
+    echo "$OUTPUT" | grep -v -E "^CMake Error|^  clang-format check failed|^$" >&2
+    echo "" >&2
+    echo "pre-commit: commit blocked by formatting. Fix with cmake/idi/tools/lint.sh --fix --format-only," >&2
+    echo "            re-stage the files, or skip once with: git commit --no-verify" >&2
+    exit 1
+fi
+# Only show output when something was checked and it's not a plain pass (e.g. a missing tool warning)
+if echo "$OUTPUT" | grep -q "Warning"; then
+    echo "$OUTPUT" >&2
+fi
+exit 0

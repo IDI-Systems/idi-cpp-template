@@ -113,6 +113,7 @@ function(idi_component_setup component_name)
         FILES ${INTERNAL_FILE_LIST})
 
     target_code_coverage("${CURRENT_LIBRARY_NAME}" ALL OBJECTS "${__LIBRARY_LIST}")
+    idi_docs_register_component("${CMAKE_CURRENT_LIST_DIR}" ${HEADER_ONLY})
     idi_cmake_hook(post-component)
 endfunction()
 

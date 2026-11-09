@@ -31,17 +31,34 @@ $ cmake --build .   # or generated build system command (make, Visual Studio etc
 
 _Use with `cmake .. -D<argument>=<value>`._
 
+_`<P>` is the upper-case project name (`IDICMAKE_PROJECT_NAME`), e.g. `TEMPLATE_PROJECT_BUILD_TESTS`._
+
 - `IDICMAKE_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file (only for top-level project)
-- `IDICMAKE_BUILD_DEMOS` (default: `0`) - Build demo applications if applicable.
-- `IDICMAKE_BUILD_TESTS` (default: `1`) - Build unit tests. _(long)_
+- `<P>_BUILD_DEMOS` (default: `1`, `0` as a subproject) - Build demo applications if applicable.
+- `<P>_BUILD_TESTS` (default: `1`, `0` as a subproject) - Build unit tests. _(long)_
+- `<P>_BUILD_DOCS` (default: `1`, `0` as a subproject) - Add the `docs` target when Doxygen is found.
 - `DO_TEMPLATE_COMPONENT_TEST` (default: `0`) - Generate unit test template component and build unit tests for template.
-- `NEW_COMPONENT_NAME` - Create new component.
+- `NEW_COMPONENT_NAME` - Create new component (or use `./new_component.sh <name>`).
+- `CODE_COVERAGE` (default: `OFF`) - Coverage build, see [Code Coverage](#code-coverage).
 
 ### Tests
 
 ```sh
 $ ctest -C Debug
 ```
+
+### Developer Tools
+
+Scripts for the common tasks. The `cmake/idi/tools/` ones are part of the framework and are
+updated with it; each has a `.sh` (Linux/macOS) and a `.bat` (Windows) version, and `--help`.
+
+| Script | Does |
+|---|---|
+| `./new_component.sh <name>` | Create a new component in `src/<name>/` |
+| `cmake/idi/tools/lint.sh` | clang-format check + clang-tidy gate ([Linting](#linting)) |
+| `cmake/idi/tools/coverage.sh` | Coverage build, test run and HTML report ([Code Coverage](#code-coverage)) |
+| `cmake/idi/tools/docs.sh` | Doxygen API docs ([API Documentation](#api-documentation)) |
+| `cmake/idi/tools/update.sh` | Guided framework update ([Updating the Framework](#updating-the-framework)) |
 
 ## Concepts
 
@@ -53,7 +70,13 @@ Targets are built around collections of object libaries that are then combined i
 
 ### Components
 
-The object libraries that are used to build these final targets are called "components" in the language of the framework. There is one defualt component called `common` that provides boilerplate versioning and other useful information related to project configuration. Additional components can be added via calling CMake configuration with the `-DNEW_COMPONENT_NAME=component_name` flag. This will generate a boilerplate new component that can be built up and added to the `components.cmake` file in the `src` folder.
+The object libraries that are used to build these final targets are called "components" in the language of the framework. There is one default component called `base` that provides boilerplate versioning and other useful information related to project configuration. Additional components are created with:
+
+```sh
+$ ./new_component.sh component_name        # Windows: new_component.bat component_name
+```
+
+(the same as `cmake -S . -B build -DNEW_COMPONENT_NAME=component_name`). This generates a boilerplate component in `src/component_name/`. Then add `add_subdirectory(component_name)` to `src/components.cmake` and re-configure. Run `./new_component.sh --help` for the layout of the generated files.
 
 #### Component Files
 
@@ -96,151 +119,225 @@ Tests are contained in the component's `tests` folder. See `idi_component_test` 
 
 ## Code Coverage
 
-The framework includes built-in support for code coverage instrumentation and reporting via GCC/Clang's `--coverage` flag.
+The framework instruments components and tests with GCC/Clang's `--coverage` flag and builds reports with lcov or gcovr.
 
 ### Requirements
 
-- **Compiler:** GCC or Clang (MSVC is not supported for coverage)
-- **Report tools (at least one recommended):**
-  - `lcov` + `genhtml` — generates HTML reports (preferred)
-  - `gcovr` — generates HTML and/or Cobertura XML reports (useful for CI)
-
-Install on Debian/Ubuntu:
+- **Compiler:** GCC or Clang (MSVC has no gcov-style coverage; on Windows use clang with Ninja)
+- **Report tools (at least one):**
+  - `lcov` + `genhtml` — HTML report (preferred)
+  - `gcovr` — HTML and Cobertura XML (for CI)
 
 ```sh
 $ sudo apt install lcov        # lcov + genhtml
-$ pip install gcovr             # gcovr (alternative / CI XML reports)
+$ pip install gcovr             # gcovr
 ```
 
 ### Usage
 
-Enable coverage by passing `-DCODE_COVERAGE=ON` at configure time:
+One step, in its own `build-coverage/` directory:
 
 ```sh
-$ cd build
-$ cmake .. -DCODE_COVERAGE=ON
+$ cmake/idi/tools/coverage.sh --open                        # Windows: cmake\idi\tools\coverage.bat
+$ CC=clang-21 CXX=clang++-21 cmake/idi/tools/coverage.sh    # another compiler
+$ cmake/idi/tools/coverage.sh --fail-under 80               # fail below 80% line coverage
 ```
 
-Then run one of the coverage build targets:
+Or by hand: configure with `-DCODE_COVERAGE=ON` (use a separate build directory, the option sticks in the cache) and build a target:
 
 | Target | Description |
 |---|---|
-| `ccov-all` | Run all tests and generate an aggregate HTML coverage report |
-| `ccov-all-xml` | Generate a Cobertura XML report (requires `gcovr`, available when `lcov` is also present) |
-| `ccov-clean` | Remove all generated coverage data and reports |
+| `ccov-all` | Reset counters, run all tests with `ctest`, write the HTML report (plus Cobertura XML when gcovr is installed) and print `Code Coverage: NN.NN%` |
+| `ccov-all-xml` | Same test run, Cobertura XML only (requires `gcovr`; for CI) |
+| `ccov-clean` | Remove the reports and reset the counters |
 
 ```sh
-$ cmake --build . --target ccov-all
+$ cmake -S . -B build-coverage -DCODE_COVERAGE=ON
+$ cmake --build build-coverage
+$ cmake --build build-coverage --target ccov-all
 ```
 
-Reports are written to `build/reports/coverage/`:
-
-- **HTML report:** `build/reports/coverage/html/index.html`
-- **LCOV info file:** `build/reports/coverage/coverage.info`
-- **Cobertura XML:** `build/reports/coverage/coverage.xml` (when using `gcovr`)
+Reports are written to `<build>/reports/coverage/`: `html/index.html`, `coverage.info` (lcov) and `coverage.xml` (gcovr).
 
 ### How It Works
 
-Coverage is integrated into the framework's component system automatically. The existing `idi_component`, `idi_component_test`, and `idi_component_test_public` functions call `target_code_coverage()` on their targets. When `CODE_COVERAGE=ON`:
+`idi_component`, `idi_component_test` and `idi_component_test_public` call `target_code_coverage()` on their targets. When `CODE_COVERAGE=ON`:
 
-1. All component object libraries and test executables are compiled with `--coverage`.
-2. Test executables registered with the `ALL` flag are collected for the aggregate report.
-3. At the end of configuration, the `ccov-all` target is created which runs all registered tests and produces a filtered coverage report excluding test files, third-party libraries, and system headers.
+1. Component object libraries and test executables are compiled with `--coverage` (in Debug).
+2. At the end of configuration the report targets are created. They run **every** ctest test, so tests a project registers with plain `add_test()` (scripts, system tests) count too, and a failing test fails the target.
+3. Test code (`*/tests/*`), `lib/`, Catch2, `_deps` and system headers are excluded from the reports.
+4. The gcov tool matches the compiler: `gcov-<major>` for GCC, `llvm-cov-<major> gcov` for Clang.
 
-When `CODE_COVERAGE=OFF` (the default), all coverage functions are no-ops and no build overhead is added.
+When `CODE_COVERAGE=OFF` (the default), the coverage functions do nothing.
 
-### Tool Priority
+Settings (in `cmake-hooks/post-options.cmake` or with `-D`):
 
-The report generation strategy depends on which tools are available:
+| Variable | Meaning |
+|---|---|
+| `IDICMAKE_COVERAGE_FAIL_UNDER` | Fail the report targets below this line coverage percent |
+| `IDICMAKE_COVERAGE_CTEST_ARGS` | Extra ctest arguments, e.g. `--timeout;120` |
 
-1. **lcov + genhtml** — HTML report via `ccov-all`; if `gcovr` is also available, `ccov-all-xml` is added for Cobertura XML.
-2. **gcovr only** — `ccov-all` produces both HTML and XML reports.
-3. **Neither** — `ccov-all` runs the tests and generates raw `.gcda`/`.gcno` data files only.
+More excludes: `set_property(GLOBAL APPEND PROPERTY IDICMAKE_COVERAGE_EXCLUDES "generated/*")` in a hook (relative patterns are relative to the project root).
+
+In GitLab CI, `coverage: '/^Code Coverage: \d+(?:\.\d+)?%$/'` picks up the printed percentage (see `.gitlab-ci.yml`).
+
+## Linting
+
+clang-format and clang-tidy run over the project's own sources in `src/`, excluding the framework's `src/base/` and generated `*.out.*` files. Demos in `demo/` are not linted unless you ask for it (`--demos`, or `IDICMAKE_LINT_DEMOS`).
+
+```sh
+$ cmake/idi/tools/lint.sh                      # format check + tidy gate; Windows: cmake\idi\tools\lint.bat
+$ cmake/idi/tools/lint.sh --fix --format-only  # reformat everything
+$ cmake/idi/tools/lint.sh src/foo/foo.cpp      # only some files
+$ cmake/idi/tools/lint.sh --clang-version 21   # same tools as CI
+$ cmake/idi/tools/lint.sh --all-checks         # also report the full .clang-tidy list (advisory)
+$ cmake/idi/tools/lint.sh --demos              # also lint demo/
+```
+
+The script configures and builds `build-lint/` (clang-tidy needs `compile_commands.json` and any generated sources). The same checks are available as targets in any configured build:
+
+| Target | Description |
+|---|---|
+| `format` | Apply clang-format to all project files |
+| `format-check` | Fail if a file is not formatted |
+| `tidy` | clang-tidy with the **gate checks**; fails on any finding |
+| `tidy-report` | clang-tidy with the full `.clang-tidy` check list; report only |
+| `lint` | `format-check` + `tidy` |
+| `install-git-hooks` | Install a pre-commit hook that checks clang-format on staged files (skip once with `git commit --no-verify`) |
+
+The **gate** is a short list of checks that catch real bugs plus the naming rules from `.clang-tidy`. The broader `.clang-tidy` set (cppcoreguidelines, cert, hicpp, ...) is advisory. In the template's CI, `format-check` fails the pipeline and `tidy` is `allow_failure` until the project is ready to enforce it.
+
+clang-tidy needs the Ninja or Makefile generator (Visual Studio generators do not write `compile_commands.json`); on Windows, run `lint.bat` from a Developer Command Prompt with Ninja installed.
+
+Settings (in `cmake-hooks/post-options.cmake` or with `-D`):
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `IDICMAKE_CLANG_TOOLS_VERSION` | newest installed | LLVM major version of clang-format/clang-tidy |
+| `IDICMAKE_LINT_DIRS` | `src` | Directories to lint |
+| `IDICMAKE_LINT_DEMOS` | `OFF` | Also lint `demo/` (set `ON` in a hook to make it permanent; `lint.sh --demos` for one run) |
+| `IDICMAKE_LINT_EXCLUDES` | `*.out.*;src/base/*;src/unit_test_component/*` | Project-relative globs to skip |
+| `IDICMAKE_LINT_TIDY_GATE_CHECKS` | see `cmake/idi/functions/idi_lint.cmake` | clang-tidy checks the `tidy` target enforces |
+
+### Code Style
+
+`.clang-format` defines the layout and `.clang-tidy` the naming rules that the gate enforces:
+
+```cpp
+namespace vendor::app {                  // namespaces: lower_case
+    constexpr int MAX_PEERS = 8;         // global/static/class constants: UPPER_CASE
+
+    class PeerList {                     // classes, structs, enums, type aliases: CamelCase
+    public:
+        void add_peer(int peer_id);      // functions, methods, variables, parameters: lower_case
+
+    protected:
+        void _rebuild_index();           // protected/private methods and members: '_' prefix
+        int _count = 0;
+
+    private:
+        bool _dirty = false;
+    };
+} // namespace vendor::app
+```
+
+## API Documentation
+
+The `docs` target runs [Doxygen](https://www.doxygen.nl) with the [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css) theme:
+
+```sh
+$ cmake/idi/tools/docs.sh --open               # Windows: cmake\idi\tools\docs.bat --open
+$ cmake --build build --target docs             # same thing
+```
+
+Output: `build/docs/html/index.html`. The headers are collected from the components automatically: a **shared** library documents each component's `include/<project>/public/` headers (the exported API) plus header-only components; **static** and **executable** builds document all of `include/<project>/`. The front page is `docs/mainpage.md` (other `docs/*.md` files become extra pages), or `README.md` if there is no `docs/mainpage.md`.
+
+The theme is downloaded (pinned version, hash checked) the first time `docs` is built, so configuring needs no network. Use `-DIDICMAKE_DOCS_THEME=OFF` (or `docs.sh --no-theme`) for plain Doxygen output offline.
+
+Settings (in `cmake-hooks/post-options.cmake` or with `-D`):
+
+| Variable | Meaning |
+|---|---|
+| `<P>_BUILD_DOCS` | Add the `docs` target (default on for top-level builds) |
+| `IDICMAKE_DOCS_THEME` | Use doxygen-awesome-css (default `ON`) |
+| `IDICMAKE_DOCS_OUTPUT_DIR` | Output directory (default `<build>/docs`) |
+| `IDICMAKE_DOCS_BRIEF` | One-line description under the project name |
+| `IDICMAKE_DOCS_INPUTS` | Extra files/directories to document |
+| `DOXYGEN_<KEY>` | Any Doxyfile setting, e.g. `set(DOXYGEN_PREDEFINED "MY_EXPORT=")`; project values win |
+
+The template's GitLab CI publishes the docs with GitLab Pages from the default branch (`pages` job).
 
 ## Updating the Framework
 
-The CMake framework includes a self-update mechanism that can pull in new versions of the framework files without overwriting your project-specific code (components, configuration, etc.).
-
-### Update Sources
-
-The updater supports three source modes:
-
-| Mode | Description | Required Variable |
-|---|---|---|
-| `url` (default) | Downloads a zip archive from a URL | `FRAMEWORK_UPDATE_URL` (defaults to the IDI template master branch on GitHub) |
-| `file` | Extracts from a local zip archive | `FRAMEWORK_UPDATE_FILE_LOC` — path to the archive relative to the project root |
-| `folder` | Copies from a local folder | `FRAMEWORK_UPDATE_FOLDER_LOC` — absolute path to a template project folder |
-
-### Running an Update
-
-Trigger an update by passing `-DDO_FRAMEWORK_UPDATE=ON` during CMake configuration:
-
-```sh
-$ cd build
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON
-```
-
-This will:
-
-1. Download/extract/copy the update source into a temporary `.idi-framework-update` directory.
-2. Compare the incoming framework version against the current one.
-3. If an update is available, replace the framework files (`cmake/idi/`, `src/base/`, `.claude/skills/idi-cmake/`, root `CMakeLists.txt`, `src/CMakeLists.txt`, and `lib/.gitignore`).
-4. Rename the base component's include directory to match your `IDICMAKE_PROJECT_NAME`.
-5. Clean up the temporary directory and set `IDICMAKE_DID_UPDATE` so the rest of configuration is skipped — you must re-run `cmake ..` after an update to configure normally.
-
-**If the framework is already up-to-date**, the updater will error out. To force a re-application of the same version:
-
-```sh
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_FORCE=ON
-```
-
-### Specifying a Source
-
-**From a URL (default — GitHub master):**
-
-```sh
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON
-```
-
-**From a custom URL:**
-
-```sh
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=url \
-    -DFRAMEWORK_UPDATE_URL=https://example.com/framework-v6.zip
-```
-
-**From a local zip file:**
-
-```sh
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=file \
-    -DFRAMEWORK_UPDATE_FILE_LOC=path/to/framework-update.zip
-```
-
-**From a local folder (useful during framework development):**
-
-```sh
-$ cmake .. -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=folder \
-    -DFRAMEWORK_UPDATE_FOLDER_LOC=/absolute/path/to/template-project
-```
-
-### What Gets Updated
-
-The updater replaces only the framework-managed files:
+The framework updates itself from a newer template without touching project code. Only the framework-owned paths are replaced:
 
 | Path | Content |
 |---|---|
-| `cmake/idi/` | Entire framework directory (functions, updater, templates, scripts) |
-| `src/base/` | Base component boilerplate (include directory is renamed to match your project) |
+| `cmake/idi/` | The framework: functions, updater, templates, scripts, tools, `CHANGELOG.md` |
+| `src/base/` | Base component (its include directory is renamed to match your project) |
 | `.claude/skills/idi-cmake/` | Claude Code skill describing this framework version |
 | `CMakeLists.txt` | Root CMake file |
 | `src/CMakeLists.txt` | Source directory CMake file |
 | `lib/.gitignore` | Library gitignore |
 
-Your project-specific files are **not touched**: `platform-config.cmake`, `platform-compile-options.cmake`, `version.cmake`, `components.cmake`, custom components, `cmake-hooks/`, `lib/libraries.cmake`, and `demo/`.
+Everything else is yours and is **not touched**: `platform-*.cmake`, `version.cmake`, `src/components.cmake`, `src/main/`, your components, `cmake-hooks/`, `lib/libraries.cmake`, `demo/`, CI files, `README.md`. Never put project changes inside the paths above (for example extra headers in `src/base/`): the update deletes them. Use a hook, a platform file or your own component instead.
+
+The list lives in `cmake/idi/updater/managed_paths.cmake`; the changes in each release are in `cmake/idi/CHANGELOG.md`.
+
+### Running an Update
+
+```sh
+$ cmake/idi/tools/update.sh --check     # preview only
+$ cmake/idi/tools/update.sh             # Windows: cmake\idi\tools\update.bat
+```
+
+The script:
+
+1. Refuses to run on a working tree with uncommitted changes, so the update is its own reviewable diff (`--allow-dirty` overrides).
+2. Fetches the template (GitHub `master` by default) and shows the version change, every file that will change, be added or be **deleted** in the framework-owned paths, and the changelog entries since your version.
+3. Asks for confirmation (`-y` to skip), then applies the update.
+4. Shows the diff summary and the exact `git` command to roll back.
+5. Re-configures, builds and runs the tests in `build/` (`--no-verify` to skip).
+6. With `--commit`, commits the framework-owned paths as `Update IDI CMake framework <old> -> <new>`.
+
+Sources:
+
+```sh
+$ cmake/idi/tools/update.sh --ref v6.4.0                     # a branch or tag on GitHub
+$ cmake/idi/tools/update.sh --folder ../idi-cpp-template     # a local checkout
+$ cmake/idi/tools/update.sh --file idi-cpp-template.zip      # a local archive
+$ cmake/idi/tools/update.sh --url 'https://gitlab.example.com/idi/idi-cpp-template/-/archive/{ref}/idi-cpp-template-{ref}.zip' --ref master
+```
+
+Set `IDI_TEMPLATE_UPDATE_URL` (with `{ref}`) to make a mirror the default. If the incoming version is not newer the script stops; `--force` re-applies it. A **major** version update may need changes to project-owned files: they are listed under *Manual steps* in the changelog, and the script points them out.
+
+**Projects on framework 6.3.2 or older** don't have the script yet. Update once with the CMake command below (6.3.2 and older can't update from a GitHub archive URL, so use a local checkout or archive of the template), then use `update.sh` from then on.
+
+### Updating with CMake Directly
+
+The script drives the same configure-time updater, which can also be run by hand:
+
+```sh
+$ cmake -S . -B build -DDO_FRAMEWORK_UPDATE=ON                                    # GitHub master
+$ cmake -S . -B build -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=folder \
+    -DFRAMEWORK_UPDATE_FOLDER_LOC=/absolute/path/to/template
+$ cmake -S . -B build -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=file \
+    -DFRAMEWORK_UPDATE_FILE_LOC=path/to/template.zip
+$ cmake -S . -B build -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=url \
+    -DFRAMEWORK_UPDATE_URL=https://example.com/template.zip
+```
+
+| Mode | Source | Variable |
+|---|---|---|
+| `url` (default) | Zip archive download | `FRAMEWORK_UPDATE_URL` (default: GitHub `master`) |
+| `file` | Local archive | `FRAMEWORK_UPDATE_FILE_LOC` (absolute, or relative to the project root) |
+| `folder` | Local template folder | `FRAMEWORK_UPDATE_FOLDER_LOC` (absolute path) |
+
+Archives may contain the template at the top level or inside one folder (as GitHub archives do). The updater refuses to apply a version that is not newer unless `-DFRAMEWORK_UPDATE_FORCE=ON` is given. Configuration stops after the update: run cmake again to configure normally.
 
 ### Version Checks
 
-After updating, the framework validates that your root and `src/` CMakeLists.txt files meet the minimum required version numbers (`IDICMAKE_ROOT_REQ_CML_V`, `IDICMAKE_SRC_REQ_CML_V`, `IDICMAKE_BASE_REQ_CML_V`). If the update replaced these files, they will already be at the correct version. If a major framework update changes the required versions, the updater will replace these files automatically.
+After updating, the framework validates that your root and `src/` CMakeLists.txt files meet the minimum required version numbers (`IDICMAKE_ROOT_REQ_CML_V`, `IDICMAKE_SRC_REQ_CML_V`, `IDICMAKE_BASE_REQ_CML_V`). The updater replaces these files, so they are normally already at the required version.
 
 ## Claude Code Skill
 

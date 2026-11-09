@@ -28,6 +28,7 @@ Select an alternate file with `-DIDICMAKE_PLATFORM_CONFIG=<path>` (top-level onl
 |---|---|---|
 | `<P>_BUILD_TESTS` | 1 top-level, 0 as subproject | build component tests |
 | `<P>_BUILD_DEMOS` | 1 top-level, 0 as subproject | add `demo/` |
+| `<P>_BUILD_DOCS` | 1 top-level, 0 as subproject | add the `docs` target (needs Doxygen) |
 | `<P>_USE_GIT_VERSIONING` | 1 | git hash/branch/dirty into build info |
 | `<P>_USE_BUILD_TIMESTAMPS` | 0 | UTC build time into build info |
 | `<P>_FORCE_PIC` | 0 | PIC for static builds linked into a shared lib |
@@ -37,7 +38,9 @@ Select an alternate file with `-DIDICMAKE_PLATFORM_CONFIG=<path>` (top-level onl
 
 Non-prefixed: `NEW_COMPONENT_NAME`, `DO_TEMPLATE_COMPONENT_TEST` (scaffold and
 build a throwaway `src/unit_test_component`), `CODE_COVERAGE` (no `option()`, but sticks once passed with `-D`),
-`IDI_SYNC_DEPENDENCIES`, `DO_FRAMEWORK_UPDATE` + `FRAMEWORK_UPDATE_*`.
+`IDI_SYNC_DEPENDENCIES`, `DO_FRAMEWORK_UPDATE` + `FRAMEWORK_UPDATE_*`,
+`IDICMAKE_CLANG_TOOLS_VERSION`, `IDICMAKE_DOCS_THEME` (cache), and the non-cache
+`IDICMAKE_LINT_*`, `IDICMAKE_DOCS_*`, `IDICMAKE_COVERAGE_*` variables (see functions.md).
 After options load, each is mirrored to `IDICMAKE_<OPTION>` (e.g. `IDICMAKE_BUILD_TESTS`) — use those in cmake code.
 
 ## Generated headers (base component)
@@ -110,6 +113,18 @@ test the **template itself** across exe/static/shared × compilers. In a derived
 project, rename every `TEMPLATE_PROJECT_*` flag to `<P>_*`, rename artifacts, and
 trim the matrix to what the project ships.
 
+GitLab jobs besides the build matrix: `format-check` (`lint.sh --format-only --clang-version 21`,
+fails the pipeline), `tidy` (`lint.sh --tidy-only`, `allow_failure`), `coverage`
+(`ccov-all-xml`; its `coverage:` regex matches the `Code Coverage: NN.NN%` line) and
+`pages` (`docs` target → GitLab Pages from the default branch). GitHub has `lint` and `coverage` jobs.
+
+## Tool scripts
+
+`cmake/idi/tools/` (template-owned, updated): `lint`, `coverage`, `docs`, `update`
+as `.sh` + `.bat`, plus the `pre-commit` hook (bash). All take `--help`.
+`cmake/idi/.gitattributes` keeps `.bat` CRLF and `.sh` LF. Root `new_component.{sh,bat} <name>`
+(project-owned) wraps `-DNEW_COMPONENT_NAME`, refusing invalid names and existing folders.
+
 ## New project checklist
 
 1. `platform-config.cmake`: set `IDICMAKE_PROJECT_NAME`, namespaces, type. Update
@@ -118,6 +133,6 @@ trim the matrix to what the project ships.
    disk — commit the rename (also for any component whose include dir is renamed).
 3. `version.cmake`: project version.
 4. Review `platform-compile-options.cmake` (`-Werror`, `-fno-exceptions`, C++20).
-5. Write `src/main/main.cpp` (exe) and add components with `-DNEW_COMPONENT_NAME=`.
+5. Write `src/main/main.cpp` (exe) and add components with `./new_component.sh <name>`.
 6. Fix CI files (above). Replace `README.md`; keep `TEMPLATE_LICENSE` for the framework files.
 7. Delete `cmake-hooks/` files you don't use (optional).

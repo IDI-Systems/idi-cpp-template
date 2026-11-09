@@ -8,7 +8,9 @@
 
 macro(idi_src)
     include(CMakePrintHelpers)
-    add_code_coverage_all_targets(EXCLUDE tests/* lib/*)
+    add_code_coverage_all_targets(EXCLUDE "*/tests/*" "${PROJECT_SOURCE_DIR}/lib/*")
+    idi_lint_setup()
+    idi_docs_setup()
     #####################################################################
     # CORE LIBRARY                                                      #
     #####################################################################

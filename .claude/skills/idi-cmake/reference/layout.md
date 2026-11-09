@@ -10,7 +10,9 @@ platform-config.{exe,static,shared}.cmake   # same, with the type preset (used b
 platform-options.cmake         # project-wide set() calls before project()
 platform-local-options.cmake   # optional, gitignored, per-developer overrides
 platform-compile-options.cmake # warning flags / defines / C++ standard for all targets
-cmake/idi/                     # the framework (template-owned)
+cmake/idi/                     # the framework (template-owned): functions/, scripts/, tools/, updater/, CHANGELOG.md
+new_component.{sh,bat}         # scaffold a component (project-owned)
+docs/mainpage.md               # front page of the docs target (project-owned, optional)
 cmake-hooks/                   # optional hook files (project-owned, may be deleted)
 lib/libraries.cmake            # dependency declarations
 lib/{first,third}-party/       # fetched dependencies (gitignored)
@@ -55,7 +57,7 @@ Include style inside the project and for consumers:
 a component (or `<proj>_public`) can reach all of that component's `include/`
 tree. Only files outside `include/` are truly private.
 
-### Scaffolding (`-DNEW_COMPONENT_NAME=foo`)
+### Scaffolding (`./new_component.sh foo` or `-DNEW_COMPONENT_NAME=foo`)
 
 `idi_new_component` (`cmake/idi/functions/framework/idi_new_component.cmake`)
 copies `cmake/idi/templates/template_component/` to `src/foo/`:
@@ -65,7 +67,7 @@ copies `cmake/idi/templates/template_component/` to `src/foo/`:
   `@__idi_new_component_name@`, `@PROJECT_NAME@`, `@__idi_namespace@`,
   `@__idi_c_caps_namespace@`. `${...}` is left untouched.
 - Does **not** check for an existing `src/foo` — it silently overwrites the
-  template-named files there. Check first. Resets `NEW_COMPONENT_NAME` afterwards.
+  template-named files there (`new_component.sh` refuses instead). Resets `NEW_COMPONENT_NAME` afterwards.
 - It does **not** edit `src/components.cmake`.
 
 ## `src/base` (template-owned)

@@ -49,3 +49,50 @@ jobs:
       with:
         name: idi-cpp-template-${{ matrix.type }}-${{ matrix.os }}-${{ github.sha }}
         path: build/ctest.xml
+
+  # clang-format must pass; clang-tidy reports but does not fail the workflow (remove continue-on-error to enforce).
+  lint:
+    runs-on: ubuntu-24.04
+    env:
+      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install tools
+      run: sudo apt-get update -qq && sudo apt-get install -y -qq ninja-build clang-format clang-tidy
+
+    - name: Format check
+      shell: bash
+      run: cmake/idi/tools/lint.sh --format-only -- $CMAKE_ARGS
+
+    - name: clang-tidy
+      shell: bash
+      continue-on-error: true
+      run: cmake/idi/tools/lint.sh --tidy-only -- $CMAKE_ARGS
+
+  coverage:
+    runs-on: ubuntu-24.04
+    env:
+      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install tools
+      run: sudo apt-get update -qq && sudo apt-get install -y -qq ninja-build lcov gcovr
+
+    - name: Coverage
+      shell: bash
+      run: cmake/idi/tools/coverage.sh -- $CMAKE_ARGS
+
+    - name: Upload report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: idi-cpp-template-coverage-${{ github.sha }}
+        path: build-coverage/reports/coverage/

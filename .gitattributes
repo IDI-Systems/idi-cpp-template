@@ -1,3 +1,7 @@
 * text=auto
 *.png binary
 *.jpg binary
+# Windows batch files need CRLF; shell scripts and the git hook need LF.
+*.bat text eol=crlf
+*.sh text eol=lf
+cmake/idi/tools/pre-commit text eol=lf

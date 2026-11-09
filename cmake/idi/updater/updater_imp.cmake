@@ -1,4 +1,12 @@
-
+#
+# @author Cliff Foster (Nou) <cliff@idi-systems.com>
+#
+# @copyright Copyright (c) 2025 International Development & Integration Systems LLC
+#
+# Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
+#
+# Applies a staged framework update from FRAMEWORK_UPDATE_DIR to the project. Runs from the incoming
+# framework whenever its updater version differs from the project's (see updater.cmake).
 
 macro(do_replace_dir)
     message(STATUS "\tFramework update - Updating ${ARGV0}")
@@ -14,16 +22,23 @@ macro(do_replace_file)
     message(STATUS "\tFramework update - Done Updating ${ARGV0}")
 endmacro()
 
-do_replace_dir("cmake/idi/")
-do_replace_dir("src/base/")
-do_replace_dir(".claude/skills/idi-cmake/")
+include("${FRAMEWORK_UPDATE_DIR}/cmake/idi/updater/managed_paths.cmake")
+
+foreach(__idi_managed_dir IN LISTS IDICMAKE_UPDATER_MANAGED_DIRS)
+    # file(COPY <dir> DESTINATION <dir>) copies into a sub folder unless the source ends with a slash
+    do_replace_dir("${__idi_managed_dir}/")
+endforeach()
+
 set(IDICMAKE_PLATFORM_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/platform-config.cmake")
 include("${IDICMAKE_PLATFORM_CONFIG}")
 if(DEFINED IDI_PROJECT_NAME)
     message(WARNING "Attention! It appears that your project contains files using the old IDI_ prefix instead of the new IDICMAKE_ prefix in files such a platform-config.cmake and other .cmake files! Please update these manually or problems may occur!")
     set(IDICMAKE_PROJECT_NAME ${IDI_PROJECT_NAME})
 endif()
-file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/template_project" "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/${IDICMAKE_PROJECT_NAME}")
-do_replace_file("CMakeLists.txt")
-do_replace_file("src/CMakeLists.txt")
-do_replace_file("lib/.gitignore")
+if(NOT IDICMAKE_PROJECT_NAME STREQUAL "template_project")
+    file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/template_project" "${CMAKE_CURRENT_SOURCE_DIR}/src/base/include/${IDICMAKE_PROJECT_NAME}")
+endif()
+
+foreach(__idi_managed_file IN LISTS IDICMAKE_UPDATER_MANAGED_FILES)
+    do_replace_file("${__idi_managed_file}")
+endforeach()

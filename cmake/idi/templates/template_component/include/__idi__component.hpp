@@ -8,12 +8,10 @@
 
 #include <cstdint>
 
-/**
-* Demonstration component function.
-* @return int32_t
-*/
-namespace @__idi_namespace@ {
-    namespace @__idi_new_component_name@ {
-        int32_t component_function();
-    }
-}
+namespace @__idi_namespace@::@__idi_new_component_name@ {
+    /**
+     * Demonstration component function.
+     * @return int32_t
+     */
+    int32_t component_function();
+} // namespace @__idi_namespace@::@__idi_new_component_name@

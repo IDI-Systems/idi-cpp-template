@@ -6,9 +6,11 @@ fix them upstream and pull with the updater.
 
 ## What a framework change can touch
 
-The updater (`cmake/idi/updater/updater_imp.cmake`) delivers only:
-`cmake/idi/`, `src/base/`, `.claude/skills/idi-cmake/` (whole-directory replace),
-and `CMakeLists.txt`, `src/CMakeLists.txt`, `lib/.gitignore` (file replace).
+The updater (`cmake/idi/updater/updater_imp.cmake`) delivers only the paths listed in
+`cmake/idi/updater/managed_paths.cmake`: `cmake/idi/`, `src/base/`,
+`.claude/skills/idi-cmake/` (whole-directory replace), and `CMakeLists.txt`,
+`src/CMakeLists.txt`, `lib/.gitignore` (file replace). The incoming list is used, so
+adding a path takes effect in the same update (bump the updater version).
 Changes anywhere else (platform files, hooks, `components.cmake`, `src/main`, CI,
 README) reach **new** projects only; existing projects must be told to apply them
 by hand.
@@ -35,6 +37,15 @@ silently skipped.
 The updater refuses to run when the incoming framework *and* updater versions
 are not newer, so every release that should reach projects needs a version bump.
 
+Every release also needs a `## <version>` section in `cmake/idi/CHANGELOG.md` (newest
+first). `update.sh` prints the sections between the project's and the incoming version,
+so list breaking changes and anything projects must do by hand under `### Manual steps`.
+
+The guided update (`cmake/idi/tools/update.{sh,bat}` + `updater/update_workflow.cmake`)
+stages and previews with the *project's* copy of `update_workflow.cmake`, applies through
+the configure-time updater in folder mode, then runs `MODE=post` from the *new* copy. Keep
+`MODE=stage` able to read old templates (it falls back to the ≤ 6.3.2 managed paths).
+
 ## Changing the component template
 
 `cmake/idi/templates/template_component/` is copied with `configure_file(@ONLY)`:
@@ -57,9 +68,17 @@ with an empty project name (`include/` without the `<proj>` folder): delete `src
 before re-running. A HEADER_ONLY component is not covered by the matrix; when touching header-only or
 test code, add one (with an `EXCLUDE_CORE` `idi_component_test_public`) in a scratch copy and build shared.
 
-Updater test: copy an older checkout (or a derived project) somewhere, then
+Lint the template's own code (the scaffold output too, so components generated in
+projects start clean):
+```sh
+cmake/idi/tools/lint.sh --clang-version 21 -- -DDO_TEMPLATE_COMPONENT_TEST=1 "-DIDICMAKE_LINT_EXCLUDES=*.out.*;src/base/*"
+```
+Coverage and docs: `cmake/idi/tools/coverage.sh`, `cmake/idi/tools/docs.sh` (exe and shared configs).
+
+Updater test: copy an older checkout (or a derived project) somewhere as a git repo, then
 `cmake -S <copy> -B <copy>/build -DDO_FRAMEWORK_UPDATE=ON -DFRAMEWORK_UPDATE_MODE=folder -DFRAMEWORK_UPDATE_FOLDER_LOC=$PWD`,
-re-run cmake, build, ctest.
+re-run cmake, build, ctest. For the guided flow, run `<copy>/cmake/idi/tools/update.sh --folder <newer template copy>`
+(`--check`, then a full run with `-y --commit`).
 
 ## Keep this skill in sync
 
@@ -89,7 +108,7 @@ grep -rhoE "^(function|macro)\((idi_[a-z_]+|target_code_coverage|add_code_covera
   `CMakeLists.txt`) cannot see variables set inside `idi_component_setup` (a function). Pass the
   component name instead, or set the variable in the `idi_component*` macro.
 
-## Known issues (as of framework 6.3.2)
+## Known issues (as of framework 6.4.0)
 
 - `<P>_DO_TEMPLATE_COMPONENT_TEST` is defined and mirrored to
   `IDICMAKE_DO_TEMPLATE_COMPONENT_TEST`, but `idi_new_component.cmake` and
@@ -104,5 +123,5 @@ grep -rhoE "^(function|macro)\((idi_[a-z_]+|target_code_coverage|add_code_covera
 - `export.h` has no `dllimport` branch for Windows consumers.
 - Only the root CML version check is effective: `IDICMAKE_SRC_CML_V` /
   `IDICMAKE_BASE_CML_V` are not yet set when `idi-template.cmake` checks them.
-- README.md: says `IDICMAKE_BUILD_DEMOS` defaults to 0 (it's `<P>_BUILD_DEMOS`,
-  default 1 top-level) and calls the base component `common`.
+- The `.bat` wrappers in `cmake/idi/tools/` and `new_component.bat` have not been run on Windows
+  yet (written to mirror the `.sh` versions, which are tested on Linux).

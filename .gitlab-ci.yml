@@ -62,23 +62,52 @@ build-windows:
     reports:
       junit: build/ctest.xml
 
-.coverage: # Remove '.' to enable
+# Lint: clang-format must pass; clang-tidy runs the gate checks but does not block (remove allow_failure to enforce).
+# Pin the clang version so local runs (cmake/idi/tools/lint.sh --clang-version 21) match CI.
+format-check:
+  stage: build
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:clang-21
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+  before_script:
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
+  script:
+    - cmake/idi/tools/lint.sh --format-only --clang-version 21 -- $CMAKE_ARGS
+  interruptible: true
+
+tidy:
+  stage: build
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:clang-21
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+  before_script:
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
+  script:
+    - cmake/idi/tools/lint.sh --tidy-only --clang-version 21 -- $CMAKE_ARGS
+  interruptible: true
+
+coverage:
   stage: deploy
   tags: [general, beefy]
   image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:gcc-14
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event" # Only on push events (same as 'except: merge_requests')
       when: manual
-    - if: $CI_PIPELINE_SOURCE = "merge_request_event" # Only on merge requests
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # Only on merge requests
     - if: $CI_COMMIT_TAG # Only on tag push event
   before_script: # This is required for pulling dependencies on projects
     #- git config --global credential.helper store # done in cmake-cpp image
     - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
   script:
-    - cmake --version && $CC --version && $CXX --version && lcov --version && gcovr --version
+    - cmake --version && $CC --version && $CXX --version && gcovr --version
     - mkdir -p build && cd build
     - cmake .. $CMAKE_ARGS -DCODE_COVERAGE=ON
+    - cmake --build . -j 8
+    # Prints "Code Coverage: NN.NN%" (matched by 'coverage:' below). Add -DIDICMAKE_COVERAGE_FAIL_UNDER=<pct> to enforce a minimum.
     - cmake --build . --target ccov-all-xml
+  coverage: '/^Code Coverage: \d+(?:\.\d+)?%$/'
   interruptible: true
   artifacts:
     name: "idi-cpp-template-coverage-$CI_COMMIT_SHORT_SHA"
@@ -88,3 +117,20 @@ build-windows:
       coverage_report:
         coverage_format: cobertura
         path: build/reports/coverage/coverage.xml
+
+# API docs (Doxygen) published with GitLab Pages from the default branch.
+pages:
+  stage: deploy
+  image: $CI_REGISTRY/idi/dockerfiles/cmake-cpp:clang-21
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
+  before_script:
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}" > ~/.git-credentials
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends doxygen
+  script:
+    - doxygen --version
+    - cmake -S . -B build $CMAKE_ARGS
+    - cmake --build build --target docs
+  interruptible: true
+  pages:
+    publish: build/docs/html

@@ -1,1 +1,101 @@
-Checks:          -*,cppcoreguidelines-*,cert-*,clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-security*,clang-analyzer-unix-*,performance-*,modernize-*,readability-*,hicpp-*,-modernize-use-trailing-return-type
+---
+# ──────────────────────────────────────────────────────────────────────────────
+#  clang-tidy configuration
+#  Enforces the IDI naming conventions (see README "Code style") plus a broad set of
+#  checks from the C++ Core Guidelines, CERT, HICPP, and common best-practice
+#  groups (bugprone, performance, modernize, readability).
+# ──────────────────────────────────────────────────────────────────────────────
+
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-core-*,
+  clang-analyzer-cplusplus-*,
+  clang-analyzer-security*,
+  clang-analyzer-unix-*,
+  cppcoreguidelines-*,
+  hicpp-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type
+
+WarningsAsErrors: ''
+
+# HeaderFilterRegex is left unset: the framework lint targets pass a filter for the project's own
+# src/ and demo/ folders (see cmake/idi/functions/idi_lint.cmake).
+
+CheckOptions:
+
+  # ── Namespaces ──────────────────────────────────────────────────────────────
+  readability-identifier-naming.NamespaceCase:           lower_case
+
+  # ── Types ───────────────────────────────────────────────────────────────────
+  readability-identifier-naming.ClassCase:               CamelCase
+  readability-identifier-naming.StructCase:              CamelCase
+  readability-identifier-naming.EnumCase:                CamelCase
+  readability-identifier-naming.UnionCase:               CamelCase
+  readability-identifier-naming.ConceptCase:             CamelCase
+
+  # ── Type aliases / typedefs ─────────────────────────────────────────────────
+  readability-identifier-naming.TypeAliasCase:           CamelCase
+  readability-identifier-naming.TypeAliasIgnoredRegexp:  '.*_t$|.*_type$|^iterator$|^const_iterator$|^clock$|^pointer$|^reference$|^size_type$|^difference_type$'
+  readability-identifier-naming.TypedefCase:             CamelCase
+  readability-identifier-naming.TypedefIgnoredRegexp:    '.*_t$|.*_type$'
+
+  # ── Template parameters ─────────────────────────────────────────────────────
+  readability-identifier-naming.TemplateParameterCase:           CamelCase
+  readability-identifier-naming.TypeTemplateParameterCase:       CamelCase
+  readability-identifier-naming.ValueTemplateParameterCase:      CamelCase
+  readability-identifier-naming.TemplateTemplateParameterCase:   CamelCase
+
+  # ── Functions (free) ────────────────────────────────────────────────────────
+  readability-identifier-naming.FunctionCase:            lower_case
+
+  # ── Methods ─────────────────────────────────────────────────────────────────
+  readability-identifier-naming.MethodCase:              lower_case
+  readability-identifier-naming.PublicMethodCase:        lower_case
+  readability-identifier-naming.ProtectedMethodCase:     lower_case
+  readability-identifier-naming.ProtectedMethodPrefix:   '_'
+  readability-identifier-naming.PrivateMethodCase:       lower_case
+  readability-identifier-naming.PrivateMethodPrefix:     '_'
+  readability-identifier-naming.VirtualMethodCase:       lower_case
+
+  # ── Members ─────────────────────────────────────────────────────────────────
+  readability-identifier-naming.MemberCase:              lower_case
+  readability-identifier-naming.PublicMemberCase:        lower_case
+  readability-identifier-naming.ProtectedMemberCase:     lower_case
+  readability-identifier-naming.ProtectedMemberPrefix:   '_'
+  readability-identifier-naming.PrivateMemberCase:       lower_case
+  readability-identifier-naming.PrivateMemberPrefix:     '_'
+
+  # ── Variables & parameters ──────────────────────────────────────────────────
+  readability-identifier-naming.VariableCase:            lower_case
+  readability-identifier-naming.LocalVariableCase:       lower_case
+  readability-identifier-naming.ParameterCase:           lower_case
+  readability-identifier-naming.LocalConstantCase:       lower_case
+  readability-identifier-naming.LocalConstantIgnoredRegexp: '^[A-Z][A-Z0-9_]*$'
+  readability-identifier-naming.ConstantParameterCase:   lower_case
+  readability-identifier-naming.LocalPointerCase:        lower_case
+  readability-identifier-naming.PointerParameterCase:    lower_case
+
+  # ── Constants (global / static / class scope) ──────────────────────────────
+  readability-identifier-naming.GlobalConstantCase:      UPPER_CASE
+  readability-identifier-naming.GlobalConstantPointerCase: UPPER_CASE
+  readability-identifier-naming.StaticConstantCase:      UPPER_CASE
+  readability-identifier-naming.ClassConstantCase:       UPPER_CASE
+
+  # ── Global / static variables (non-const) ──────────────────────────────────
+  readability-identifier-naming.GlobalVariableCase:      lower_case
+  readability-identifier-naming.StaticVariableCase:      lower_case
+
+  # ── Enum constants ─────────────────────────────────────────────────────────
+  #  CamelCase preferred; existing snake_case values tolerated via IgnoredRegexp
+  readability-identifier-naming.EnumConstantCase:              CamelCase
+  readability-identifier-naming.EnumConstantIgnoredRegexp:     '^[a-z][a-z0-9_]*$'
+  readability-identifier-naming.ScopedEnumConstantCase:        CamelCase
+  readability-identifier-naming.ScopedEnumConstantIgnoredRegexp: '^[a-z][a-z0-9_]*$'
+
+  # ── Macros ──────────────────────────────────────────────────────────────────
+  readability-identifier-naming.MacroDefinitionCase:     UPPER_CASE

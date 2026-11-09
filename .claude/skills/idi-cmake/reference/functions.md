@@ -140,8 +140,52 @@ add_code_coverage_all_targets([EXCLUDE <glob>...])
 No-ops unless `-DCODE_COVERAGE=ON` (forces Debug; GCC/Clang only). No `option()`
 is declared, but a `-D` on the command line still lands in the cache, so use a
 separate build dir for coverage or pass `-DCODE_COVERAGE=OFF` to turn it off.
-Components and tests already call it. Targets: `ccov-all`, `ccov-all-xml`
-(gcovr + lcov present), `ccov-clean`; output in `build/reports/coverage/`.
+Components and tests already call it. Exclude globs: absolute or starting with `*`
+are used as is, others are relative to the project root (also for patterns appended
+directly to the `IDICMAKE_COVERAGE_EXCLUDES` global property from a hook).
+
+Targets: `ccov-all` (reset counters, run **all** ctest tests, lcov HTML + gcovr XML
+when installed, print `Code Coverage: NN.NN%`; a failing test fails it),
+`ccov-all-xml` (gcovr only, XML), `ccov-clean`; output in `<build>/reports/coverage/`.
+gcov tool: `gcov-<major>` (GCC), `llvm-cov-<major> gcov` (Clang). Variables:
+`IDICMAKE_COVERAGE_FAIL_UNDER` (percent), `IDICMAKE_COVERAGE_CTEST_ARGS` (list).
+Wrapper: `cmake/idi/tools/coverage.{sh,bat}` (own `build-coverage/` dir).
+
+## Lint — `idi_lint.cmake`, `scripts/lint.cmake`
+
+```cmake
+idi_lint_setup()   # called by idi_src(); defers target creation to the end of configure
+```
+Top-level builds only. Targets (each skipped if the name is already taken):
+`format`, `format-check`, `tidy` (gate checks + `-warnings-as-errors=*`), `tidy-report`
+(`.clang-tidy` Checks, never fails), `lint` (format-check + tidy), `install-git-hooks`.
+All run `cmake -DLINT_CONFIG=<build>/idi-lint-config.cmake -DMODE=<mode> [-DFILES=a;b] -P cmake/idi/scripts/lint.cmake`,
+as do the wrappers `cmake/idi/tools/lint.{sh,bat}` and the hook `cmake/idi/tools/pre-commit`.
+Files: globbed from `IDICMAKE_LINT_DIRS` (default `src`; `demo` is added when the cache
+option `IDICMAKE_LINT_DEMOS` is ON, default OFF, or with `lint.sh --demos`) at run time, minus
+`IDICMAKE_LINT_EXCLUDES` (project-relative globs, default `*.out.*;src/base/*;src/unit_test_component/*`);
+clang-tidy uses the `.c/.cpp` entries of `compile_commands.json` (top-level builds set
+`CMAKE_EXPORT_COMPILE_COMMANDS` ON; VS generators don't write it). Gate list:
+`IDICMAKE_LINT_TIDY_GATE_CHECKS` (naming via `.clang-tidy` CheckOptions + bug/perf checks).
+Tool version: `IDICMAKE_CLANG_TOOLS_VERSION` (cache; empty = newest `clang-tidy-N` found);
+env `CLANG_FORMAT` / `CLANG_TIDY` override. `run-clang-tidy` is run through Python when
+found, else clang-tidy runs file by file. Set the variables in `cmake-hooks/post-options.cmake`.
+
+## Docs — `idi_docs.cmake`, `scripts/docs-theme.cmake`
+
+```cmake
+idi_docs_setup()                                         # called by idi_src()
+idi_docs_register_component(<component_dir> <header_only>)  # called by idi_component_setup()
+```
+Top-level builds with `<P>_BUILD_DOCS` on and Doxygen found get a `docs` target (not in
+ALL; skipped if a `docs` target exists). Inputs: per component `include/<proj>/public/`
+(shared, non-header-only) or `include/<proj>/` (otherwise); `__*.h` templates skipped,
+`__*.out.h` kept; main page `docs/mainpage.md` (+ other `docs/*.md`) else `README.md`.
+Uses `doxygen_add_docs()`: any `DOXYGEN_<KEY>` the project sets wins over the defaults.
+Theme: doxygen-awesome-css, pinned version + SHA256, downloaded by the `docs-theme`
+target at build time; `IDICMAKE_DOCS_THEME=OFF` for plain output. Also
+`IDICMAKE_DOCS_OUTPUT_DIR` (default `<build>/docs`), `IDICMAKE_DOCS_BRIEF`, `IDICMAKE_DOCS_INPUTS`.
+Wrapper: `cmake/idi/tools/docs.{sh,bat}`.
 
 ## Hooks — `misc.cmake`
 
@@ -156,7 +200,7 @@ Called by template-owned files; don't call them from project code:
 `idi_load_platform_config` (root, before `project()`), `idi_init` (root),
 `idi_src` (`src/CMakeLists.txt`), `idi_main` (`src/main/CMakeLists.txt`),
 `idi_new_component` (from `idi_init`), `idi_configure_common_includes`
-(base component only).
+(base component only; its `<proj>_GetBuildInfo` target declares `__build_info.out.h` as a BYPRODUCT).
 
 Other internal helpers: `idi_component_setup` (body of `idi_component`),
 `idi_get_repo_information` and `idi_commit_starts_with` (dependency checkout checks).
