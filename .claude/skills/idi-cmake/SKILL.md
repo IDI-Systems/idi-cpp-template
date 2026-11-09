@@ -54,6 +54,13 @@ or component instead.
 | `.claude/skills/idi-cmake/**` (this skill) | CI files, `README.md`, dotfiles, `CLAUDE.md` |
 | `cmake/idi/tools/*` (lint/coverage/docs/update scripts), `cmake/idi/CHANGELOG.md` | `new_component.{sh,bat}`, `docs/` |
 
+**`src/base/` is not for project code.** Never add new sources or headers there, not even
+small shared ones (logging config, common types): the updater deletes the whole folder and
+replaces it with the template's copy, so anything added is lost. Put shared code in a
+project component — an existing low-level one every user already depends on (e.g.
+`utilities`), or a new `common` one (`./new_component.sh common`, then add it to the
+dependents' `idi_component(...)` lists).
+
 Exception: when working **in the template repository itself** (the
 `idi-cpp-template` / `cmake-cpp` repo), template-owned files are the product —
 read `reference/maintaining.md` first.
@@ -75,8 +82,8 @@ prints a reminder) and re-configure. Edit dependencies on other components in
 `src/foo/CMakeLists.txt`: `idi_component(foo base other_component EXTERNAL_LIBRARIES spdlog::spdlog)`.
 Component names in that list are bare (`base`, not `<proj>_base`).
 
-**Add sources / headers** — list each file in the matching cmake file of the
-component (globs are not used):
+**Add sources / headers** — list each file in the matching cmake file of a
+project component, never `src/base` (globs are not used):
 - `.cpp` → `src/foo/objects.cmake` via `idi_add_sources(...)`
 - internal C++ API header → `src/foo/include/<proj>/include.cmake` via `idi_add_includes(...)`
 - exported C header for the shared lib → `src/foo/include/<proj>/public/public.cmake` via `idi_add_public_includes(...)`
