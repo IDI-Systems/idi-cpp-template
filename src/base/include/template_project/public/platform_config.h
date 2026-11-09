@@ -3,7 +3,7 @@
  *
  * Defines for getting the platform configuration of the project
  *
- * @copyright Copyright (c) 2025 International Development & Integration Systems LLC
+ * @copyright Copyright (c) 2026 International Development & Integration Systems LLC
  *
  */
 // No #pragma once here, on purpose: this forwarding header is byte-identical in every project built on

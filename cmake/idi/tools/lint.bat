@@ -2,7 +2,7 @@
 rem
 rem @author Cliff Foster (Nou) <cliff@idi-systems.com>
 rem
-rem @copyright Copyright (c) 2025 International Development & Integration Systems LLC
+rem @copyright Copyright (c) 2026 International Development & Integration Systems LLC
 rem
 rem Licensed under a modified MIT License, see TEMPLATE_LICENSE for full license details
 rem
