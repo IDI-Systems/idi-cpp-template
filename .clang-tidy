@@ -56,8 +56,8 @@ CheckOptions:
   # ── Methods ─────────────────────────────────────────────────────────────────
   readability-identifier-naming.MethodCase:              lower_case
   readability-identifier-naming.PublicMethodCase:        lower_case
+  #  Protected methods take no '_' prefix: they are the API subclasses call
   readability-identifier-naming.ProtectedMethodCase:     lower_case
-  readability-identifier-naming.ProtectedMethodPrefix:   '_'
   readability-identifier-naming.PrivateMethodCase:       lower_case
   readability-identifier-naming.PrivateMethodPrefix:     '_'
   readability-identifier-naming.VirtualMethodCase:       lower_case

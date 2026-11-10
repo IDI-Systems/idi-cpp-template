@@ -232,10 +232,11 @@ namespace vendor::app {                  // namespaces: lower_case
         void add_peer(int peer_id);      // functions, methods, variables, parameters: lower_case
 
     protected:
-        void _rebuild_index();           // protected/private methods and members: '_' prefix
-        int _count = 0;
+        void rebuild_index();            // protected methods: no prefix (subclasses call them)
+        int _count = 0;                  // protected/private members: '_' prefix
 
     private:
+        void _mark_dirty();              // private methods: '_' prefix
         bool _dirty = false;
     };
 } // namespace vendor::app
