@@ -205,7 +205,7 @@ The script configures and builds `build-lint/` (clang-tidy needs `compile_comman
 | `lint` | `format-check` + `tidy` |
 | `install-git-hooks` | Install a pre-commit hook that checks clang-format on staged files (skip once with `git commit --no-verify`) |
 
-The **gate** is a short list of checks that catch real bugs plus the naming rules from `.clang-tidy`. The broader `.clang-tidy` set (cppcoreguidelines, cert, hicpp, ...) is advisory. In the template's CI, `format-check` fails the pipeline and `tidy` is `allow_failure` until the project is ready to enforce it.
+The **gate** is a short list of checks that catch real bugs plus the naming rules from `.clang-tidy`. The broader `.clang-tidy` set (cppcoreguidelines, cert, modernize, the static analyzer, ...) is advisory. In the template's CI, `format-check` fails the pipeline and `tidy` is `allow_failure` until the project is ready to enforce it.
 
 clang-tidy needs the Ninja or Makefile generator (Visual Studio generators do not write `compile_commands.json`); on Windows, run `lint.bat` from a Developer Command Prompt with Ninja installed.
 
