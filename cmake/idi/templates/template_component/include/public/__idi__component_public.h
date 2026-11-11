@@ -6,6 +6,11 @@
  */
 #pragma once
 
+// ABI note: this header is the C ABI of a shared-library boundary and is consumed from C++ only. extern "C" gives
+// unmangled names and plain struct layouts that stay stable across compilers and library versions. It is not meant
+// to compile as C: C++ inside it (default member initializers, bool, nullptr) is intended. Keep the structs
+// standard-layout and trivially copyable.
+
 #include "@PROJECT_NAME@/public/export.h"
 
 #include <cstdint>

@@ -20,7 +20,10 @@ Requires CMake ≥ 3.26 and a C++20 compiler (GCC 11+, Clang 11+, MSVC 2019+).
 | `IDICMAKE_IS_LIBRARY` | library vs executable |
 | `IDICMAKE_IS_SHARED` | shared vs static (requires `IS_LIBRARY`) |
 
-Select an alternate file with `-DIDICMAKE_PLATFORM_CONFIG=<path>` (top-level only).
+Select an alternate file with `-DIDICMAKE_PLATFORM_CONFIG=<path>` (top-level only, not
+kept in the cache: pass it on every configure). A relative path is tried against the
+directory cmake is run from, then the build dir, then the source dir; configure stops
+with `FATAL_ERROR` if none exists.
 
 ## Cache options (`<P>` = upper-case project name)
 
@@ -34,10 +37,10 @@ Select an alternate file with `-DIDICMAKE_PLATFORM_CONFIG=<path>` (top-level onl
 | `<P>_FORCE_PIC` | 0 | PIC for static builds linked into a shared lib |
 | `<P>_GENERATE_UMBRELLA_HEADER` | 1 | shared builds: generate `<proj>/<proj>.h` |
 | `<P>_CI_GIT_BRANCH_NAME` | "" | override branch name (CI detached HEAD) |
-| `<P>_DO_TEMPLATE_COMPONENT_TEST` | 0 | currently has no effect, see maintaining.md |
+| `<P>_DO_TEMPLATE_COMPONENT_TEST` | 0 | scaffold and build a throwaway `src/unit_test_component` (template CI) |
 
-Non-prefixed: `NEW_COMPONENT_NAME`, `DO_TEMPLATE_COMPONENT_TEST` (scaffold and
-build a throwaway `src/unit_test_component`), `CODE_COVERAGE` (no `option()`, but sticks once passed with `-D`),
+Non-prefixed: `NEW_COMPONENT_NAME`, `DO_TEMPLATE_COMPONENT_TEST` (same as
+`<P>_DO_TEMPLATE_COMPONENT_TEST`), `CODE_COVERAGE` (no `option()`, but sticks once passed with `-D`),
 `IDI_SYNC_DEPENDENCIES`, `DO_FRAMEWORK_UPDATE` + `FRAMEWORK_UPDATE_*`,
 `IDICMAKE_CLANG_TOOLS_VERSION`, `IDICMAKE_DOCS_THEME` (cache), and the non-cache
 `IDICMAKE_LINT_*`, `IDICMAKE_DOCS_*`, `IDICMAKE_COVERAGE_*` variables (see functions.md).
@@ -48,10 +51,14 @@ After options load, each is mirrored to `IDICMAKE_<OPTION>` (e.g. `IDICMAKE_BUIL
 The configured `*.out.*` files are written **into the source tree** next to their
 templates and gitignored; never edit or commit them.
 
-- `<proj>/public/export.h` → `<CNS>_EXPORT`: `__declspec(dllexport)` /
+- `<proj>/public/export.h` → `<CNS>_EXPORT`. Windows shared builds:
+  `__declspec(dllexport)` when `<CNS>_BUILDING_LIBRARY` is defined (the framework
+  adds it PUBLIC to every compiled component, so core, the DLL and tests linking core
+  get it; header-only components don't set it), `__declspec(dllimport)` otherwise
+  (`<proj>_public`, installed consumers). Windows static/exe: empty. Elsewhere:
   `visibility("default")` when `<CNS>_IS_LIBRARY`, empty otherwise. Mark every
-  exported C function with it. (No `dllimport` branch.) Shared builds compile with
-  hidden visibility, so un-marked symbols are not exported.
+  exported C function with it. Shared builds compile with hidden visibility, so
+  un-marked symbols are not exported.
 - `<proj>/public/platform_config.h` → `<CNS>_PROJECT_NAME`, `_PROJECT_NAME_STR`,
   `_IS_LIBRARY`, `_IS_SHARED`, `_IS_DYNAMIC`, `_VENDOR_NAMESPACE`, `_APP_NAMESPACE`
   + anything added with `idi_platform_config()`.
@@ -66,7 +73,8 @@ templates and gitignored; never edit or commit them.
   content, size and mtime second, which silently dropped a second project's `version.h`
   from a translation unit including both.
 - `__build_info.out.h` is regenerated **at build time** by the `<proj>_GetBuildInfo`
-  target (`cmake/idi/scripts/build-info.cmake`).
+  target (`cmake/idi/scripts/build-info.cmake`, declared as its `BYPRODUCTS`) and
+  installed with the other public headers.
 - Shared builds: umbrella header `build/generated/<proj>/<proj>.h` including every
   public header (except `__*` files); include as `"<proj>/<proj>.h"`.
 
@@ -76,9 +84,15 @@ templates and gitignored; never edit or commit them.
   and exe builds install all `idi_add_includes` + public headers; shared builds
   install only public headers + the umbrella header, plus every header of a
   `HEADER_ONLY` component.
-- Executable: `RUNTIME` (`bin/`). Shared lib: `LIBRARY` (`lib/` on Linux).
+- Executable: `RUNTIME` (`bin/`). Shared lib: `.so` in `lib/`; on Windows the
+  `.dll` in `bin/` and the import `.lib` in `lib/`. Static lib: the `.a`/`.lib` in
+  `lib/` (one archive holding every component's objects; third-party dependencies
+  are not bundled or installed).
+- The base component's C API (`version.h`) is plain C (`<stdint.h>`, `<stdbool.h>`,
+  `(void)` prototypes). Component public headers are C ABI consumed from C++ (see
+  the note in the component template).
 - No `install(EXPORT)`, no `<proj>Config.cmake`: **`find_package(<proj>)` is not
-  supported.** Static-library builds don't install the `.a`/`.lib`.
+  supported.**
 
 ## Consuming from another project
 

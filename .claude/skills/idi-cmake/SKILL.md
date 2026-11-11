@@ -117,9 +117,9 @@ to every framework target). Per-target tweaks: `cmake-hooks/post-target-compile-
 (target name is `${compile_target}`). Defaults: C++20, `-Wall -Wextra -Wshadow -pedantic -Werror -fno-exceptions`, MSVC `/W4 /WX`.
 
 **Switch build type** — edit `IDICMAKE_IS_LIBRARY`/`IDICMAKE_IS_SHARED`, or pass
-`-DIDICMAKE_PLATFORM_CONFIG=$PWD/platform-config.shared.cmake` (also `.static`, `.exe`). A relative
-path is resolved against the directory cmake runs in, not the build dir: `../platform-config.*.cmake`
-is right only when running `cmake ..` from inside the build dir (as CI does).
+`-DIDICMAKE_PLATFORM_CONFIG=platform-config.shared.cmake` (also `.static`, `.exe`). A relative
+path is tried against the directory cmake runs in, then the build dir, then the source dir;
+configure stops if none exists.
 
 **Coverage** — `cmake/idi/tools/coverage.sh` (own `build-coverage/` dir; `--fail-under N`), or
 `cmake -B build-cov -DCODE_COVERAGE=ON && cmake --build build-cov && cmake --build build-cov --target ccov-all`
@@ -132,6 +132,9 @@ arguments limit the check), or the
 `format` / `format-check` / `tidy` / `tidy-report` / `lint` targets. Naming rules come from
 the project's `.clang-tidy`; dirs/excludes/gate checks from `IDICMAKE_LINT_*` (set in
 `cmake-hooks/post-options.cmake`). Code you write in a project should pass `lint.sh`.
+
+**Sanitizers** — `cmake -B build-asan -DIDICMAKE_SANITIZERS="address;undefined" && cmake --build build-asan && ctest --test-dir build-asan`
+(`thread` in its own build dir). Every target, dependencies included, gets the flags.
 
 **Docs** — `cmake/idi/tools/docs.sh` or `cmake --build build --target docs` → `build/docs/html/`.
 Documents component `include/` headers (public ones only for shared libraries); front page

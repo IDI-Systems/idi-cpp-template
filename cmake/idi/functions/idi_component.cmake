@@ -7,6 +7,11 @@
 #
 
 function(idi_component_setup component_name)
+    if(component_name STREQUAL "base" AND
+        (NOT DEFINED IDICMAKE_BASE_CML_V OR IDICMAKE_BASE_CML_V LESS IDICMAKE_BASE_REQ_CML_V))
+        message(FATAL_ERROR "The CMakeLists.txt in the src/base component directory is not at the required version for the IDI CMake framework. "
+            "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
+    endif()
     set(HEADER_ONLY false)
     foreach(var IN LISTS ARGN)
         if(var STREQUAL "HEADER_ONLY")
@@ -94,6 +99,10 @@ function(idi_component_setup component_name)
             install(TARGETS "${CURRENT_LIBRARY_NAME}"
                     FILE_SET core_public_includes DESTINATION includes/${IDICMAKE_PROJECT_NAME}
             )
+            # Selects dllexport over dllimport in export.h. Propagates to the core and shared
+            # targets (and tests linking core), but not to <project>_public. Not set on header-only
+            # (contract) components: their consumers do not build the library.
+            target_compile_definitions(${CURRENT_LIBRARY_NAME} PUBLIC "${__idi_c_caps_namespace}_BUILDING_LIBRARY")
             target_include_directories(${CURRENT_LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
         endif()
     else()

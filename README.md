@@ -33,13 +33,14 @@ _Use with `cmake .. -D<argument>=<value>`._
 
 _`<P>` is the upper-case project name (`IDICMAKE_PROJECT_NAME`), e.g. `TEMPLATE_PROJECT_BUILD_TESTS`._
 
-- `IDICMAKE_PLATFORM_CONFIG` (default: `platform_config.cmake`) - Platform configuration file (only for top-level project)
+- `IDICMAKE_PLATFORM_CONFIG` (default: `platform-config.cmake`) - Platform configuration file (only for top-level project; a relative path is tried against the current directory, then the build directory, then the source directory)
 - `<P>_BUILD_DEMOS` (default: `1`, `0` as a subproject) - Build demo applications if applicable.
 - `<P>_BUILD_TESTS` (default: `1`, `0` as a subproject) - Build unit tests. _(long)_
 - `<P>_BUILD_DOCS` (default: `1`, `0` as a subproject) - Add the `docs` target when Doxygen is found.
-- `DO_TEMPLATE_COMPONENT_TEST` (default: `0`) - Generate unit test template component and build unit tests for template.
+- `<P>_DO_TEMPLATE_COMPONENT_TEST` or `DO_TEMPLATE_COMPONENT_TEST` (default: `0`) - Generate unit test template component and build unit tests for template.
 - `NEW_COMPONENT_NAME` - Create new component (or use `./new_component.sh <name>`).
 - `CODE_COVERAGE` (default: `OFF`) - Coverage build, see [Code Coverage](#code-coverage).
+- `IDICMAKE_SANITIZERS` (default: empty) - Sanitizer build, see [Sanitizers](#sanitizers).
 
 ### Tests
 
@@ -90,6 +91,8 @@ Includes are structured in a specific way to easily enable the installation or i
 
 The include folder in each component contains exactly one subfolder that is named after the CMake `IDICMAKE_PROJECT_NAME` configuration value. Inside that folder exists any interface header files that can be used with **static** libraries. In addition, a folder called `public` contains any headers that are used as header interfaces to a **shared** library. These generally will be C exported interfaces for shared object ABI compatibility.
 
+The `public` headers are `.h` files with `extern "C"` declarations, but they are consumed from C++ only. The C ABI is there so the shared library boundary has unmangled names and plain struct layouts that stay stable across compilers and library versions; it is not there for C callers. C++ inside these headers (default member initializers, `bool`, `nullptr`, `<cstdint>`) is fine. Keep structs that cross the boundary standard-layout and trivially copyable. Generated components carry a short note saying this at the top of their public header.
+
 Any header files that are not to be consumed by end-users should _not_ be included in the `include` folder structure. Those headers will remain private to the project and it's components (there is currently no way to restrict headers to _just_ the component in which it lives).
 
 ```
@@ -116,6 +119,20 @@ The `include/project_name` folder will also include a `include.cmake` file that 
 ### Tests
 
 Tests are contained in the component's `tests` folder. See `idi_component_test` and `idi_component_test_public` function documentation below for more information on how tests can be added. Tests are built around CTest and use Catch2 by default.
+
+Each `tests` folder has a `.clang-tidy` that inherits the project's and turns off two checks that misfire on Catch2 tests: `bugprone-unchecked-optional-access` (it cannot see that a failed `REQUIRE` stops the test) and `readability-function-cognitive-complexity` (a test case with many `SECTION`s and `REQUIRE`s scores high without being hard to read).
+
+## Sanitizers
+
+`IDICMAKE_SANITIZERS` builds every target (components, tests, demos and the dependencies the project adds) with the given sanitizers, so `ctest` runs under them. Use one build folder per set:
+
+```sh
+$ cmake -B build-asan -DIDICMAKE_SANITIZERS="address;undefined"
+$ cmake --build build-asan && ctest --test-dir build-asan --output-on-failure
+$ cmake -B build-tsan -DIDICMAKE_SANITIZERS=thread
+```
+
+Values: `address`, `undefined`, `leak`, `thread` (GCC/Clang; `thread` cannot be combined with `address` or `leak`), and `address` only on MSVC. Undefined behaviour stops the program, so a test with UB fails instead of printing a warning. Run the address set before a release and after changing memory or plugin-loading code: it finds overflows and leaks that the tests alone pass over.
 
 ## Code Coverage
 
@@ -200,12 +217,14 @@ The script configures and builds `build-lint/` (clang-tidy needs `compile_comman
 |---|---|
 | `format` | Apply clang-format to all project files |
 | `format-check` | Fail if a file is not formatted |
-| `tidy` | clang-tidy with the **gate checks**; fails on any finding |
+| `tidy` | clang-tidy with the **gate checks**; fails on any finding, on a bad clang-tidy config, or when it finds no files to check |
 | `tidy-report` | clang-tidy with the full `.clang-tidy` check list; report only |
 | `lint` | `format-check` + `tidy` |
 | `install-git-hooks` | Install a pre-commit hook that checks clang-format on staged files (skip once with `git commit --no-verify`) |
 
-The **gate** is a short list of checks that catch real bugs plus the naming rules from `.clang-tidy`. The broader `.clang-tidy` set (cppcoreguidelines, cert, hicpp, ...) is advisory. In the template's CI, `format-check` fails the pipeline and `tidy` is `allow_failure` until the project is ready to enforce it.
+The **gate** is a short list of checks that catch real bugs plus the naming rules from `.clang-tidy`. The broader `.clang-tidy` set (cppcoreguidelines, cert, modernize, the static analyzer, ...) is advisory. In the template's CI, `format-check` and `tidy` both fail the pipeline; a new project starts with no findings, so keep it that way. A project that adopts the gate with findings to clear can add `allow_failure: true` to its `tidy` job for a while.
+
+Before checking files, `tidy` and `tidy-report` run `clang-tidy --verify-config` on the root `.clang-tidy`, every `.clang-tidy` under the lint folders, and the gate list. clang-tidy otherwise ignores a glob that matches no check (for example `clang-analyzer-core-*`, where the analyzer names use a dot) or a misspelled option without a word.
 
 clang-tidy needs the Ninja or Makefile generator (Visual Studio generators do not write `compile_commands.json`); on Windows, run `lint.bat` from a Developer Command Prompt with Ninja installed.
 
@@ -232,14 +251,17 @@ namespace vendor::app {                  // namespaces: lower_case
         void add_peer(int peer_id);      // functions, methods, variables, parameters: lower_case
 
     protected:
-        void _rebuild_index();           // protected/private methods and members: '_' prefix
-        int _count = 0;
+        void rebuild_index();            // protected methods: no prefix (subclasses call them)
+        int _count = 0;                  // protected/private members: '_' prefix
 
     private:
+        void _mark_dirty();              // private methods: '_' prefix
         bool _dirty = false;
     };
 } // namespace vendor::app
 ```
+
+To silence a finding that is intended, put the reason next to it and use `// NOLINTNEXTLINE(<check>)` on the line above, or `// NOLINTBEGIN(<check>)` / `// NOLINTEND(<check>)` around a block. Avoid a trailing `// NOLINT(<check>)`: when clang-format wraps a long line, the comment moves onto another line and stops applying. Turn a check off for a whole folder with a nested `.clang-tidy` that has `InheritParentConfig: true` (as the `tests` folders do), not in the project's root file.
 
 ## API Documentation
 

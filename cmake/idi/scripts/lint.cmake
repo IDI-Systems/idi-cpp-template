@@ -12,7 +12,7 @@
 # Modes:
 #   format        clang-format -i on the files
 #   format-check  fail if any file is not formatted
-#   tidy          clang-tidy gate checks, fail on any finding
+#   tidy          clang-tidy gate checks, fail on any finding (also on a bad config or no files checked)
 #   tidy-report   clang-tidy with the .clang-tidy check list, report only
 #   lint          format-check + tidy
 #   install-hook  install the pre-commit hook (HOOK_SOURCE = path of cmake/idi/tools/pre-commit)
@@ -309,6 +309,100 @@ function(_lint_compile_db_files OUT_VAR)
     set(${OUT_VAR} "${_files}" PARENT_SCOPE)
 endfunction()
 
+# Source files (not headers) of the given project-relative paths.
+function(_lint_sources_only OUT_VAR)
+    set(_kept "")
+    foreach(_f IN LISTS ARGN)
+        _lint_is_source(_is_src "${_f}")
+        if(_is_src)
+            list(APPEND _kept "${_f}")
+        endif()
+    endforeach()
+    set(${OUT_VAR} "${_kept}" PARENT_SCOPE)
+endfunction()
+
+# Explains why a full clang-tidy run found no files, or returns "" when there is nothing to lint.
+function(_lint_empty_run_problem OUT_VAR)
+    set(${OUT_VAR} "" PARENT_SCOPE)
+    _lint_all_files(_on_disk)
+    _lint_sources_only(_sources ${_on_disk})
+    list(LENGTH _sources _n)
+    if(_n GREATER 0)
+        list(JOIN LINT_DIRS ", " _dirs)
+        string(CONCAT _msg "${LINT_BUILD_DIR}/compile_commands.json lists none of the ${_n} source file(s) under "
+            "${_dirs}. Re-configure the build folder (CMAKE_EXPORT_COMPILE_COMMANDS=ON) and build it, or delete the "
+            "folder and configure it again.")
+        set(${OUT_VAR} "${_msg}" PARENT_SCOPE)
+        return()
+    endif()
+    if(NOT "demo" IN_LIST LINT_DIRS AND IS_DIRECTORY "${LINT_SOURCE_DIR}/demo")
+        list(JOIN LINT_DIRS ", " _dirs)
+        set(LINT_DIRS demo)
+        _lint_all_files(_demo_files)
+        _lint_sources_only(_demo_sources ${_demo_files})
+        if(_demo_sources)
+            string(CONCAT _msg "The lint folders (${_dirs}) have no sources, but demo/ does. Lint it with "
+                "IDICMAKE_LINT_DEMOS=ON (set in cmake-hooks/post-options.cmake) or lint.sh --demos.")
+            set(${OUT_VAR} "${_msg}" PARENT_SCOPE)
+        endif()
+    endif()
+endfunction()
+
+# clang-tidy --verify-config on every .clang-tidy (root and lint folders) and, for the gate, on the gate check list.
+# A glob that matches no check or a misspelled option is otherwise ignored without a word. Sets CONFIG_FAILED.
+function(_lint_verify_config MODE)
+    set(CONFIG_FAILED FALSE PARENT_SCOPE)
+    if(NOT LINT_CLANG_TIDY_MAJOR OR LINT_CLANG_TIDY_MAJOR LESS 16)
+        return() # --verify-config arrived in clang-tidy 16
+    endif()
+    set(_configs "")
+    if(EXISTS "${LINT_SOURCE_DIR}/.clang-tidy")
+        list(APPEND _configs ".clang-tidy")
+    endif()
+    foreach(_dir IN LISTS LINT_DIRS)
+        if(IS_DIRECTORY "${LINT_SOURCE_DIR}/${_dir}")
+            file(GLOB_RECURSE _found RELATIVE "${LINT_SOURCE_DIR}" "${LINT_SOURCE_DIR}/${_dir}/.clang-tidy")
+            list(APPEND _configs ${_found})
+        endif()
+    endforeach()
+    list(REMOVE_DUPLICATES _configs)
+
+    set(_problems "")
+    foreach(_config IN LISTS _configs)
+        get_filename_component(_dir "${LINT_SOURCE_DIR}/${_config}" DIRECTORY)
+        execute_process(COMMAND "${LINT_CLANG_TIDY}" --verify-config
+            WORKING_DIRECTORY "${_dir}" RESULT_VARIABLE _rc OUTPUT_VARIABLE _out ERROR_VARIABLE _err)
+        if(NOT _rc EQUAL 0)
+            string(APPEND _problems "${_out}${_err}")
+        endif()
+    endforeach()
+    if(MODE STREQUAL "tidy")
+        # --config={} keeps the .clang-tidy files (checked above) out of this run, so only the gate list is checked
+        execute_process(COMMAND "${LINT_CLANG_TIDY}" --verify-config "--config={}" "-checks=${LINT_GATE_CHECKS}"
+            WORKING_DIRECTORY "${LINT_SOURCE_DIR}" RESULT_VARIABLE _rc OUTPUT_VARIABLE _out ERROR_VARIABLE _err)
+        if(NOT _rc EQUAL 0)
+            string(REPLACE "Command-line option '-checks'" "IDICMAKE_LINT_TIDY_GATE_CHECKS" _out "${_out}${_err}")
+            string(APPEND _problems "${_out}")
+        endif()
+    endif()
+
+    if(_problems)
+        # A nested config that inherits a bad parent repeats the parent's warnings; print each line once.
+        string(REPLACE "\r" "" _problems "${_problems}")
+        string(REPLACE ";" "\\;" _problems "${_problems}")
+        string(REPLACE "\n" ";" _lines "${_problems}")
+        list(FILTER _lines EXCLUDE REGEX "^[ \t]*$")
+        list(REMOVE_DUPLICATES _lines)
+        list(JOIN _lines "\n" _problems)
+        if(LINT_SOURCE_DIR)
+            string(REPLACE "${LINT_SOURCE_DIR}/" "" _problems "${_problems}")
+        endif()
+        message(NOTICE "=== clang-tidy: configuration problems ===\n${_problems}")
+        message(NOTICE "FAIL - fix the clang-tidy configuration above (checked with clang-tidy --verify-config).")
+        set(CONFIG_FAILED TRUE PARENT_SCOPE)
+    endif()
+endfunction()
+
 # Sets TIDY_FAILED in the caller. MODE is tidy (gate) or tidy-report.
 function(_lint_tidy MODE)
     set(TIDY_FAILED FALSE PARENT_SCOPE)
@@ -318,6 +412,13 @@ function(_lint_tidy MODE)
     set(_LINT_SKIP FALSE)
     _lint_require_tool(LINT_CLANG_TIDY clang-tidy)
     if(_LINT_SKIP)
+        return()
+    endif()
+
+    # A broken configuration fails the gate before any file is checked; the report still runs.
+    _lint_verify_config(${MODE})
+    if(CONFIG_FAILED AND MODE STREQUAL "tidy")
+        set(TIDY_FAILED TRUE PARENT_SCOPE)
         return()
     endif()
 
@@ -351,6 +452,22 @@ function(_lint_tidy MODE)
 
     list(LENGTH _files _count)
     if(_count EQUAL 0)
+        if(DEFINED FILES AND NOT FILES STREQUAL "")
+            message(NOTICE "=== clang-tidy: no source files to check ===")
+            return()
+        endif()
+        # A full run that finds nothing must not pass silently: the database may be stale or missing the project,
+        # or the code may live in a folder that is not linted.
+        _lint_empty_run_problem(_problem)
+        if(_problem)
+            message(NOTICE "=== clang-tidy: no source files to check ===")
+            message(NOTICE "${_problem}")
+            if(MODE STREQUAL "tidy")
+                message(NOTICE "FAIL - clang-tidy checked no files.")
+                set(TIDY_FAILED TRUE PARENT_SCOPE)
+            endif()
+            return()
+        endif()
         message(NOTICE "=== clang-tidy: no source files to check ===")
         return()
     endif()

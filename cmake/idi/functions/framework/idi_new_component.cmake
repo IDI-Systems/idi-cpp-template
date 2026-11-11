@@ -28,7 +28,7 @@ function(__idi_copy_template component_name src_dir dest_dir)
 endfunction()
 
 macro(idi_new_component)
-    if(DO_TEMPLATE_COMPONENT_TEST)
+    if(DO_TEMPLATE_COMPONENT_TEST OR IDICMAKE_DO_TEMPLATE_COMPONENT_TEST)
         set(NEW_COMPONENT_NAME "unit_test_component" CACHE INTERNAL "" FORCE)
     endif()
 

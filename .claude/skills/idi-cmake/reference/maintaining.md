@@ -26,7 +26,8 @@ by hand.
 `IDICMAKE_ROOT_REQ_CML_V`, `IDICMAKE_SRC_REQ_CML_V`, `IDICMAKE_BASE_REQ_CML_V`:
 bump when root `CMakeLists.txt`, `src/CMakeLists.txt`, or `src/base/CMakeLists.txt`
 change, together with the `IDICMAKE_*_CML_V` value set inside that file. A bump
-requires a MAJOR framework bump.
+requires a MAJOR framework bump. The root value is checked in `idi-template.cmake`,
+src in `idi_src()`, base in `idi_component_setup()` (component `base`).
 
 `cmake/idi/updater/updater_version.cmake` — `IDICMAKE_CPP_UPDATER_VERSION`:
 increment on **any** change to `updater.cmake` or `updater_imp.cmake`. The
@@ -52,7 +53,8 @@ the configure-time updater in folder mode, then runs `MODE=post` from the *new* 
 use `@__idi_new_component_name@`, `@PROJECT_NAME@`, `@__idi_namespace@`,
 `@__idi_c_caps_namespace@` in contents and `__idi__component` in file names.
 Keep `${...}` for values resolved at configure time of the generated component.
-Test with `-DDO_TEMPLATE_COMPONENT_TEST=1` (builds `src/unit_test_component`).
+Test with `-DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1` (or the unprefixed
+`-DDO_TEMPLATE_COMPONENT_TEST=1`; builds `src/unit_test_component`).
 
 ## Testing a change
 
@@ -62,7 +64,7 @@ for t in exe static shared; do
         -DTEMPLATE_PROJECT_BUILD_DEMOS=1 && cmake --build build-$t && ctest --test-dir build-$t -C Debug
 done
 ```
-The platform config path must be absolute (or relative to the directory cmake runs in). If
+A relative platform config path is tried against the cwd, the build dir, then the source dir. If
 configure fails before the platform config loads, the `unit_test_component` scaffold is written
 with an empty project name (`include/` without the `<proj>` folder): delete `src/unit_test_component/`
 before re-running. A HEADER_ONLY component is not covered by the matrix; when touching header-only or
@@ -108,20 +110,9 @@ grep -rhoE "^(function|macro)\((idi_[a-z_]+|target_code_coverage|add_code_covera
   `CMakeLists.txt`) cannot see variables set inside `idi_component_setup` (a function). Pass the
   component name instead, or set the variable in the `idi_component*` macro.
 
-## Known issues (as of framework 6.4.0)
+## Known issues (as of framework 6.5.0)
 
-- `<P>_DO_TEMPLATE_COMPONENT_TEST` is defined and mirrored to
-  `IDICMAKE_DO_TEMPLATE_COMPONENT_TEST`, but `idi_new_component.cmake` and
-  `idi_src.cmake` read the unprefixed `DO_TEMPLATE_COMPONENT_TEST`, so CI's
-  `-DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1` does nothing.
-- `__build_info.h` is not listed in `src/base/.../public/public.cmake`, so it is
-  not installed, while the installed `__version.out.h` includes
-  `<proj>/public/__build_info.out.h`.
-- Shared install: `install(TARGETS <proj> LIBRARY FILE_SET HEADERS ...)` — the
-  target has no `HEADERS` file set, and on Windows the DLL (`RUNTIME`) and import
-  lib (`ARCHIVE`) are not installed.
-- `export.h` has no `dllimport` branch for Windows consumers.
-- Only the root CML version check is effective: `IDICMAKE_SRC_CML_V` /
-  `IDICMAKE_BASE_CML_V` are not yet set when `idi-template.cmake` checks them.
+Add framework bugs found while working here, and remove them in the commit that fixes them.
+
 - The `.bat` wrappers in `cmake/idi/tools/` and `new_component.bat` have not been run on Windows
   yet (written to mirror the `.sh` versions, which are tested on Linux).

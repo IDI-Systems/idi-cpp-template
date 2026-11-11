@@ -16,15 +16,8 @@ if(NOT IDICMAKE_DID_UPDATE AND NOT IDICMAKE_TEMPLATE_LOADED)
             "If you updated the template recently, also update the CMakeList.txt in the root directory")
     endif()
 
-    if(IDICMAKE_SRC_CML_V LESS IDICMAKE_SRC_REQ_CML_V)
-        message(FATAL_ERROR "The CMakeLists.txt in the src directory is not at the required version for the IDI CMake framework."
-            "If you updated the template recently, also update the CMakeList.txt in the src directory")
-    endif()
-
-    if(IDICMAKE_BASE_CML_V LESS IDICMAKE_BASE_REQ_CML_V)
-        message(FATAL_ERROR "The CMakeLists.txt in the src/base component directory is not at the required version for the IDI CMake framework."
-            "If you updated the template recently, also update the CMakeList.txt in the src/base component directory")
-    endif()
+    # The src and src/base CMakeLists.txt versions are checked in idi_src()
+    # and idi_component(base), since those files have not been read yet.
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_dependency.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_add_sources.cmake)
@@ -46,6 +39,7 @@ if(NOT IDICMAKE_DID_UPDATE AND NOT IDICMAKE_TEMPLATE_LOADED)
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_code_coverage.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_lint.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_sanitizers.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/idi/functions/idi_docs.cmake)
 
     set(IDICMAKE_TEMPLATE_LOADED true)

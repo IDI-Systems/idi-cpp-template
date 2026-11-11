@@ -6,20 +6,38 @@
 #  groups (bugprone, performance, modernize, readability).
 # ──────────────────────────────────────────────────────────────────────────────
 
+#  Turned off:
+#   - hicpp-*: nearly all are aliases of checks already on (a NOLINT for one reappears as the other).
+#   - magic numbers, identifier length: physics constants and formula variable names (q, x, h_st).
+#   - easily-swappable-parameters: fires on every function taking two values of one type.
+#   - the low-level pro-* checks: C APIs and plugin interfaces need unions, casts, raw pointers.
+#   - enum-size, use-enum-class: C API enums can't become enum class or change size (ABI).
 Checks: >
   -*,
   bugprone-*,
   cert-*,
-  clang-analyzer-core-*,
-  clang-analyzer-cplusplus-*,
+  clang-analyzer-core.*,
+  clang-analyzer-cplusplus.*,
   clang-analyzer-security*,
-  clang-analyzer-unix-*,
+  clang-analyzer-unix.*,
   cppcoreguidelines-*,
-  hicpp-*,
   modernize-*,
   performance-*,
   readability-*,
-  -modernize-use-trailing-return-type
+  -modernize-use-trailing-return-type,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-use-enum-class,
+  -performance-enum-size
 
 WarningsAsErrors: ''
 
@@ -27,6 +45,10 @@ WarningsAsErrors: ''
 # src/ and demo/ folders (see cmake/idi/functions/idi_lint.cmake).
 
 CheckOptions:
+
+  # ── Other checks ────────────────────────────────────────────────────────────
+  #  typedefs in extern "C" blocks (the C API headers) must stay typedefs
+  modernize-use-using.IgnoreExternC:                     true
 
   # ── Namespaces ──────────────────────────────────────────────────────────────
   readability-identifier-naming.NamespaceCase:           lower_case
@@ -56,8 +78,8 @@ CheckOptions:
   # ── Methods ─────────────────────────────────────────────────────────────────
   readability-identifier-naming.MethodCase:              lower_case
   readability-identifier-naming.PublicMethodCase:        lower_case
+  #  Protected methods take no '_' prefix: they are the API subclasses call
   readability-identifier-naming.ProtectedMethodCase:     lower_case
-  readability-identifier-naming.ProtectedMethodPrefix:   '_'
   readability-identifier-naming.PrivateMethodCase:       lower_case
   readability-identifier-naming.PrivateMethodPrefix:     '_'
   readability-identifier-naming.VirtualMethodCase:       lower_case
