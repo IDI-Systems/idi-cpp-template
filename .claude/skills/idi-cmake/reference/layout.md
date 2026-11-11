@@ -38,8 +38,9 @@ src/foo/
       foo.hpp                  # C++ API, namespace vendor::app::foo
       public/
         public.cmake           # idi_add_public_includes(...)
-        foo_public.h           # extern "C" API with <CNS>_EXPORT
+        foo_public.h           # extern "C" API with <CNS>_EXPORT (C ABI, consumed from C++ only)
   tests/
+    .clang-tidy                # inherits the root; Catch2-friendly check tweaks
     tests.cmake                # idi_component_test(...) / idi_component_test_public(...)
     test.cpp
     test_public.cpp
@@ -52,6 +53,10 @@ explicitly in one of these.
 Include style inside the project and for consumers:
 `#include "<proj>/foo.hpp"`, `#include "<proj>/public/foo_public.h"`,
 `#include "<proj>/public/export.h"`.
+
+`public/*.h` headers use `extern "C"` for a stable shared-library ABI (unmangled names, plain
+struct layouts), not for C callers: C++ inside them (default member initializers, `bool`,
+`nullptr`, `<cstdint>`) is intended. Keep boundary structs standard-layout and trivially copyable.
 
 `include/<proj>/` isolation is per component, not per folder: anything that links
 a component (or `<proj>_public`) can reach all of that component's `include/`

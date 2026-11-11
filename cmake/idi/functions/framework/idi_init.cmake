@@ -141,6 +141,9 @@ macro(idi_init)
             endif()
         endif()
 
+        # Before any dependency or component is added, so every target gets the sanitizer flags.
+        idi_sanitizers_setup()
+
         idi_add_third_party_dependency(Catch2 https://github.com/catchorg/Catch2.git v3.8.1)
 
         # Add the main source folder.

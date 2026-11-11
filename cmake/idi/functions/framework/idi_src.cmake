@@ -7,6 +7,11 @@
 #
 
 macro(idi_src)
+    if(NOT DEFINED IDICMAKE_SRC_CML_V OR IDICMAKE_SRC_CML_V LESS IDICMAKE_SRC_REQ_CML_V)
+        message(FATAL_ERROR "The CMakeLists.txt in the src directory is not at the required version for the IDI CMake framework. "
+            "If you updated the template recently, also update the CMakeList.txt in the src directory")
+    endif()
+
     include(CMakePrintHelpers)
     add_code_coverage_all_targets(EXCLUDE "*/tests/*" "${PROJECT_SOURCE_DIR}/lib/*")
     idi_lint_setup()
@@ -58,7 +63,7 @@ macro(idi_src)
     include("${CMAKE_CURRENT_LIST_DIR}/components.cmake")
     idi_cmake_hook(post-components-list)
 
-    if(DO_TEMPLATE_COMPONENT_TEST)
+    if(DO_TEMPLATE_COMPONENT_TEST OR IDICMAKE_DO_TEMPLATE_COMPONENT_TEST)
         add_subdirectory("unit_test_component")
     endif()
 
@@ -94,8 +99,12 @@ macro(idi_src)
                 PRIVATE
                 "${CMAKE_CURRENT_LIST_DIR}/main/dll_main.cpp"
             )
+            # Public headers are installed per component (core_public_includes).
+            # RUNTIME is the .dll and ARCHIVE the import .lib on Windows.
             install(TARGETS "${IDICMAKE_SHARED_NAME}"
-                LIBRARY FILE_SET HEADERS DESTINATION includes/${IDICMAKE_PROJECT_NAME}/public)
+                RUNTIME
+                LIBRARY
+                ARCHIVE)
             add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/main")
 
             # Consumer-facing INTERFACE target that only exposes include
@@ -142,6 +151,10 @@ macro(idi_src)
             message(STATUS "------ Added SHARED Library ${IDICMAKE_PROJECT_NAME}")
             message(STATUS "------ Added PUBLIC consumer target ${IDICMAKE_PROJECT_NAME}_public")
         else()
+            # The core target is the static library; component objects are
+            # linked into it. Headers are installed per component (core_includes).
+            install(TARGETS "${IDICMAKE_PROJECT_NAME}"
+                ARCHIVE)
             message(STATUS "------ Added STATIC Library ${IDICMAKE_PROJECT_NAME}")
         endif()
     endif()

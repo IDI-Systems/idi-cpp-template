@@ -67,8 +67,11 @@ set(IDICMAKE_CLANG_TOOLS_VERSION "" CACHE STRING "LLVM major version of clang-fo
 
 # Top-level builds export compile_commands.json so clang-tidy (and editors) can use it.
 # Visual Studio generators ignore this; use Ninja for clang-tidy on Windows.
-if(NOT DEFINED CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Write compile_commands.json (used by clang-tidy)")
+# Makefile and Ninja build folders get an empty CMAKE_EXPORT_COMPILE_COMMANDS cache entry from CMake itself, so test
+# for an empty value, not for DEFINED: a folder configured before 6.4.0 would otherwise never write the database.
+# An explicit OFF is kept.
+if("${CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "" AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Write compile_commands.json (used by clang-tidy)" FORCE)
 endif()
 
 # ---------------------------------------------------------------------------

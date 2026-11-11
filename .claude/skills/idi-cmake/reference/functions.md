@@ -151,6 +151,17 @@ gcov tool: `gcov-<major>` (GCC), `llvm-cov-<major> gcov` (Clang). Variables:
 `IDICMAKE_COVERAGE_FAIL_UNDER` (percent), `IDICMAKE_COVERAGE_CTEST_ARGS` (list).
 Wrapper: `cmake/idi/tools/coverage.{sh,bat}` (own `build-coverage/` dir).
 
+## Sanitizers — `idi_sanitizers.cmake`
+
+```cmake
+idi_sanitizers_setup()   # called by idi_init() before dependencies and src/ are added
+```
+`IDICMAKE_SANITIZERS` (cache list, empty = off): `address`, `undefined`, `leak`, `thread`
+(`thread` not with `address`/`leak`; MSVC: `address` only). Top-level builds add
+`-fsanitize=<list> -fno-omit-frame-pointer -g` (+ `-fno-sanitize-recover=undefined`) with
+`add_compile_options`/`add_link_options` at the root, so components, tests, demos and
+dependencies all get them. Use one build dir per set (`build-asan`, `build-tsan`).
+
 ## Lint — `idi_lint.cmake`, `scripts/lint.cmake`
 
 ```cmake
@@ -170,6 +181,13 @@ clang-tidy uses the `.c/.cpp` entries of `compile_commands.json` (top-level buil
 Tool version: `IDICMAKE_CLANG_TOOLS_VERSION` (cache; empty = newest `clang-tidy-N` found);
 env `CLANG_FORMAT` / `CLANG_TIDY` override. `run-clang-tidy` is run through Python when
 found, else clang-tidy runs file by file. Set the variables in `cmake-hooks/post-options.cmake`.
+Since 6.5.0, `tidy`/`tidy-report` first run `clang-tidy --verify-config` on the root and nested
+`.clang-tidy` files (and, for `tidy`, the gate list), and `tidy` fails on a bad config or when a full
+run finds no files although the lint dirs hold sources (stale `compile_commands.json`; hint when only
+`demo/` has sources). `tests/` folders carry a nested `.clang-tidy` (`InheritParentConfig: true`) that
+turns off `bugprone-unchecked-optional-access` and `readability-function-cognitive-complexity` for Catch2.
+Silence a finding with `NOLINTNEXTLINE(<check>)` or `NOLINTBEGIN/END`, not a trailing `NOLINT`
+(clang-format can wrap it onto another line).
 
 ## Docs — `idi_docs.cmake`, `scripts/docs-theme.cmake`
 

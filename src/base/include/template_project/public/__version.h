@@ -12,6 +12,7 @@
 #include "@PROJECT_NAME@/public/__build_info.out.h"
 #include "@PROJECT_NAME@/public/idi_version.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -23,33 +24,33 @@ extern "C"
  * Get the major version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_major();
+@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_major(void);
 
 /**
  * Get the minor version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_minor();
+@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_minor(void);
 
 /**
  * Get the patch version number of the current version of the project.
  * @return int32_t
  */
-@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_patch();
+@__idi_c_caps_namespace@_EXPORT uint32_t @__idi_c_namespace@_get_version_patch(void);
 
 /**
  * Get the short version of the git hash
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_short();
+@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_short(void);
 
 /**
  * Get the long version of the git hash
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_long();
+@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_hash_long(void);
 
 
 /**
@@ -57,7 +58,7 @@ extern "C"
  *
  * @return const char *
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_branch();
+@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_git_branch(void);
 
 /**
  * Get if the git repo is dirty at build time.
@@ -65,7 +66,7 @@ extern "C"
  * @return true If the git repo is dirty
  * @return false If the git repo is not dirty
  */
-@__idi_c_caps_namespace@_EXPORT bool @__idi_c_namespace@_get_git_is_dirty();
+@__idi_c_caps_namespace@_EXPORT bool @__idi_c_namespace@_get_git_is_dirty(void);
 
 /**
  * Gets the build timestamp in UTC time
@@ -74,7 +75,7 @@ extern "C"
  *
  * @return std::string reference to timestamp.
  */
-@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_build_timestamp();
+@__idi_c_caps_namespace@_EXPORT const char * @__idi_c_namespace@_get_build_timestamp(void);
 
 #ifdef __cplusplus
 }

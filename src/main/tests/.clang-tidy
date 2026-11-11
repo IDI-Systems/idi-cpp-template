@@ -1,0 +1,5 @@
+---
+# Tests check an optional with a Catch2 REQUIRE before reading it; clang-tidy can't see that REQUIRE stops the test.
+# A test case with many SECTIONs and REQUIREs scores high on cognitive complexity without being hard to read.
+InheritParentConfig: true
+Checks: '-bugprone-unchecked-optional-access,-readability-function-cognitive-complexity'
