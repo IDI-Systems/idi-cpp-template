@@ -57,6 +57,8 @@ Optional, to match new projects (all in files the updater does not own):
   - Remove `allow_failure: true` from the `tidy` job once the gate is clean.
   - Add the `sanitizers` job.
   - Check that the option prefix in `CMAKE_ARGS` is the upper-cased project name.
+- `.github/workflows/cpp.yml` (if the project uses GitHub Actions): the same changes. Pin the lint job to clang 21
+  (installed from apt.llvm.org), remove `continue-on-error` from the clang-tidy step and add the `sanitizers` job.
 - Add the ABI note from the component template to existing public headers if they use C++ inside `extern "C"`.
 
 ## 6.4.0
