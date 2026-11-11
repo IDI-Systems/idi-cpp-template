@@ -14,6 +14,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         type: [exe, static, shared]
     env:
+      # The option prefix is the upper-cased IDICMAKE_PROJECT_NAME from platform-config.cmake (here template_project).
+      # Rename it with the project: CMake ignores options with another prefix without a warning.
       CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_USE_BUILD_TIMESTAMPS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1 -DTEMPLATE_PROJECT_CI_GIT_BRANCH_NAME="${{ github.ref_name }}"
 
     steps:
@@ -41,7 +43,7 @@ jobs:
       run: |
         export PATH=$HOME/cmake/bin:$PATH
         cd build
-        ctest -C Debug --output-junit ctest.xml
+        ctest -C Debug --output-on-failure --output-junit ctest.xml
 
     - name: Upload Artifact
       if: always()
@@ -50,7 +52,8 @@ jobs:
         name: idi-cpp-template-${{ matrix.type }}-${{ matrix.os }}-${{ github.sha }}
         path: build/ctest.xml
 
-  # clang-format must pass; clang-tidy reports but does not fail the workflow (remove continue-on-error to enforce).
+  # Lint: clang-format and the clang-tidy gate must both pass.
+  # Pin the clang version so local runs (cmake/idi/tools/lint.sh --clang-version 21) match CI.
   lint:
     runs-on: ubuntu-latest
     env:
@@ -62,16 +65,50 @@ jobs:
         submodules: recursive
 
     - name: Install tools
-      run: sudo apt-get update -qq && sudo apt-get install -y -qq ninja-build clang-format clang-tidy
+      run: |
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s 21
+        sudo apt-get install -y -qq ninja-build clang-format-21 clang-tidy-21
 
     - name: Format check
       shell: bash
-      run: cmake/idi/tools/lint.sh --format-only -- $CMAKE_ARGS
+      run: cmake/idi/tools/lint.sh --format-only --clang-version 21 -- $CMAKE_ARGS
 
     - name: clang-tidy
       shell: bash
-      continue-on-error: true
-      run: cmake/idi/tools/lint.sh --tidy-only -- $CMAKE_ARGS
+      run: cmake/idi/tools/lint.sh --tidy-only --clang-version 21 -- $CMAKE_ARGS
+
+  # Tests under AddressSanitizer + UndefinedBehaviorSanitizer (leaks included). Add a job with
+  # -DIDICMAKE_SANITIZERS=thread for code that uses threads.
+  sanitizers:
+    runs-on: ubuntu-latest
+    env:
+      CMAKE_ARGS: -DTEMPLATE_PROJECT_BUILD_DEMOS=1 -DTEMPLATE_PROJECT_BUILD_TESTS=1 -DTEMPLATE_PROJECT_DO_TEMPLATE_COMPONENT_TEST=1
+      CC: clang-21
+      CXX: clang++-21
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@v7
+      with:
+        submodules: recursive
+
+    - name: Install tools
+      run: |
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s 21
+        sudo apt-get install -y -qq ninja-build libclang-rt-21-dev
+
+    - name: Build and test
+      shell: bash
+      run: |
+        cmake -S . -B build $CMAKE_ARGS -DIDICMAKE_SANITIZERS="address;undefined"
+        cmake --build build -j 8
+        ctest --test-dir build -C Debug --output-on-failure --output-junit ctest.xml
+
+    - name: Upload Artifact
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: idi-cpp-template-sanitizers-${{ github.sha }}
+        path: build/ctest.xml
 
   coverage:
     runs-on: ubuntu-latest
